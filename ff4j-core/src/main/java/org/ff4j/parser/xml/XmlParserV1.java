@@ -35,7 +35,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.ff4j.feature.Feature;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyString;
@@ -325,7 +325,7 @@ public final class XmlParserV1 extends ConfigurationFileParserXml {
      *            current feature uid
      * @return flipstrategy related to current feature.
      */
-    private TogglePredicate parseFlipStrategy(Element flipStrategyTag, String uid) {
+    private ToggleStrategy parseFlipStrategy(Element flipStrategyTag, String uid) {
         NamedNodeMap nnm = flipStrategyTag.getAttributes();
         if (nnm.getNamedItem(FLIPSTRATEGY_ATTCLASS) == null) {
             throw new IllegalArgumentException("Error syntax in configuration file : '" + FLIPSTRATEGY_ATTCLASS
@@ -367,7 +367,7 @@ public final class XmlParserV1 extends ConfigurationFileParserXml {
                           .map(entry -> new PropertyString(entry.getKey(), entry.getValue()))
                           .forEach(setOfProperties::add);
             }
-            return TogglePredicate.of(uid, clazzName, setOfProperties);
+            return ToggleStrategy.of(uid, clazzName, setOfProperties);
         } catch (Exception e) {
             throw new IllegalArgumentException("An error occurs during flipstrategy parsing TAG" + uid, e);
         }

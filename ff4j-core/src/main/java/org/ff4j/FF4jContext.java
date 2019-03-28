@@ -29,13 +29,13 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.ff4j.exception.ItemNotFoundException;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.user.FF4jUser;
 import org.ff4j.utils.JsonUtils;
 
 
 /**
- * Context holder to perform {@link TogglePredicate} evaluations but not only.
+ * Context holder to perform {@link ToggleStrategy} evaluations but not only.
  * May be useful to evaluate security, ACL, tags
  *
  * @author Cedrick Lunven (@clunven)

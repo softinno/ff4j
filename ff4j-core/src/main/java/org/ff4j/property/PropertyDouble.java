@@ -69,8 +69,9 @@ public class PropertyDouble extends Property < Double > {
     /** {@inheritDoc} */
     @Override
     public Double fromString(String v) {
+        if (v == null) return null;
         try {
-            return new Double(v);
+            return Double.valueOf(v);
         } catch(NumberFormatException nbe) {
             throw new InvalidPropertyTypeException("Cannot cast " + v + "to expected " + Double.class, nbe);
         }

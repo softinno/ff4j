@@ -261,7 +261,7 @@ public abstract class ConfigurationFileParserXml extends ConfigurationFileParser
         if (props != null) {
             props.forEach(property -> {
                 sb.append("    <" + PROPERTY_TAG + " " + PROPERTY_PARAMNAME + "=\"" + property.getUid() + "\" ");
-                sb.append(PROPERTY_PARAMVALUE + "=\"" + property.asString() + "\" ");
+                sb.append(PROPERTY_PARAMVALUE + "=\"" + property.getValueAsString() + "\" ");
                 if (!(property instanceof PropertyString)) {
                     sb.append(PROPERTY_PARAMTYPE  + "=\"" + property.getClass().getCanonicalName()  + "\"");
                 }

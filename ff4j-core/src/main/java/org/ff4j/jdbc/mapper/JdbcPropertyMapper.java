@@ -72,7 +72,7 @@ public class JdbcPropertyMapper extends AbstractJdbcMapper  implements PropertyM
             // ClassName
             ps.setString(6, property.getClassName());
             // Value
-            ps.setString(7, property.asString());
+            ps.setString(7, property.getValueAsString());
             if (property.getFixedValues().isPresent()) {
                 String fixedValues = property.getFixedValues().get().toString();
                 ps.setString(8, fixedValues.substring(1, fixedValues.length() - 1));

@@ -1,5 +1,7 @@
 package org.ff4j.property.repository;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.ff4j.FF4jRepository;
@@ -41,8 +43,18 @@ public interface PropertyRepository extends FF4jRepository < String, Property<?>
      * @return
      *      list of properties names.
      */
-    default Stream < String > listPropertyNames() {
+    default Stream < String > getPropertyNames() {
         return findAllIds();
+    }
+    
+    /**
+     * Syntax sugar.
+     *
+     * @return
+     *      list of properties names.
+     */
+    default Set < String > getPropertyNamesAsSet() {
+        return findAllIds().collect(Collectors.toSet());
     }
     
     /**

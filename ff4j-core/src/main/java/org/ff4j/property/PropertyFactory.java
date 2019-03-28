@@ -114,7 +114,7 @@ public class PropertyFactory {
      */
     public static Property<?> createProperty(Property<?> from) {
         Property<?> to = PropertyFactory.createProperty(from.getUid(), 
-                from.getClassName(), from.asString(), 
+                from.getClassName(), from.getValueAsString(), 
                 from.getDescription().orElse(""), null);
         if (from.getFixedValues().isPresent()) {
             for (Object fixedValue : from.getFixedValues().get()) {
@@ -129,14 +129,14 @@ public class PropertyFactory {
      *
      * @param pName
      *            property name.
-     * @param pType
+     * @param className
      *            property type
      * @param pValue
      *            property value
      * @return
      */
-    public static Property<?> createProperty(String pName, String pType, String pValue) {
-        return PropertyFactory.createProperty(pName, pType, pValue, null, null);
+    public static Property<?> createProperty(String pName, String className, String pValue) {
+        return PropertyFactory.createProperty(pName, className, pValue, null, null);
     }
 
     /**
@@ -144,23 +144,23 @@ public class PropertyFactory {
      *
      * @param pName
      *            property name.
-     * @param pType
+     * @param className
      *            property type
      * @param pValue
      *            property value
      * @return
      */
-    public static Property<?> createProperty(String pName, String pType, String pValue, String desc, Set < String > fixedValues) {
+    public static Property<?> createProperty(String pName, String className, String pValue, String desc, Set < String > fixedValues) {
         assertHasLength(pName);
-        assertHasLength(pType);
+        assertHasLength(className);
         try {
-            Constructor<?> constr = Class.forName(pType).getConstructor(String.class, String.class);
+            Constructor<?> constr = Class.forName(className).getConstructor(String.class, String.class);
             final Property<?> ap = (Property<?>) constr.newInstance(pName, pValue);
             ap.setDescription(desc);
             ap.addFixedValues(fixedValues);
             return ap;
         } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot instantiate '" + pType + "' check default constructor : " + e.getMessage(), e);
+            throw new IllegalArgumentException("Cannot instantiate '" + className + "' check default constructor : " + e.getMessage(), e);
         }
     }
 }

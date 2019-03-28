@@ -72,7 +72,7 @@ public class PropertyLocalDateTime extends Property< LocalDateTime > {
      * @return
      *      current value as a string or null
      */
-    public String asString() {
+    public String getValueAsString() {
         if (value == null) return null;
         return value.format(FORMATTER);
     }
@@ -80,6 +80,7 @@ public class PropertyLocalDateTime extends Property< LocalDateTime > {
     /** {@inheritDoc} */
     @Override
     public LocalDateTime fromString(String v) {
+        assertStringValueIsNotNull(v);
         return LocalDateTime.parse(v, FORMATTER);
     }
 

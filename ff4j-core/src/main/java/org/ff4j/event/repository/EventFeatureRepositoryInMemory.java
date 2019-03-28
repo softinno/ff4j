@@ -42,8 +42,8 @@ import java.util.stream.Stream;
 import org.ff4j.event.Event;
 import org.ff4j.event.EventQueryDefinition;
 import org.ff4j.event.EventSeries;
-import org.ff4j.event.chart.Serie;
-import org.ff4j.event.chart.TimeSeriesChart;
+import org.ff4j.event.Serie;
+import org.ff4j.event.TimeSeries;
 import org.ff4j.event.monitoring.HitCount;
 
 /**
@@ -109,6 +109,7 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
     }
 
     private Optional < EventSeries > findEventSeries(String eventUid) {
+        assertHasLength(eventUid);
         return events.values().stream()
             // Get Collection < EventSeries >
             .map(m -> m.values())
@@ -139,6 +140,7 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
     public void save(Iterable<Event> entities) {
         assertNotNull(entities);
         entities.forEach(evt -> {
+            assertEvent(evt);
             Optional < EventSeries > result = findEventSeries(evt.getUid());
         if (result.isPresent()) {
             result.get().removeIf(e -> evt.getUid().equals(e.getUid()));
@@ -149,12 +151,6 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
         }});
     }
     
-    /** {@inheritDoc} */
-    protected void update(Event entity) {
-        // Does this event exist ? 
-        
-    }
-
     @Override
     public void delete(Iterable<String> entities) {
         assertNotNull(entities);
@@ -176,6 +172,7 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
     
     /** {@inheritDoc} */
     public void saveEvent(Event e) {
+        assertEvent(e);
         if (match(e)) saveEvent(e, events);
     }
     
@@ -242,6 +239,7 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
      * @return if the evetn is stored
      */
     private boolean saveEvent(Event e, Map<String, Map<String, EventSeries>> target) {
+        assertEvent(e);
         String key = getKeyDate(e.getTimestamp());
         String uid = e.getTargetUid();
         if (!target.containsKey(key)) {
@@ -255,9 +253,9 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
     
     /** {@inheritDoc} */
     @Override
-    public TimeSeriesChart getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units) {
+    public TimeSeries getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units) {
         // Create the interval depending on units
-        TimeSeriesChart tsc = new TimeSeriesChart(query.getFrom(), query.getTo(), units);
+        TimeSeries tsc = new TimeSeries(query.getFrom(), query.getTo(), units);
         
         for (String currentDay : getCandidateDays(query.getFrom(), query.getTo())) {
             // There are some event this day

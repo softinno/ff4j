@@ -44,7 +44,7 @@ import javax.sql.DataSource;
 
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureAccessException;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.jdbc.JdbcConstants.FeaturePermissionColumns;
 import org.ff4j.jdbc.JdbcConstants.FeaturePropertyColumns;
 import org.ff4j.jdbc.JdbcConstants.FeatureToggleStrategyColumns;
@@ -248,7 +248,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
                 try (ResultSet rsToggleStrat = psToggleStrategies.executeQuery()) {
                     while (rsToggleStrat.next()) {
                         String toggleStrategyClassName = rsToggleStrat.getString(FeatureToggleStrategyColumns.TOGGLE_CLASS.colname());
-                        f.addToggleStrategy(TogglePredicate.of(uid, toggleStrategyClassName, toggleStratProperties.get(uid)));
+                        f.addToggleStrategy(ToggleStrategy.of(uid, toggleStrategyClassName, toggleStratProperties.get(uid)));
                     }
                 }
             }
@@ -377,7 +377,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
                         String featureUid              = rsToggleStrat.getString(FeatureToggleStrategyColumns.FEATURE_UID.colname());
                         String toggleStrategyClassName = rsToggleStrat.getString(FeatureToggleStrategyColumns.TOGGLE_CLASS.colname());
                         mapFP.get(featureUid).addToggleStrategy(
-                                TogglePredicate.of(featureUid, toggleStrategyClassName, 
+                                ToggleStrategy.of(featureUid, toggleStrategyClassName, 
                                         toggleStratProperties.get(featureUid).get(toggleStrategyClassName)));
                     }
                 }
@@ -516,7 +516,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
             }
             // Create ToggleStrategy
             if (!feature.getToggleStrategies().isEmpty()) {
-                for(TogglePredicate tp : feature.getToggleStrategies()) {
+                for(ToggleStrategy tp : feature.getToggleStrategies()) {
                     try(PreparedStatement ps = mapper.insertToggleStrategyStatement(feature.getUid(), tp)) {
                         ps.executeUpdate();
                     }

@@ -25,7 +25,10 @@ import static org.ff4j.test.AssertUtils.assertNotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -86,7 +89,6 @@ public interface FF4jRepository<ID extends Serializable, ENTITY extends FF4jEnti
      */
     boolean exists(ID id);
     
-
     // --------------------------
     //    SAVE (CREATE/UPDATE)
     // --------------------------
@@ -126,6 +128,13 @@ public interface FF4jRepository<ID extends Serializable, ENTITY extends FF4jEnti
     Stream<ID> findAllIds();
     
     /**
+     * Syntaxic sugar..
+     */
+    default Set < ID > findAllIdsAsSet() {
+        return findAllIds().collect(Collectors.toSet());
+    }
+    
+    /**
      * Find One entity by its id.
      * 
      * @param id
@@ -155,12 +164,26 @@ public interface FF4jRepository<ID extends Serializable, ENTITY extends FF4jEnti
     }
     
     /**
+     * Syntaxic sugar..
+     */
+    default Map < String, ENTITY > findAsMap(Iterable<ID> ids)  {
+        return find(ids).collect(Collectors.toMap(FF4jEntity::getUid, Function.identity()));
+    }
+    
+    /**
      * Retrieve all entities of the stores as a collection.
      *
      * @return entities as an {@link Iterable}
      */
     default Stream<ENTITY> findAll() {
         return find(findAllIds().collect(Collectors.toList()));
+    }
+    
+    /**
+     * Syntaxic sugar..
+     */
+    default Map < String, ENTITY > findAllAsMap()  {
+        return findAll().collect(Collectors.toMap(FF4jEntity::getUid, Function.identity()));
     }
 
     /**

@@ -4,7 +4,7 @@ package org.ff4j.property;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ package org.ff4j.property;
  * #L%
  */
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,21 +54,17 @@ public abstract class PropertyList<T, K extends Property<T>> extends Property < 
      * @param uid
      *      property ID
      */
-    public PropertyList(String uid) {
-        super(uid);
-        initProperty(uid);
-    }
     public PropertyList(String uid, String valueAsString) {
         super(uid, valueAsString);
         initProperty(uid);
     }
-    public PropertyList(String uid, List<T> value) {
-        super(uid, value);
-        initProperty(uid);
-    }
+    
     @SuppressWarnings("unchecked")
     public PropertyList(String uid, T... value) {
-        super(uid, Arrays.asList(value));
+        super(uid, (String) null);
+        if (value != null) {
+            this.value = Arrays.asList(value);
+        }
         initProperty(uid);
     }
     
@@ -77,11 +72,10 @@ public abstract class PropertyList<T, K extends Property<T>> extends Property < 
     @Override
     public List<T> fromString(String v) {
         if (v == null) return null;
-        // Brackets ?
         if (v.startsWith("[")) {
            v = v.substring(1, v.length()-1);
         }
-        if (property == null) initProperty(uid);
+        initProperty(uid);
         return Arrays.stream(v.split(listDelimiter))
                      .map(String::trim)
                      .map(property::fromString)
@@ -93,37 +87,29 @@ public abstract class PropertyList<T, K extends Property<T>> extends Property < 
      *
      * @return current value as a string or null
      */
-    public String asString() {
+    public String getValueAsString() {
         if (get() == null) {
             return null;
         }
-        // Handle Collections
-        if (Collection.class.isAssignableFrom(get().getClass())) {
-           Collection<T> collection = (Collection<T>) get();
-           if (collection == null || collection.isEmpty()) {
-               return "";
-           }
-           Iterator<T> it = collection.iterator();
-           StringBuilder sb = new StringBuilder(it.next().toString());
-           while (it.hasNext()) {
-               sb.append(listDelimiter);
-               sb.append(it.next());
-           }
-           return sb.toString();
+        Collection<T> collection = (Collection<T>) get();
+        Iterator<T> it = collection.iterator();
+        StringBuilder sb = new StringBuilder(it.next().toString());
+        while (it.hasNext()) {
+            sb.append(listDelimiter);
+            sb.append(it.next());
         }
-        return get().toString();
+        return sb.toString();
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void initProperty(String uid) {
         try {
             Class<K> persistentClass = (Class<K>)
                     ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
             property = persistentClass.getConstructor(String.class).newInstance(uid);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new IllegalArgumentException("Cannot use reflection to instanciate Generic type :"
-                    + "constructor with single argument string should exist", e);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot instanciate type :"
+                    + "constructor with argument String does not exist", e);
         }
     }
     

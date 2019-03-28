@@ -71,7 +71,9 @@ public class PropertyCalendar extends Property< Calendar > {
     public Calendar fromString(String v) {
         try {
         	Calendar c = Calendar.getInstance();
-        	c.setTime(SIMPLE_DATE_FORMAT.parse(v));
+        	if (v != null) {
+        	    c.setTime(SIMPLE_DATE_FORMAT.parse(v));
+        	}
             return c;
         } catch (ParseException e) {
            throw new IllegalArgumentException("Illegal expression for date, expecting yyyy-MM-dd HH:mm", e);
@@ -84,10 +86,7 @@ public class PropertyCalendar extends Property< Calendar > {
      * @return
      *      current value as a string or null
      */
-    public String asString() {
-        if (value == null) {
-            return null;
-        }
+    public String getValueAsString() {
         return SIMPLE_DATE_FORMAT.format(value.getTime());
     }
 

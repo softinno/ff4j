@@ -42,11 +42,5 @@ public class EventConstants {
     /** CUSTOM KEY. */
     public static final String KEY_ACL = "accessControlList";
 
-	/** total hit count. */
-	public static final String TITLE_PIE_HITCOUNT = "Total Hit Counts";
-
-	/** distribution. */
-	public static final String TITLE_BARCHAR_HIT = "HitCounts Distribution";
-
 	private EventConstants() {}
 }

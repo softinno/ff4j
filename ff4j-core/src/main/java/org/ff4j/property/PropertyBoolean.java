@@ -72,11 +72,12 @@ public class PropertyBoolean extends Property< Boolean > {
     /** {@inheritDoc} */
     @Override
     public Boolean fromString(String v) {
+        if (v == null) return null;
         if (!Boolean.TRUE.toString().equals(v.toLowerCase()) &&
             !Boolean.FALSE.toString().equals(v) ) {
             throw new InvalidPropertyTypeException("Cannot cast " + v + "to expected " + Boolean.class);
         }
-        return new Boolean(v);
+        return Boolean.valueOf(v);
     }
 
 }

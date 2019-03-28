@@ -75,19 +75,19 @@ public class OfficeHourToggleStrategy extends AbstractToggleStrategy {
         
         // Update Days
         getProperty(MONDAY).ifPresent( 
-                p -> weekTimeTable.put(Calendar.MONDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.MONDAY, parseIntervalsExpression(p.getValueAsString())));
         getProperty(TUESDAY).ifPresent(
-                p -> weekTimeTable.put(Calendar.TUESDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.TUESDAY, parseIntervalsExpression(p.getValueAsString())));
         getProperty(WEDNESDAY).ifPresent(
-                p -> weekTimeTable.put(Calendar.WEDNESDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.WEDNESDAY, parseIntervalsExpression(p.getValueAsString())));
         getProperty(THURSDAY).ifPresent(
-                p -> weekTimeTable.put(Calendar.THURSDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.THURSDAY, parseIntervalsExpression(p.getValueAsString())));
         getProperty(FRIDAY).ifPresent(
-                p -> weekTimeTable.put(Calendar.FRIDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.FRIDAY, parseIntervalsExpression(p.getValueAsString())));
         getProperty(SATURDAY).ifPresent(
-                p -> weekTimeTable.put(Calendar.SATURDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.SATURDAY, parseIntervalsExpression(p.getValueAsString())));
         getProperty(SUNDAY).ifPresent(
-                p -> weekTimeTable.put(Calendar.SUNDAY, parseIntervalsExpression(p.asString())));
+                p -> weekTimeTable.put(Calendar.SUNDAY, parseIntervalsExpression(p.getValueAsString())));
         
         // Update publiholidays
         getProperty(PUBLICHOLIDAY).ifPresent(publicHoliday -> {

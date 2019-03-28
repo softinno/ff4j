@@ -41,15 +41,5 @@ public class RoleNotFoundException extends ItemNotFoundException {
     public RoleNotFoundException(String uid) {
         super(uid);
     }
-
-    /**
-     * Parameterized constructor.
-     * 
-     * @param featureName
-     *            feature to be processed
-     **/
-    public RoleNotFoundException(String uid, Throwable parentException) {
-        super(uid, parentException);
-    }
     
 }

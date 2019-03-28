@@ -1,16 +1,11 @@
 
 package org.ff4j.utils;
 
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-/*
+/*-
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2014 Ff4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +20,11 @@ import java.net.UnknownHostException;
  * limitations under the License.
  * #L%
  */
+
+import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,30 +53,41 @@ import org.ff4j.test.AssertUtils;
  * @author Cedrick Lunven (@clunven)
  */
 public class Util {
-    
+
     private Util() {}
 
     /**
      * Find a feature or property in a stream
+     * 
      * @param stream
      * @param uid
      * @return
      */
-    public static < T extends FF4jEntity<?> > Optional<T> find(Stream <T> stream, String uid) {
+    public static <T extends FF4jEntity<?>> Optional<T> find(Stream<T> stream, String uid) {
         if (stream == null || uid == null) return Optional.empty();
         return stream.filter(t -> uid.equals(t.getUid())).findFirst();
     }
-    
+
     /**
      * Retrieve all entities as a MAP and not stream collecting by UID.
-    *
-    * @return entities as an {@link Iterable}
-    */
-    public static < T extends FF4jEntity<?> > Map < String, T > toMap(Stream<T> stream) {
-       if (stream == null) return new HashMap<>(); 
-       return stream.collect(Collectors.toMap(T::getUid, Function.identity()));
-   } 
+     *
+     * @return entities as an {@link Iterable}
+     */
+    public static <T extends FF4jEntity<?>> Map<String, T> toMap(Stream<T> stream) {
+        if (stream == null) return new HashMap<>();
+        return stream.collect(Collectors.toMap(T::getUid, Function.identity()));
+    }
+
+    public static <T> Set<T> asSet(Stream<T> myStream) {
+        if (null == myStream) return new HashSet<>();
+        return myStream.collect(Collectors.toSet());
+    }
     
+    public static <T> List<T> asList(Stream<T> myStream) {
+        if (null == myStream) return new ArrayList<>();
+        return myStream.collect(Collectors.toList());
+    }
+
     /**
      * Create an HashSet.
      *
@@ -86,24 +97,24 @@ public class Util {
      */
     @SuppressWarnings("unchecked")
     public static <T> Set<T> setOf(T... els) {
-         return (els == null) ? null : new HashSet<T>(Arrays.asList(els));
+        return (els == null) ? null : new HashSet<T>(Arrays.asList(els));
     }
-    
+
     /**
      * Creation of a map from a single Value.
+     * 
      * @param key
-     *      map key
+     *            map key
      * @param value
-     *      map value
-     * @return
-     *      the populated map
+     *            map value
+     * @return the populated map
      */
-    public static <K,V> Map < K, V > mapOf(K key, V value) {
-        Map <K, V> mapOfValues = new HashMap<>();
+    public static <K, V> Map<K, V> mapOf(K key, V value) {
+        Map<K, V> mapOfValues = new HashMap<>();
         mapOfValues.put(key, value);
         return mapOfValues;
     }
-    
+
     /**
      * Create an HashSet.
      *
@@ -111,10 +122,10 @@ public class Util {
      *            enumeration of elements
      * @return
      */
-    public static <T> Set<T> setOf(Stream < T > elements) {
+    public static <T> Set<T> setOf(Stream<T> elements) {
         return (elements == null) ? null : elements.collect(Collectors.toSet());
     }
-    
+
     /**
      * Create an HashSet.
      *
@@ -126,7 +137,7 @@ public class Util {
     public static <T> List<T> listOf(T... els) {
         return (els == null) ? null : new ArrayList<T>(Arrays.asList(els));
     }
-    
+
     /**
      * Check that expression is true.
      * 
@@ -136,7 +147,7 @@ public class Util {
     public static boolean hasLength(String expression) {
         return expression != null && !"".equals(expression);
     }
-    
+
     /**
      * Check that class is valid.
      * 
@@ -146,25 +157,24 @@ public class Util {
     public static boolean isValidClass(Class<?> clazz) {
         return (clazz != null) && (clazz != NullType.class);
     }
-    
+
     /**
      * Validate event.
      *
      * @param evt
-     *          event
+     *            event
      */
     public static void validateEvent(Event evt) {
         AssertUtils.assertNotNull(evt);
         AssertUtils.assertHasLength(evt.getScope());
         AssertUtils.assertHasLength(evt.getTargetUid());
         AssertUtils.assertHasLength(evt.getAction());
-    }   
-    
+    }
+
     /**
      * Read hostName from JDK.
      * 
-     * @return
-     *      current hostname
+     * @return current hostname
      */
     public static String inetAddressHostName() {
         try {
@@ -172,21 +182,21 @@ public class Util {
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException("Cannot find the target host by itself", e);
         }
-    }   
-    
+    }
+
     /**
      * Serialize collection elements with a delimiter.
      *
      * @param collec
-     *      collection (a,b,c)
+     *            collection (a,b,c)
      * @param delimiter
-     *      delimiter char (e.g : ",")
-     * @return
-     *      the list : a,b,c
+     *            delimiter char (e.g : ",")
+     * @return the list : a,b,c
      */
-    public static <T> String join(Collection < T > collec, String delimiter) {
+    public static <T> String join(Collection<T> collec, String delimiter) {
         AssertUtils.assertHasLength(delimiter);
-        if (collec == null) return null;
+        if (collec == null)
+            return null;
         StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (T t : collec) {
@@ -198,54 +208,51 @@ public class Util {
         }
         return sb.toString();
     }
-    
+
     /**
      * Check if a current class can be cast to collection.
      * 
      * @param c
-     *      current class
-     * @return
-     *      flag if it's a collection
+     *            current class
+     * @return flag if it's a collection
      */
     public static boolean isClassCollection(Class<?> c) {
         return Collection.class.isAssignableFrom(c) || Map.class.isAssignableFrom(c);
     }
-    
+
     /**
      * Check if a current object can be cast to collection.
      * 
      * @param ob
-     *      current object
-     * @return
-     *      flag if it's a collection
+     *            current object
+     * @return flag if it's a collection
      */
     public static boolean isCollection(Object ob) {
         return ob != null && isClassCollection(ob.getClass());
     }
-    
+
     /**
      * Check if a current object is empty
      * 
      * @param ob
-     *      current collection
-     * @return
-     *      flag if it's an empty collection
+     *            current collection
+     * @return flag if it's an empty collection
      */
     public static boolean isEmpty(Collection<?> ob) {
         return (ob == null) || ob.isEmpty();
     }
-    
+
     /**
      * Downcast as collection or return error.
      *
      * @param ob
-     *      target object
-     * @return
-     *      if can ve converted to collection.
+     *            target object
+     * @return if can ve converted to collection.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Collection < T > asCollection(Object ob) {
-        if (ob == null) return null;
+    public static <T> Collection<T> asCollection(Object ob) {
+        if (ob == null)
+            return null;
         if (ob.getClass().isArray()) {
             return Arrays.asList((T[]) ob);
         }
@@ -254,36 +261,34 @@ public class Util {
         }
         return (Collection<T>) ob;
     }
-    
+
     /**
      * Get a random offset within map.
      *
      * @param size
-     *      target list size
-     * @return
-     *      a random positive integer below size
+     *            target list size
+     * @return a random positive integer below size
      */
     public static int getRandomOffset(int size) {
         return (int) (Math.random() * Math.abs(size));
     }
-    
+
     /**
      * Get a random element from a list.
      *
      * @param myList
-     *      current list
+     *            current list
      */
-    public static < T > T getRandomElement(List<T> myList) {
+    public static <T> T getRandomElement(List<T> myList) {
         return myList.get(getRandomOffset(myList.size()));
     }
-     
+
     /**
      * Allow to instanciate utility class.
      *
      * @param utilityClass
-     *      current utility
-     * @return
-     *      instance
+     *            current utility
+     * @return instance
      * @throws Exception
      */
     public static <T> T instanciatePrivate(Class<T> utilityClass) throws Exception {
@@ -291,18 +296,19 @@ public class Util {
         ce.setAccessible(true);
         return ce.newInstance();
     }
-    
+
     /**
      * Get key listfrom value.
      *
      * @param map
-     *      current MAP
+     *            current MAP
      * @param value
-     *      value of MAP
+     *            value of MAP
      * @return
      */
     public static <T, E> Set<T> getKeysByValue(Map<T, E> map, E value) {
-        if (map == null) return null;
+        if (map == null)
+            return null;
         Set<T> keys = new HashSet<T>();
         for (Entry<T, E> entry : map.entrySet()) {
             if (value != null && value.equals(entry.getValue())) {
@@ -311,18 +317,19 @@ public class Util {
         }
         return keys;
     }
-    
+
     /**
      * Get a first key matching from value.
      *
      * @param map
-     *      current MAP
+     *            current MAP
      * @param value
-     *      value of MAP
+     *            value of MAP
      * @return
      */
     public static <T, E> T getFirstKeyByValue(Map<T, E> map, E value) {
-        if (map == null) return null;
+        if (map == null)
+            return null;
         for (Entry<T, E> entry : map.entrySet()) {
             if (value != null && value.equals(entry.getValue())) {
                 return entry.getKey();
@@ -330,9 +337,9 @@ public class Util {
         }
         return null;
     }
-    
+
     public static String fromInputStreamToString(InputStream in) {
-        try(Scanner scan = new Scanner(in)) { 
+        try (Scanner scan = new Scanner(in)) {
             return scan.useDelimiter("\\A").hasNext() ? scan.next() : "";
         }
     }

@@ -175,7 +175,7 @@ public class AssertFF4j {
 	 * @return current object
 	 */
 	public final AssertFF4j assertThatStoreHasSize(int expectedNumber) {
-		assertEquals(expectedNumber,  new Long(ff4j.getRepositoryFeatures().findAll().count()).intValue());
+		assertEquals(expectedNumber,  Long.valueOf(ff4j.getRepositoryFeatures().findAll().count()).intValue());
 		return this;
 	}
 
@@ -187,7 +187,7 @@ public class AssertFF4j {
 	 * @return current object
 	 */
 	public final AssertFF4j assertThatPropertyStoreHasSize(int expectedNumber) {
-		assertEquals(expectedNumber, new Long(ff4j.getRepositoryProperties().findAll().count()).intValue());
+		assertEquals(expectedNumber, Long.valueOf(ff4j.getRepositoryProperties().findAll().count()).intValue());
 		return this;
 	}
 	
@@ -200,7 +200,7 @@ public class AssertFF4j {
      * @return current object
      */
     public final AssertFF4j assertThatUserStoreHasSize(int expectedNumber) {
-        assertEquals(expectedNumber, new Long(ff4j.getRepositoryUsersRoles().findAll().count()).intValue());
+        assertEquals(expectedNumber, Long.valueOf(ff4j.getRepositoryUsersRoles().findAll().count()).intValue());
         return this;
     }
     
@@ -212,7 +212,7 @@ public class AssertFF4j {
      * @return current object
      */
     public final AssertFF4j assertThatRoleStoreHasSize(int expectedNumber) {
-        assertEquals(expectedNumber, new Long(ff4j.getRepositoryUsersRoles().countRoles()).intValue());
+        assertEquals(expectedNumber, Long.valueOf(ff4j.getRepositoryUsersRoles().countRoles()).intValue());
         return this;
     }
 
@@ -225,7 +225,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatStoreHasNumberOfGroups(int expectedNumber) {
 		assertEquals(expectedNumber, 
-		             new Long(ff4j.getRepositoryFeatures().listGroupNames().count()).intValue());
+		             Long.valueOf(ff4j.getRepositoryFeatures().listGroupNames().count()).intValue());
 		return this;
 	}
 
@@ -333,7 +333,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatGroupHasSize(int expected, String groupName) {
 		assertThatGroupExist(groupName);
-		assertEquals(expected, new Long(ff4j.getRepositoryFeatures().readGroup(groupName).count()).intValue());
+		assertEquals(expected, Long.valueOf(ff4j.getRepositoryFeatures().readGroup(groupName).count()).intValue());
 		return this;
 	}
 

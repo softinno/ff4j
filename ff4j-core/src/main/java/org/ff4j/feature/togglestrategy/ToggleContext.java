@@ -26,7 +26,7 @@ import org.ff4j.FF4jContext;
 import org.ff4j.feature.Feature;
 
 /**
- * Wrapper for {@link TogglePredicate} to implement {@link Predicate} and ease evolutions.
+ * Wrapper for {@link ToggleStrategy} to implement {@link Predicate} and ease evolutions.
  *
  * @author Cedrick LUNVEN (@clunven)
  */

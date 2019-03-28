@@ -54,7 +54,7 @@ public class ReleaseDateToggleStrategy extends AbstractToggleStrategy {
         // Parsing V1 file with Map<String, String> and not typed params
         if (p instanceof PropertyString) {
             try {
-                releaseDate = new SimpleDateFormat("yyyy-MM-dd-HH:mm").parse(p.asString());
+                releaseDate = new SimpleDateFormat("yyyy-MM-dd-HH:mm").parse(p.getValueAsString());
             } catch (ParseException e) {
                 throw new IllegalArgumentException("Cannot parse release "
                         + "date expected format is 'yyyy-MM-dd-HH:mm'",e);

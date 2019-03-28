@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.ff4j.FF4j;
 import org.ff4j.feature.Feature;
 import org.ff4j.property.Property;
 import org.ff4j.user.FF4jRole;
@@ -53,6 +54,27 @@ public final class FF4jConfigFile {
     
     /** InMemory USers parsed. */
     private Map < String, FF4jUser > users = new LinkedHashMap<>();
+    
+    /**
+     * Default
+     */
+    public FF4jConfigFile() {
+    }
+    
+    /**
+     * Used for export.
+     *
+     * @param ff4j
+     */
+    public FF4jConfigFile(FF4j ff4j) {
+        if (ff4j != null) {
+            this.autoCreate = ff4j.isAutoCreateFeatures();
+            this.audit      = ff4j.isAuditEnabled();
+        // Features
+        }
+        
+        
+    }
     
     /** {@inheritDoc} */
     @Override

@@ -86,8 +86,9 @@ public class PropertyInt extends Property< Integer > {
     /** {@inheritDoc} */
     @Override
     public Integer fromString(String v) {
+        assertStringValueIsNotNull(v);
         try {
-            return new Integer(v);
+            return Integer.valueOf(v);
         } catch(NumberFormatException nbe) {
             throw new InvalidPropertyTypeException("Cannot cast " + v + "to expected " + Integer.class, nbe);
         }

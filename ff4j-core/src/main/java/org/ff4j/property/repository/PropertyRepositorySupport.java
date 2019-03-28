@@ -11,10 +11,8 @@ import java.util.Set;
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
 import org.ff4j.event.repository.EventAuditTrailRepository;
-import org.ff4j.exception.ItemAlreadyExistException;
 import org.ff4j.exception.ItemNotFoundException;
 import org.ff4j.property.Property;
-import org.ff4j.property.exception.PropertyAlreadyExistException;
 import org.ff4j.property.exception.PropertyNotFoundException;
 
 
@@ -66,14 +64,6 @@ public abstract class PropertyRepositorySupport
             assertItemExist(uid);
         } catch(ItemNotFoundException infEx) {
             throw new PropertyNotFoundException(uid, infEx);
-        }
-    }
-    
-    protected void assertPropertyNotExist(String uid) {
-        try {
-            assertItemNotExist(uid);
-        } catch(ItemAlreadyExistException infEx) {
-            throw new PropertyAlreadyExistException(uid, infEx);
         }
     }
     

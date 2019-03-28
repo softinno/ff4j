@@ -123,7 +123,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     /** {@inheritDoc} */
     @Override
     public long count() {
-        return listPropertyNames().count();
+        return getPropertyNames().count();
     }
 
     /** {@inheritDoc} */
@@ -196,7 +196,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     
     /** {@inheritDoc} */
     @Override
-    public Stream<String> listPropertyNames() {
+    public Stream<String> getPropertyNames() {
         Collection < String > propertyNames = new ArrayList<>();
         try (Connection sqlConn = getDataSource().getConnection()) {
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectAllPropertyNames())) {

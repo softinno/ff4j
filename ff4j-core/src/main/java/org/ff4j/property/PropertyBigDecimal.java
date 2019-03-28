@@ -73,6 +73,7 @@ public class PropertyBigDecimal extends Property< BigDecimal > {
     /** {@inheritDoc} */
     @Override
     public BigDecimal fromString(String v) {
+        if (v == null) return null;
         try {
             return new BigDecimal(v);
         } catch(NumberFormatException nbe) {

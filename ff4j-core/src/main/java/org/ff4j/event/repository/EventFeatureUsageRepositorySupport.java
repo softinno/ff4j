@@ -26,6 +26,7 @@ import org.ff4j.FF4jRepositorySupport;
 
 import org.ff4j.event.Event;
 import org.ff4j.feature.Feature;
+import org.ff4j.test.AssertUtils;
 
 /**
  * Allow to track features usage.
@@ -44,6 +45,28 @@ public abstract class EventFeatureUsageRepositorySupport
     public void onFeatureHit(Feature feature) {
         featureUsageHit(feature);
     }
+    
+    /**
+     * Validate feature uid.
+     *
+     * @param uid
+     *      target uid
+     */
+    protected void assertEventExist(String uid) {
+        assertItemExist(uid);
+    }
+    
+    /**
+     * Validate feature uid.
+     *
+     * @param uid
+     *      target uid
+     */
+    protected void assertEvent(Event e) {
+        AssertUtils.assertNotNull(e);
+        AssertUtils.assertHasLength(e.getUid());
+    }
+    
     
     /** {@inheritDoc} */
     @Override

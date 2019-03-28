@@ -30,7 +30,7 @@ import org.junit.jupiter.api.DisplayName;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@DisplayName("Testing INMEMORY | EVENT/FEATURE_USAGE  Repository")
+@DisplayName(" EventRepository::InMemory")
 public class EventRepositoryTestInMemory extends EventRepositoryTest {
  
     /** {@inheritDoc} */

@@ -40,8 +40,18 @@ public class AuditTrailQuery {
     public AuditTrailQuery() {
     }
     
+    public AuditTrailQuery(long from, long to) {
+        this.from = Long.valueOf(from);
+        this.to   = Long.valueOf(to);
+    }
+    
     public AuditTrailQuery from(long from) {
-        this.from = new Long(from);
+        this.from = Long.valueOf(from);
+        return this;
+    }
+    
+    public AuditTrailQuery to(long to) {
+        this.to = Long.valueOf(to);
         return this;
     }
     
@@ -55,11 +65,11 @@ public class AuditTrailQuery {
         return this;
     }
     
-    public Optional < Long > getLowerBound() {
+    public Optional < Long > getFrom() {
         return Optional.ofNullable(from);
     }
     
-    public Optional < Long > getUpperBound() {
+    public Optional < Long > getTo() {
         return Optional.ofNullable(to);
     }
     

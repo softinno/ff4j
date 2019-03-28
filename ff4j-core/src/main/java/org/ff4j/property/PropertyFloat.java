@@ -69,8 +69,9 @@ public class PropertyFloat extends Property< Float > {
     /** {@inheritDoc} */
     @Override
     public Float fromString(String v) {
+        assertStringValueIsNotNull(v);
         try {
-            return new Float(v);
+            return Float.valueOf(v);
         } catch(NumberFormatException nbe) {
             throw new InvalidPropertyTypeException("Cannot cast " + v + "to expected " + Float.class, nbe);
         }

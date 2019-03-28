@@ -340,8 +340,8 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
     /** {@inheritDoc} */
     @Override
     public int compareTo(Event evt) {
-        int myTime = new Long(this.getTimestamp() - evt.getTimestamp()).intValue();
-        // Not equals even if same timestamp (of course...)
+        int myTime = Long.valueOf(this.getTimestamp() - evt.getTimestamp()).intValue();
+        // Timestamp alone does not ensure unicity, adding UIDs
         return (myTime != 0) ? myTime : evt.getUid().compareTo(getUid());
     }
     

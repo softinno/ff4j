@@ -32,10 +32,10 @@ import java.util.concurrent.TimeUnit;
 import org.ff4j.FF4jRepository;
 import org.ff4j.event.Event;
 import org.ff4j.event.Event.Scope;
-import org.ff4j.event.chart.TimeSeriesChart;
-import org.ff4j.event.monitoring.HitCount;
 import org.ff4j.event.EventQueryDefinition;
 import org.ff4j.event.EventSeries;
+import org.ff4j.event.TimeSeries;
+import org.ff4j.event.monitoring.HitCount;
 import org.ff4j.feature.Feature;
 
 /**
@@ -120,7 +120,7 @@ public interface EventFeatureUsageRepository extends FF4jRepository < String, Ev
      * @return
      *      object structure
      */
-    TimeSeriesChart getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units);
+    TimeSeries getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units);
     
     /**
      * Get all events.

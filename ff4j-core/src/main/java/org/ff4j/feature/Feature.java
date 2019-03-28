@@ -31,7 +31,7 @@ import java.util.Optional;
 import org.ff4j.FF4jContext;
 import org.ff4j.FF4jEntity;
 import org.ff4j.feature.togglestrategy.ToggleContext;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyFactory;
 import org.ff4j.security.FF4jGrantees;
@@ -58,12 +58,15 @@ public class Feature extends FF4jEntity < Feature > {
 
     /** State to decide to toggleOn or not. */
     private boolean enable = false;
+    
+    /** Some feature should live for a dedicated period of time and raised alert if stil there after a while. */
+    private Optional < Long > ttl = Optional.empty();
 
     /** Feature could be grouped to enable/disable the whole group. */
     private Optional< String> group = Optional.empty();
     
     /** Custom behaviour to define if feature if enable or not e.g. A/B Testing capabilities. */
-    private List < TogglePredicate > toggleStrategies = new ArrayList<>();
+    private List < ToggleStrategy > toggleStrategies = new ArrayList<>();
     
     /**
      * Initialize {@link Feature} with id;
@@ -111,13 +114,13 @@ public class Feature extends FF4jEntity < Feature > {
         f.getGroup().ifPresent(g -> this.group = Optional.of(g));
         // Cloning Strategies
         if (!f.getToggleStrategies().isEmpty()) {
-            for (TogglePredicate strat : f.getToggleStrategies()) {
-                addToggleStrategy(TogglePredicate.of(uid, strat.getClass().getName(), strat.getProperties()));
+            for (ToggleStrategy strat : f.getToggleStrategies()) {
+                addToggleStrategy(ToggleStrategy.of(uid, strat.getClass().getName(), strat.getProperties()));
             }
         }
         // Cloning Properties
         for (Property<?> p : f.getProperties().values()) {
-            Property<?> pTmp = PropertyFactory.createProperty(p.getUid(), p.getClass().getName(), p.asString());
+            Property<?> pTmp = PropertyFactory.createProperty(p.getUid(), p.getClass().getName(), p.getValueAsString());
             p.getDescription().ifPresent(pTmp::setDescription);
             if (p.getFixedValues().isPresent()) {
                 for (Object fixValue : p.getFixedValues().get()) {
@@ -153,7 +156,7 @@ public class Feature extends FF4jEntity < Feature > {
         if (!isEnabled()) return false;
         boolean toggled = true;
         if (!toggleStrategies.isEmpty()) {
-            Iterator<TogglePredicate> iter = toggleStrategies.iterator();
+            Iterator<ToggleStrategy> iter = toggleStrategies.iterator();
             // Break as soon as one of the strategy return false
             while (toggled && iter.hasNext()) {
                 toggled = iter.next().test(new ToggleContext(this, context));
@@ -246,10 +249,11 @@ public class Feature extends FF4jEntity < Feature > {
         json.append(super.baseJson());
         json.append(attributeAsJson("enabled", enable));
         group.ifPresent(g -> json.append(attributeAsJson("group", g)));
+        ttl.ifPresent(ttl -> json.append(attributeAsJson("ttl", ttl)));
         if (!this.toggleStrategies.isEmpty()) {
             json.append(",\"toggleStrategies\": [");
             boolean first = true;
-            for (TogglePredicate element : getToggleStrategies()) {
+            for (ToggleStrategy element : getToggleStrategies()) {
                 json.append(first ? "" : ",");
                 json.append(element.toJson());
                 first = false;
@@ -272,7 +276,7 @@ public class Feature extends FF4jEntity < Feature > {
      * @return
      *       current value of 'toggleStrategies'
      */
-    public List<TogglePredicate> getToggleStrategies() {
+    public List<ToggleStrategy> getToggleStrategies() {
         return toggleStrategies;
     }
     
@@ -282,7 +286,7 @@ public class Feature extends FF4jEntity < Feature > {
      * @return
      *       current value of 'toggleStrategies'
      */
-    public Feature addToggleStrategy(TogglePredicate ts) {
+    public Feature addToggleStrategy(ToggleStrategy ts) {
         getToggleStrategies().add(ts);
         updateLastModifiedDate();
         return this;
@@ -296,7 +300,7 @@ public class Feature extends FF4jEntity < Feature > {
      * @return
      *      cuurent value for toggle
      */
-    public Feature setToggleStrategies(TogglePredicate... toggles) {
+    public Feature setToggleStrategies(ToggleStrategy... toggles) {
         return setToggleStrategies((toggles == null) ? 
                 new ArrayList<>() : Arrays.asList(toggles));
     }
@@ -309,9 +313,43 @@ public class Feature extends FF4jEntity < Feature > {
      * @return
      *      cuurent value for toggle
      */
-    public Feature setToggleStrategies(List<TogglePredicate > collec) {
+    public Feature setToggleStrategies(List<ToggleStrategy > collec) {
         toggleStrategies = collec;
         updateLastModifiedDate();
+        return this;
+    }
+
+    // ---- Working With TTL ----
+
+    /**
+     * Getter accessor for attribute 'ttl'.
+     *
+     * @return current value of 'ttl'
+     */
+    public Optional<Long> getTTL() {
+        return ttl;
+    }
+    
+    /**
+     * Setter for ttl.
+     *
+     * @param ttl
+     *      ttl value
+     */
+    public void setTTL(long ttl) {
+        this.ttl = Optional.ofNullable(ttl);
+    }
+    
+    /**
+     * Fluent Setter.
+     *
+     * @param groupName
+     *      target groupName
+     * @return
+     *      current bean
+     */
+    public Feature ttl(long ttl) {
+        setTTL(ttl);
         return this;
     }
     

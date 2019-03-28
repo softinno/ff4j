@@ -35,16 +35,6 @@ public class UserNotFoundException extends ItemNotFoundException {
     /**
      * Parameterized constructor.
      * 
-     * @param propertyName
-     *            property to be processed
-     **/
-    public UserNotFoundException(String uid) {
-        super(uid);
-    }
-
-    /**
-     * Parameterized constructor.
-     * 
      * @param featureName
      *            feature to be processed
      **/

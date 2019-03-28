@@ -81,7 +81,7 @@ public class PropertyClass extends Property< Class<?> > {
      *      current value as a string or null
      */
     @Override
-    public String asString() {
+    public String getValueAsString() {
         if (value == null) {
             return null;
         }

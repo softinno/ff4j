@@ -71,8 +71,9 @@ public class PropertyShort extends Property< Short > {
     /** {@inheritDoc} */
     @Override
     public Short fromString(String v) {
+        assertStringValueIsNotNull(v);
         try {
-            return new Short(v);
+            return Short.valueOf(v);
         } catch(NumberFormatException nbe) {
             throw new InvalidPropertyTypeException("Cannot cast " + v + "to expected " + Short.class, nbe);
         }

@@ -4,7 +4,7 @@ package org.ff4j.property;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,6 @@ package org.ff4j.property;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Load property as list of {@link Long }.
  *
@@ -33,17 +30,12 @@ public class PropertyListLong extends PropertyList<Long , PropertyLong> {
     /** Serial Number. */
     private static final long serialVersionUID = 6233268464258209549L;
     
-    public PropertyListLong(String uid) {
-        super(uid);
-    }
     public PropertyListLong(String uid, String valueAsString) {
         super(uid, valueAsString);
     }
-    public PropertyListLong(String uid, List< Long  > value) {
-        super(uid, value);
-    }
+   
     public PropertyListLong(String uid, Long  ... value) {
-        super(uid, Arrays.asList(value));
+        super(uid, value);
     }
   
 

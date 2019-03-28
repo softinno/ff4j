@@ -75,6 +75,7 @@ public class PropertyLogLevel extends Property<LogLevel> {
     /** {@inheritDoc} */
     @Override
     public LogLevel fromString(String v) {
+        assertStringValueIsNotNull(v);
         return LogLevel.valueOf(v);
     } 
     

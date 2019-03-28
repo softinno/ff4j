@@ -51,7 +51,7 @@ public class ClientFilterToggleStrategy extends AbstractToggleStrategy {
         Property<?> p = getRequiredProperty(PARAM_CLIENTLIST);
         // Parsing V1 file with Map<String, String> and not typed params
         if (p instanceof PropertyString) {
-            clientGranted = new HashSet<>(Arrays.asList(p.asString().split(",")));
+            clientGranted = new HashSet<>(Arrays.asList(p.getValueAsString().split(",")));
         } else {    
             clientGranted = new HashSet<>(((PropertyListString) p).getValue());
         }

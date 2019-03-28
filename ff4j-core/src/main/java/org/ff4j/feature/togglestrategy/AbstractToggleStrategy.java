@@ -32,11 +32,11 @@ import org.ff4j.property.Property;
 import org.ff4j.test.AssertUtils;
 
 /**
- * Super class for {@link TogglePredicate} implementation with utilities.
+ * Super class for {@link ToggleStrategy} implementation with utilities.
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public abstract class AbstractToggleStrategy implements TogglePredicate,Serializable {
+public abstract class AbstractToggleStrategy implements ToggleStrategy,Serializable {
 
     /** Serial. */
     private static final long serialVersionUID = -2440547428499432159L;

@@ -107,10 +107,6 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
         this(name);
         this.value = value;
     }
-    
-    public Property(Property<T> e) {
-        this(e.getUid(), e);
-    }
         
     public Property(String uid, Property<T> e) {
         super(uid, e);
@@ -240,7 +236,7 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      *
      * @return current value as a string or null
      */
-    public String asString() {
+    public String getValueAsString() {
         if (get() == null) {
             return null;
         }
@@ -252,8 +248,8 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      *
      * @return int value
      */
-    public int asInt() {
-        return Integer.parseInt(asString());
+    public int getValueAsInt() {
+        return Integer.parseInt(getValueAsString());
     }
 
     /**
@@ -261,8 +257,8 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      *
      * @return int value
      */
-    public double asDouble() {
-        return Double.parseDouble(asString());
+    public double getValueAsDouble() {
+        return Double.parseDouble(getValueAsString());
     }
 
     /**
@@ -270,8 +266,8 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      *
      * @return boolea value
      */
-    public boolean asBoolean() {
-        return Boolean.parseBoolean(asString());
+    public boolean getValueAsBoolean() {
+        return Boolean.parseBoolean(getValueAsString());
     }
     
     /**
@@ -320,7 +316,7 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
         jsonExpression.append(super.baseJson());
         jsonExpression.append(",\"type\":\"" + className + "\"");
         jsonExpression.append(",\"value\":");
-        jsonExpression.append((null == value) ? "null" : "\"" + asString() + "\"");
+        jsonExpression.append((null == value) ? "null" : "\"" + getValueAsString() + "\"");
         if (fixedValues != null) {
             jsonExpression.append(",\"fixedValues\":" + JsonUtils.collectionAsJson(fixedValues));
         }
@@ -364,6 +360,7 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
                 fixedValues = new HashSet<>();
             }
             fixedValues.addAll(setOf(fixed));
+            fixedValues.remove(null);
         }
         return this;
     }
@@ -377,14 +374,10 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
     public String getClassName() {
         return className;
     }
-
-    /**
-     * Setter accessor for attribute 'type'.
-     * @param type
-     * 		new value for 'type '
-     */
-    public void setClassName(String type) {
-        this.className = type;
+    
+    protected void assertStringValueIsNotNull(String v) {
+        if (v == null) {
+            throw new IllegalArgumentException("Property value cannot be null");
+        }
     }
-
 }

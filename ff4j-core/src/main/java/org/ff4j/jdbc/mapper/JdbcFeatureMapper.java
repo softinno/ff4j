@@ -27,7 +27,7 @@ import java.sql.SQLException;
 
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureAccessException;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.jdbc.JdbcConstants.FeaturesColumns;
 import org.ff4j.jdbc.JdbcQueryBuilder;
 import org.ff4j.mapper.FeatureMapper;
@@ -74,7 +74,7 @@ public class JdbcFeatureMapper extends AbstractJdbcMapper implements FeatureMapp
             // Owner
             ps.setString(5, prop.getOwner().orElse(null));
             // Value
-            ps.setString(6, prop.asString());
+            ps.setString(6, prop.getValueAsString());
             if (prop.getFixedValues().isPresent()) {
                 String fixedValues = prop.getFixedValues().get().toString();
                 ps.setString(7, fixedValues.substring(1, fixedValues.length() - 1));
@@ -113,7 +113,7 @@ public class JdbcFeatureMapper extends AbstractJdbcMapper implements FeatureMapp
     /**
      * INSERT INTO FF4J_FEATURE_STRAT(FEAT_UID,TOGGLE_CLASS)
      **/
-    public PreparedStatement insertToggleStrategyStatement(String featureUID, TogglePredicate togglePredicate) {
+    public PreparedStatement insertToggleStrategyStatement(String featureUID, ToggleStrategy togglePredicate) {
         PreparedStatement ps;
         try {
             // create statement
@@ -131,7 +131,7 @@ public class JdbcFeatureMapper extends AbstractJdbcMapper implements FeatureMapp
     /**
      * INSERT INTO FF4J_FEATURE_STRAT_P(UID,CLASSNAME,VAL,FIXEDVALUES,STRAT_FEAT_UID,STRAT_CLASS)
      */
-    public PreparedStatement insertToggleStrategyPropertyStatement(String featureUID, TogglePredicate togglePredicate, Property<?> prop) {
+    public PreparedStatement insertToggleStrategyPropertyStatement(String featureUID, ToggleStrategy togglePredicate, Property<?> prop) {
         PreparedStatement ps;
         try {
             // create statement
@@ -141,7 +141,7 @@ public class JdbcFeatureMapper extends AbstractJdbcMapper implements FeatureMapp
             // Classname
             ps.setString(2, prop.getClassName());
             // Value
-            ps.setString(3, prop.asString());
+            ps.setString(3, prop.getValueAsString());
             if (prop.getFixedValues().isPresent()) {
                 String fixedValues = prop.getFixedValues().get().toString();
                 ps.setString(4, fixedValues.substring(1, fixedValues.length() - 1));

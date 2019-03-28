@@ -37,7 +37,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.ff4j.feature.Feature;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyString;
@@ -478,8 +478,8 @@ public final class XmlParserV2 extends ConfigurationFileParserXml {
             </toggleStrategy>
         </toggleStrategies>
      */
-    private static List <TogglePredicate> parseToggleStrategies(Element toggleStrategies, String uid) {
-        List <TogglePredicate> listOfStrategies = new ArrayList<>();
+    private static List <ToggleStrategy> parseToggleStrategies(Element toggleStrategies, String uid) {
+        List <ToggleStrategy> listOfStrategies = new ArrayList<>();
          // Look for list of <toggleStrategy>
         NodeList lisOfToggleStrategy = toggleStrategies.getElementsByTagName(TOGGLE_STRATEGY_TAG);
         //<toggleStrategy>
@@ -500,7 +500,7 @@ public final class XmlParserV2 extends ConfigurationFileParserXml {
                     Element propertiesTag = (Element) propertiesTaglist.item(0);
                     parsePropertiesTag(propertiesTag).values().stream().forEach(properties::add);
                 }
-                listOfStrategies.add(TogglePredicate.of(uid, clazzName, properties));
+                listOfStrategies.add(ToggleStrategy.of(uid, clazzName, properties));
             } catch (Exception e) {
                 throw new IllegalArgumentException("An error occurs during flipstrategy parsing TAG" + uid, e);
             }

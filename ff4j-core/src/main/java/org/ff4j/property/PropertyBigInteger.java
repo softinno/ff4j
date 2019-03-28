@@ -73,6 +73,7 @@ public class PropertyBigInteger extends Property< BigInteger > {
     /** {@inheritDoc} */
     @Override
     public BigInteger fromString(String v) {
+        if (v == null) return null;
         try {
             return new BigInteger(v);
         } catch(NumberFormatException nbe) {

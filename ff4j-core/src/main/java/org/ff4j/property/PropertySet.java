@@ -89,7 +89,7 @@ public abstract class PropertySet<T, K extends Property<T>> extends Property < S
      *
      * @return current value as a string or null
      */
-    public String asString() {
+    public String getValueAsString() {
         if (get() == null) {
             return null;
         }

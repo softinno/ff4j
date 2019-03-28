@@ -71,8 +71,9 @@ public class PropertyLong extends Property< Long > {
     /** {@inheritDoc} */
     @Override
     public Long fromString(String v) {
+        assertStringValueIsNotNull(v);
         try {
-            return new Long(v);
+            return Long.valueOf(v);
         } catch(NumberFormatException nbe) {
             throw new InvalidPropertyTypeException("Cannot cast " + v + "to expected " + Long.class, nbe);
         }

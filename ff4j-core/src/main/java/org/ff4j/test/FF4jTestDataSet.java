@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.togglestrategy.PonderationToggleStrategy;
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.feature.togglestrategy.expression.ExpressionToggleStrategy;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
@@ -221,7 +221,7 @@ public interface FF4jTestDataSet {
         
         Set < Property<?> > ponderationProperties = new HashSet<>();
         ponderationProperties.add(new PropertyDouble(PonderationToggleStrategy.PARAM_WEIGHT, 1.0));
-        f2.addToggleStrategy(TogglePredicate.of(F2, PonderationToggleStrategy.class.getName(),ponderationProperties));
+        f2.addToggleStrategy(ToggleStrategy.of(F2, PonderationToggleStrategy.class.getName(),ponderationProperties));
         
         Map < FF4jPermission, FF4jGrantees > permissions = f2.getAccessControlList().getPermissions();
         permissions.put(FF4jPermission.FEATURE_TOGGLE, new FF4jGrantees(Util.setOf(USER_JOHN), new HashSet<>()));
@@ -236,7 +236,7 @@ public interface FF4jTestDataSet {
         Feature f4 = new Feature(F4).enable(true).group("GRP1").description("some desc");
         Set < Property<?> > expressionProperties = new HashSet<>();
         expressionProperties.add(new PropertyString(ExpressionToggleStrategy.PARAM_EXPRESSION, "f2 | f3"));
-        f4.addToggleStrategy(TogglePredicate.of(F4, ExpressionToggleStrategy.class.getName(),expressionProperties));
+        f4.addToggleStrategy(ToggleStrategy.of(F4, ExpressionToggleStrategy.class.getName(),expressionProperties));
         results.put(F4, f4);
         
         return results;
@@ -266,8 +266,8 @@ public interface FF4jTestDataSet {
             r.put(PCalendar,        new PropertyCalendar(PCalendar, myCal));
             r.put(PDate,            new PropertyDate(PDate, myDate));
             r.put(PClass,           new PropertyClass(PClass, String.class));
-            r.put(PDouble,          new PropertyDouble(PDouble, new Double(20.0)));
-            r.put(PFloat,           new PropertyFloat(PFloat, new Float(20.0)));
+            r.put(PDouble,          new PropertyDouble(PDouble, Double.valueOf(20.0)));
+            r.put(PFloat,           new PropertyFloat(PFloat, Float.valueOf(20.0f)));
             r.put(PInstant,         new PropertyInstant(PInstant, myInstant));
             r.put(PInt,             new PropertyInt(PInt, 10));
             r.put(PLocal,           new PropertyLocalDateTime(PLocal, myLocalDateTime));
@@ -283,8 +283,8 @@ public interface FF4jTestDataSet {
             r.put(PListCalendar,    new PropertyListCalendar(PListCalendar, myCal, myCal2));
             r.put(PListDate,        new PropertyListDate(PListDate, myDate, myDate2));
             r.put(PListClass,       new PropertyListClass(PListClass, String.class, Integer.class));
-            r.put(PListDouble,      new PropertyListDouble(PListDouble, new Double(20.0), new Double(30.0) ));
-            r.put(PListFloat,       new PropertyListFloat(PListFloat, new Float(20.0), new Float(30.0)));
+            r.put(PListDouble,      new PropertyListDouble(PListDouble, Double.valueOf(20.0), Double.valueOf(30.0) ));
+            r.put(PListFloat,       new PropertyListFloat(PListFloat, Float.valueOf(20.0f), Float.valueOf(30.0f)));
             r.put(PListInstant,     new PropertyListInstant(PListInstant, myInstant, myInstant2));
             r.put(PListInt,         new PropertyListInt(PListInt, 10, 20));
             r.put(PListLocal,       new PropertyListLocalDateTime(PListLocal, myLocalDateTime, myLocalDateTime2));

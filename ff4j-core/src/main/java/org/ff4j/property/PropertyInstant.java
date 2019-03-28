@@ -77,7 +77,7 @@ public class PropertyInstant extends Property< Instant > {
      * @return
      *      current value as a string or null
      */
-    public String asString() {
+    public String getValueAsString() {
         if (value == null) return null;
         return toLocalDateTime().format(FORMATTER);
     }
@@ -85,6 +85,7 @@ public class PropertyInstant extends Property< Instant > {
     /** {@inheritDoc} */
     @Override
     public Instant fromString(String v) {
+        assertStringValueIsNotNull(v);
         return LocalDateTime.parse(v, FORMATTER).toInstant(ZONE);
     }
 

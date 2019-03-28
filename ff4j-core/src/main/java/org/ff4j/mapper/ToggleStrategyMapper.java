@@ -20,9 +20,9 @@ package org.ff4j.mapper;
  * #L%
  */
 
-import org.ff4j.feature.togglestrategy.TogglePredicate;
+import org.ff4j.feature.togglestrategy.ToggleStrategy;
 
 public interface ToggleStrategyMapper <REQ, RES > 
-        extends Mapper< TogglePredicate, REQ, RES > {
+        extends Mapper< ToggleStrategy, REQ, RES > {
 
 }

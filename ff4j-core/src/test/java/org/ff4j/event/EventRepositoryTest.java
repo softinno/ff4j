@@ -1,11 +1,34 @@
 package org.ff4j.event;
 
+/*-
+ * #%L
+ * ff4j-core
+ * %%
+ * Copyright (C) 2013 - 2019 FF4J
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.ff4j.FF4j;
 import org.ff4j.event.repository.EventFeatureUsageRepository;
 import org.ff4j.event.repository.EventFeatureUsageRepositorySupport;
+import org.ff4j.exception.AssertionViolationException;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.test.AssertFF4j;
@@ -32,8 +55,16 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
     /** Test Values */
     protected AssertFF4j assertFF4j;
     
+    /** Cached feature names. */
+    protected List <String > featureNames = new ArrayList<>();
+    
     /** DataSet. **/
     protected FF4jConfigFile testDataSet;
+    
+    /**
+     * I need listener cannot get EventFeatureUsageRepository only.
+     */
+    protected abstract EventFeatureUsageRepositorySupport initRepository();
     
     /** {@inheritDoc} */
     @BeforeEach
@@ -44,11 +75,10 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
         testedStore = ff4j.getRepositoryEventFeaturesUsage();
         testDataSet = expectConfig();
     }
-   
-    // I need listener cannot get EventFeatureUsageRepository only.
-    protected abstract EventFeatureUsageRepositorySupport initRepository();
     
-    // Utility to generate event
+    /**
+     * Generate feature event.
+     */
     protected Event generateFeatureUsageEvent(String uid) {
         return new Event().source(Event.Source.JAVA_API)
                 .targetUid(uid)
@@ -56,20 +86,37 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
                 .action(Event.Action.HIT);
     }
     
-    // Generate a random event during the period
+    /**
+     * Generate feature event.
+     */
     protected Event generateFeatureUsageEvent(String uid, long timestamp) {
         Event event = generateFeatureUsageEvent(uid);
         event.setTimestamp(timestamp);
         return event;
     }
     
-    // Generate a random event during the period
+    /**
+     * Generating event.
+     *
+     * @param uid
+     *      feature unique id
+     * @param from
+     *      start date
+     * @param to
+     *      end date
+     * @return
+     *      event generated
+     */
     protected Event generateFeatureUsageEvent(String uid, long from, long to) {
         return generateFeatureUsageEvent(uid, from + (long) (Math.random() * (to-from)));
     }
     
-    List <String > featureNames = new ArrayList<>();
-    
+    /**
+     * Pick a feature randomly.
+     *
+     * @return
+     *      pick one of the name  
+     */
     protected String getRandomFeatureName() {
         if (featureNames == null) {
             featureNames = new ArrayList<>(testDataSet.getFeatures().keySet());
@@ -77,21 +124,39 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
         return Util.getRandomElement(featureNames);
     }
     
-    // Generate a random event during the period
+    /**
+     * Generating event.
+     *
+     * @param from
+     *      start date
+     * @param to
+     *      end date
+     * @return
+     *      event generated
+     */
     protected Event generateRandomFeatureUsageEvent(long from, long to) {
         return generateFeatureUsageEvent(getRandomFeatureName(), from , to);
     }
     
-    // Populate repository for test
-    protected void populateRepository(long from, long to, int totalEvent) throws InterruptedException {
+    /**
+     * Populate repository.
+     *
+     * @param from
+     *      start date
+     * @param to
+     *      end date
+     * @param totalEvent
+     *      number of events to generate
+     */
+    protected void populateRepository(long from, long to, int totalEvent) {
         for (int i = 0; i < totalEvent; i++) {
             testedStore.save(generateRandomFeatureUsageEvent(from, to));
         }
     }
     
     @Test
-    @DisplayName("When using a feature a hitcount is record in the repository")
-    public void testSaveEventUnit() throws InterruptedException {
+    @DisplayName("When saving event unitary, record is stored in the repository")
+    public void whenSaveUnitaryEventShouldbeThere() throws InterruptedException {
         long start = System.currentTimeMillis();
         EventQueryDefinition query = new EventQueryDefinition(start, System.currentTimeMillis());
         Assertions.assertEquals(0, testedStore.getTotalHitCount(query));
@@ -100,13 +165,39 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
         Thread.sleep(100);
         Assertions.assertEquals(1, testedStore.getTotalHitCount(queryfewMillis));
     }
-    
-    /*
-    @Test(expected = IllegalArgumentException.class)
-    public void testSaveEventNull() {
-        Assert.assertFalse(repo.saveEvent(null));
+
+    @Test
+    @DisplayName("When creating event with null param, expecting AssertionViolationException")
+    public void createWithNullShouldThrowViolationException() throws Exception {
+        assertThrows(AssertionViolationException.class, () -> { testedStore.save((Event) null); });
     }
     
+    @Test
+    public void testPieChart() throws InterruptedException {
+        long start = System.currentTimeMillis();
+        Event evt1 = new Event()
+             .targetUid("f1")
+             .scope(Event.Scope.FEATURE)
+             .action(Event.Action.CREATE)
+             .source(Event.Source.JAVA_API);
+        testedStore.save(evt1);
+        Thread.sleep(200);
+        
+        EventQueryDefinition query = new EventQueryDefinition(start-10, System.currentTimeMillis());
+        //find(ids)etFeatureUsagePieChart(eqd)
+        //Map < String, HitCount> maps = testedStore.getHostHitCount(query);
+        
+        Assertions.assertNotNull(testedStore.getHitCount(query));
+        
+        //Assertions.assertNotNull(testedStore.getHostPieChart(eqd));
+        //Assertions.assertNotNull(testedStore.getHostBarChart(eqd));
+        //Assertions.assertNotNull(testedStore.getSourcePieChart(eqd));
+        //Assertions.assertNotNull(testedStore.getUserPieChart(eqd));
+        //Assertions.assertNotNull(testedStore.getSourceBarChart(eqd));
+        //Assertions.assertNotNull(testedStore.getUserBarChart(eqd));
+    }
+    
+   /* 
     @Test
     public void testSaveAuditTrail() throws InterruptedException {
         long start = System.currentTimeMillis();
@@ -116,24 +207,7 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
         Assert.assertEquals(1, repo.getAuditTrail(new EventQueryDefinition(start-10, System.currentTimeMillis())).size());
     }
     
-    @Test
-    public void testPieChart() throws InterruptedException {
-        long start = System.currentTimeMillis();
-        Event evt1 = new Event(SOURCE_JAVA, TARGET_FEATURE, "f1", EventConstants.ACTION_CREATE);
-        Assert.assertTrue(repo.saveEvent(evt1));
-        Thread.sleep(200);
-        
-        EventQueryDefinition eqd = new EventQueryDefinition(start-10, System.currentTimeMillis());
-        Assert.assertNotNull(repo.getFeatureUsagePieChart(eqd));
-        Assert.assertNotNull(repo.getHostPieChart(eqd));
-        Assert.assertNotNull(repo.getSourcePieChart(eqd));
-        Assert.assertNotNull(repo.getUserPieChart(eqd));
-        
-        Assert.assertNotNull(repo.getHostBarChart(eqd));
-        Assert.assertNotNull(repo.getSourceBarChart(eqd));
-        Assert.assertNotNull(repo.getUserBarChart(eqd));
-        
-    }
+   
     
     @Test
     public void testFeatureUsageBarCharts() throws InterruptedException {

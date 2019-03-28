@@ -46,7 +46,7 @@ public class PonderationToggleStrategy extends AbstractToggleStrategy {
         Property<?> p = getRequiredProperty(PARAM_WEIGHT);
         // Parsing V1 file with Map<String, String> and not typed params
         if (p instanceof PropertyString) {
-            weight = p.asDouble();
+            weight = p.getValueAsDouble();
         } else {
             weight = ((PropertyDouble) p).getValue();
         }

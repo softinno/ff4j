@@ -56,7 +56,7 @@ public class ExpressionToggleStrategy extends AbstractToggleStrategy {
     @Override
     public void initialize() {
         PropertyString propertyString = (PropertyString) getRequiredProperty(PARAM_EXPRESSION);
-        expression = propertyString.asString();
+        expression = propertyString.getValueAsString();
         mapOfValue.put(featureUid, expression);
     }
     

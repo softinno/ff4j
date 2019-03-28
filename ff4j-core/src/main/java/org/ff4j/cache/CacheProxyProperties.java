@@ -110,8 +110,8 @@ public class CacheProxyProperties extends CacheProxy< String, Property<?>> imple
     
     /** {@inheritDoc} */
     @Override
-    public Stream<String> listPropertyNames() {
-        return getTargetPropertyStore().listPropertyNames();
+    public Stream<String> getPropertyNames() {
+        return getTargetPropertyStore().getPropertyNames();
     }
     
     /** {@inheritDoc} */

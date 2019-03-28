@@ -85,9 +85,12 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
    
     /** Flag to ask for automatically create the feature if not found in the store. */
     private boolean autoCreateFeatures = false;
+    
+    /** Flag used to get audit status. */ 
+    private boolean audit = false;
    
     // -------------------------------------------------------------------------
-    // ---------- Repositories (feature, property,event..) ---------------------
+    // -------- Repositories (features, properties, events) --------------------
     // -------------------------------------------------------------------------
     
     /** Storage to persist feature within {@link FeatureRepository}. */
@@ -429,57 +432,49 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
         return sb.toString();
     }
     
-    // -------------------------
-    // ------ ACCESSORS --------
-    // -------------------------
+    // ---------------------------
+    // ------ CACHE PROXY --------
+    // ---------------------------
     
-    /**
-     * Reach target implementation of the featureStore.
-     *
-     * @return
-     */
     public FeatureRepository getTargetRepositoryFeatures() {
+        Optional<CacheProxyFeatures> cacheProxy = getRepositoryFeaturesCacheProxy();
+        return cacheProxy.isPresent() ? cacheProxy.get().getTargetFeatureStore() : getRepositoryFeatures();
+    }
+    
+    public Optional<CacheProxyFeatures> getRepositoryFeaturesCacheProxy() {
         FeatureRepository rf = getRepositoryFeatures();
-        return (rf instanceof CacheProxyFeatures) ?
-               ((CacheProxyFeatures) rf).getTargetFeatureStore() : rf;
+        if (rf instanceof CacheProxyFeatures) {
+            return Optional.of((CacheProxyFeatures)rf);
+        }
+        return Optional.empty();
     }
-    
-    /**
-     * Reach concrete implementation of the propertyStore.
-     *
-     * @return
-     */
+  
     public PropertyRepository getTargetRepositoryProperties() {
-        PropertyRepository rp = getRepositoryProperties();
-        return (rp instanceof CacheProxyProperties) ?
-                ((CacheProxyProperties) rp).getTargetPropertyStore() : rp;
+        Optional<CacheProxyProperties> cacheProxy = getRepositoryPropertiesCacheProxy();
+        return cacheProxy.isPresent() ? cacheProxy.get().getTargetPropertyStore() : getRepositoryProperties();
+    }
+    
+    public Optional<CacheProxyProperties> getRepositoryPropertiesCacheProxy() {
+        PropertyRepository ps = getRepositoryProperties();
+        if (ps instanceof CacheProxyProperties) {
+            return Optional.of((CacheProxyProperties) ps);
+        }
+        return Optional.empty();
     }
     
     /**
-     * try to fetch CacheProxy (cannot handled proxy CGLIB, ASM or any bytecode manipulation).
+     * Clear cache proxy and feature if relevant.
      *
      * @return
+     *      true if a cache has been empty.
      */
-    public Optional < CacheProxyFeatures > getRepositoryFeaturesCacheProxy() {
-        FeatureRepository fs = getRepositoryFeatures();
-        CacheProxyFeatures cacheProxy = null;
-        if (fs instanceof CacheProxyFeatures) {
-            cacheProxy = (CacheProxyFeatures) fs;
-        }
-        return Optional.ofNullable(cacheProxy);
-    }
-    
-    /**
-     * Access to cache proxy if caching enabled, null otherwize
-     * @return
-     */
-    public Optional < CacheProxyProperties> getRepositoryPropertiesCacheProxy() {
-        PropertyRepository ps = getRepositoryProperties();
-        CacheProxyProperties cacheProxy = null;
-        if (ps instanceof CacheProxyProperties) {
-            cacheProxy = (CacheProxyProperties) ps;
-        }
-        return Optional.ofNullable(cacheProxy);
+    public boolean clearCache() {
+        Optional<CacheProxyFeatures> cpFeatures     = getRepositoryFeaturesCacheProxy();
+        Optional<CacheProxyProperties> cpProperties = getRepositoryPropertiesCacheProxy();
+        boolean status = cpFeatures.isPresent() || cpProperties.isPresent();
+        cpFeatures.ifPresent(cpf   -> cpf.getCacheManager().clear());
+        cpProperties.ifPresent(cpp -> cpp.getCacheManager().clear());
+        return status;
     }
     
     // -------------------------------------------------------------------------
@@ -626,12 +621,23 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
     }
     
     /**
+     * Get audit status.
+     *
+     * @return
+     *      audit status.
+     */
+    public boolean isAuditEnabled() {
+        return audit;
+    }
+    
+    /**
      * Register listener to work on audit.
      *
      * @return
      *      current ff4j instance
      */
     public FF4j withAudit() {
+        this.audit = true;
         assertNotNull(getAuditTrail(), "Cannot register empty audit listerner");
         getRepositoryFeatures().registerAuditListener(getAuditTrail());
         getRepositoryProperties().registerAuditListener(getAuditTrail());
@@ -645,6 +651,7 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
      *      current ff4j instance
      */
     public FF4j withoutAudit() {
+        this.audit = false;
         getRepositoryFeatures().unRegisterAuditListener();
         getRepositoryProperties().unRegisterAuditListener();
         return this;

@@ -51,7 +51,7 @@ public class ServerFilterToggleStrategy extends AbstractToggleStrategy {
         Property<?> p = getRequiredProperty(PARAM_SERVERLIST);
         // Parsing V1 file with Map<String, String> and not typed params
         if (p instanceof PropertyString) {
-            serverList = new HashSet<>(Arrays.asList(p.asString().split(",")));
+            serverList = new HashSet<>(Arrays.asList(p.getValueAsString().split(",")));
         } else {    
             serverList = new HashSet<>(((PropertyListString) p).getValue());
         }

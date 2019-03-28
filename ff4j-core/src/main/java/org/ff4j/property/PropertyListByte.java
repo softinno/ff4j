@@ -4,7 +4,7 @@ package org.ff4j.property;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,18 @@ package org.ff4j.property;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.List;
-
 public class PropertyListByte extends PropertyList<Byte , PropertyByte > {
     
     /** Serial Number. */
     private static final long serialVersionUID = 5183534695780541411L;
     
-    public PropertyListByte(String uid) {
-        super(uid);
-    }
+   
     public PropertyListByte(String uid, String valueAsString) {
         super(uid, valueAsString);
     }
-    public PropertyListByte(String uid, List<Byte > value) {
-        super(uid, value);
-    }
+   
     public PropertyListByte(String uid, Byte ... value) {
-        super(uid, Arrays.asList(value));
+        super(uid, value);
     }
 
 }

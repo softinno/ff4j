@@ -56,6 +56,18 @@ public class PropertyString extends Property<String> {
     }
     
     /**
+     * Copy constructor. Create a property based on an existing one.
+     *
+     * @param name
+     *      new property name
+     * @param value
+     *      existing property
+     */
+    public PropertyString(String name, PropertyString value) {
+        super(name, value);
+    }
+    
+    /**
      * Full Constructor.
      * 
      * @param name
@@ -76,9 +88,7 @@ public class PropertyString extends Property<String> {
     /** {@inheritDoc} */
     @Override
     public String fromString(String v) {
-        if (v == null) {
-            throw new IllegalArgumentException("Property value cannot be null");
-        }
+        assertStringValueIsNotNull(v);
         return v;
     }
 
