@@ -19,8 +19,7 @@ package org.ff4j.event.repository;
  * limitations under the License.
  * #L%
  */
-
-import static org.ff4j.test.AssertUtils.*;
+import static org.ff4j.test.AssertUtils.assertNotNull;
 import static org.ff4j.utils.Util.validateEvent;
 
 import java.util.ArrayList;
@@ -123,6 +122,6 @@ public class EventAuditTrailRepositoryInMemory implements EventAuditTrailReposit
                       // Remove from the Event Series
                       .remove(evt);
         });
-    }    
+    }      
     
 }

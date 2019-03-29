@@ -73,8 +73,8 @@ public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository 
         this.dataSource = jdbcDS;
     }
     
-    /** {@inheritDoc} */
     @Override
+    /** {@inheritDoc} */
     public void createSchema() {
         DataSource       ds = getDataSource();
         JdbcQueryBuilder qb = getQueryBuilder();
@@ -84,27 +84,23 @@ public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository 
     }
     
     @Override
+    /** {@inheritDoc} */
     public void log(Event evt) {
-        // TODO Auto-generated method stub
         
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
+    /** {@inheritDoc} */
     public Stream<Event> search(AuditTrailQuery query) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
+    /** {@inheritDoc} */
     public void purge(AuditTrailQuery query) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    
-    
-    /** {@inheritDoc} *
-    
+        throw new UnsupportedOperationException("Not implemented, yet");
+    }    
     
     /** {@inheritDoc} *
     @Override

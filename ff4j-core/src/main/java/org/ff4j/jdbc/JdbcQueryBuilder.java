@@ -321,6 +321,10 @@ public class JdbcQueryBuilder {
     public String sqlFindAllFeatures() {
         return sqlSelect(false, FeaturesColumns.values());
     }
+    // select *
+    public String sqlFindAllFeaturesId() {
+        return sqlSelect(false, FeaturesColumns.UID);
+    }
     // select by id
     public String sqlFindFeatureById() {
 	   // distinct flag | where condition column | select columns

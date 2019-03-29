@@ -32,12 +32,12 @@ import org.ff4j.cache.CacheManager;
 import org.ff4j.cache.CacheProxyFeatures;
 import org.ff4j.cache.CacheProxyProperties;
 import org.ff4j.event.Event;
-import org.ff4j.event.repository.EventFeatureUsageRepositorySupport;
+import org.ff4j.event.repository.EventRepositorySupport;
 import org.ff4j.event.repository.EventAuditTrailRepository;
 import org.ff4j.event.repository.EventFeatureUsageListener;
 import org.ff4j.event.repository.EventAuditTrailRepositoryInMemory;
 import org.ff4j.event.repository.EventFeatureUsageRepository;
-import org.ff4j.event.repository.EventFeatureRepositoryInMemory;
+import org.ff4j.event.repository.EventFeatureUsageRepositoryInMemory;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
 import org.ff4j.feature.repository.FeatureRepository;
@@ -106,7 +106,7 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
     private EventAuditTrailRepository auditTrail = new EventAuditTrailRepositoryInMemory();
    
     /** Define feature usage. */
-    private EventFeatureUsageRepositorySupport repositoryEventFeaturesUsage = new EventFeatureRepositoryInMemory();
+    private EventRepositorySupport repositoryEventFeaturesUsage = new EventFeatureUsageRepositoryInMemory();
     
     // -------------------------------------
     // ---------- CONTEXT ------------------
@@ -155,7 +155,7 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
         this.repositoryProperties         = new PropertyRepositoryInMemory(config);
         this.repositoryUsersRoles         = new RolesAndUsersRepositoryInMemory(config);
         this.auditTrail                   = new EventAuditTrailRepositoryInMemory();
-        this.repositoryEventFeaturesUsage = new EventFeatureRepositoryInMemory();
+        this.repositoryEventFeaturesUsage = new EventFeatureUsageRepositoryInMemory();
     }
     
     // -------------------------------------
@@ -667,7 +667,7 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
      * @param featureUsage
      * @return
      */
-    public FF4j withRepositoryEventFeaturesUsage(EventFeatureUsageRepositorySupport featureUsage) {
+    public FF4j withRepositoryEventFeaturesUsage(EventRepositorySupport featureUsage) {
         setRepositoryEventFeaturesUsage(featureUsage);
         return withFeatureUsageTracking();
     }
@@ -700,7 +700,7 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
      * @return
      *       current value of 'repositoryEventFeaturesUsage'
      */
-    public EventFeatureUsageRepositorySupport getRepositoryEventFeaturesUsage() {
+    public EventRepositorySupport getRepositoryEventFeaturesUsage() {
         return repositoryEventFeaturesUsage;
     }
 
@@ -709,7 +709,7 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
      * @param repositoryEventFeaturesUsage
      * 		new value for 'repositoryEventFeaturesUsage '
      */
-    public void setRepositoryEventFeaturesUsage(EventFeatureUsageRepositorySupport repositoryEventFeaturesUsage) {
+    public void setRepositoryEventFeaturesUsage(EventRepositorySupport repositoryEventFeaturesUsage) {
         this.repositoryEventFeaturesUsage = repositoryEventFeaturesUsage;
     }
     

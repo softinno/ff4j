@@ -31,7 +31,7 @@ import org.ff4j.feature.Feature;
  * events into external DB leveraging on {@link FF4jRepository}.
  * 
  * @see {@link EventFeatureUsageRepository}
- * @see {@link EventFeatureUsageRepositorySupport}
+ * @see {@link EventRepositorySupport}
  * 
  * @author Cedrick LUNVEN  (@clunven)
  */

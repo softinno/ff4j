@@ -51,7 +51,7 @@ import org.ff4j.event.monitoring.HitCount;
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositorySupport {
+public class EventFeatureUsageRepositoryInMemory extends EventRepositorySupport {
    
     /** serialVersionUID. */
     private static final long serialVersionUID = 2667121403242303018L;
@@ -69,7 +69,7 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
     /**
      * Default constructor with default capacity to 100.000
      */
-    public EventFeatureRepositoryInMemory() {
+    public EventFeatureUsageRepositoryInMemory() {
         this(DEFAULT_QUEUE_CAPACITY);
     }
     
@@ -79,7 +79,7 @@ public class EventFeatureRepositoryInMemory extends EventFeatureUsageRepositoryS
      * @param queueCapacity
      *            default queue capacity
      */
-    public EventFeatureRepositoryInMemory(int queueCapacity) {
+    public EventFeatureUsageRepositoryInMemory(int queueCapacity) {
         this.queueCapacity = queueCapacity;
     }
     

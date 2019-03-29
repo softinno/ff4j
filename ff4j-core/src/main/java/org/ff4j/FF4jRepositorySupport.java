@@ -98,4 +98,11 @@ public abstract class FF4jRepositorySupport < E extends FF4jEntity<?>, LISTENER 
             throw new ItemAlreadyExistException(uid);
         }
     }
+    
+    /**
+     * Syntaxic sugar
+     */
+    protected void notImplementedYet() {
+        throw new UnsupportedOperationException("Not implemented, yet");
+    }
 }

@@ -104,6 +104,19 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	
 	@Test
     @DisplayName("When parsing configuration file, should have expected test DataSet")
+    public void readAllConfFileShouldMatchExpectedFeatureNames() {
+        // Given
+        assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size());
+        Set < String > featuresNames = Util.asSet(testedStore.findAllIds());
+        Assertions.assertEquals(testDataSet.getFeatures().size(), featuresNames.size());
+        Assertions.assertTrue(featuresNames.contains(F1));
+        Assertions.assertTrue(featuresNames.contains(F2));
+        Assertions.assertTrue(featuresNames.contains(F3));
+        Assertions.assertTrue(featuresNames.contains(F4));
+	}
+	
+	@Test
+    @DisplayName("When parsing configuration file, should have expected test DataSet")
     public void readAllConfFileShouldMatchExpectedDataSet() {
         // Given
         assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size());

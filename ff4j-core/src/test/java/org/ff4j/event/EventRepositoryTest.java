@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.ff4j.FF4j;
 import org.ff4j.event.repository.EventFeatureUsageRepository;
-import org.ff4j.event.repository.EventFeatureUsageRepositorySupport;
+import org.ff4j.event.repository.EventRepositorySupport;
 import org.ff4j.exception.AssertionViolationException;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
@@ -64,7 +64,7 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
     /**
      * I need listener cannot get EventFeatureUsageRepository only.
      */
-    protected abstract EventFeatureUsageRepositorySupport initRepository();
+    protected abstract EventRepositorySupport initRepository();
     
     /** {@inheritDoc} */
     @BeforeEach

@@ -33,7 +33,7 @@ import org.ff4j.test.AssertUtils;
  *
  * @author Cedrick LUNVEN  (@clunven)
  */
-public abstract class EventFeatureUsageRepositorySupport 
+public abstract class EventRepositorySupport 
                 extends FF4jRepositorySupport < Event , FF4jRepositoryEventListener> 
                 implements EventFeatureUsageListener, EventFeatureUsageRepository {
 

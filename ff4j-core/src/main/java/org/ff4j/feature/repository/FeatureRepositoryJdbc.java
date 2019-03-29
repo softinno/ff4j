@@ -85,12 +85,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
 
     /** Default Constructor. */
     public FeatureRepositoryJdbc() {}
-
-    /** {@inheritDoc} */
-    public Stream<String> findAllIds() {
-    	return null;
-	}
-    
+   
     /**
      * Constructor from DataSource.
      *
@@ -126,6 +121,26 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
             executeUpdate(ds, qb.sqlCreateTableToggleStrategyProperties());
         }
         JdbcUtils.createSchemaSecurity(ds);
+    }
+    
+    /** {@inheritDoc} */
+    public Stream<String> findAllIds() {
+        Set<String> setOFIds = new HashSet<String>();
+        try (Connection sqlConn = getDataSource().getConnection()) {
+            try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlFindAllFeaturesId())) {
+                try (ResultSet rs1 = ps1.executeQuery()) {
+                    while (rs1.next()) {
+                        String featureUid = rs1.getString(FeaturesColumns.UID.colname());
+                        if (Util.hasLength(featureUid)) {
+                            setOFIds.add(featureUid);
+                        } 
+                    }
+                }
+            }
+            return setOFIds.stream();
+        } catch (SQLException sqlEX) {
+            throw new FeatureAccessException("Cannot list groups, error related to database", sqlEX);
+        }
     }
     
     /** {@inheritDoc} */

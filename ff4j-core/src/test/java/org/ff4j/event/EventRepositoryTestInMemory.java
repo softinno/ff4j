@@ -1,6 +1,6 @@
 package org.ff4j.event;
-import org.ff4j.event.repository.EventFeatureRepositoryInMemory;
-import org.ff4j.event.repository.EventFeatureUsageRepositorySupport;
+import org.ff4j.event.repository.EventFeatureUsageRepositoryInMemory;
+import org.ff4j.event.repository.EventRepositorySupport;
 
 /*-
  * #%L
@@ -35,8 +35,8 @@ public class EventRepositoryTestInMemory extends EventRepositoryTest {
  
     /** {@inheritDoc} */
     @Override
-    public EventFeatureUsageRepositorySupport initRepository() {
-        return new EventFeatureRepositoryInMemory();
+    public EventRepositorySupport initRepository() {
+        return new EventFeatureUsageRepositoryInMemory();
     }
     
 }
