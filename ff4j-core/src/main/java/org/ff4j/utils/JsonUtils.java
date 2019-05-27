@@ -1,8 +1,6 @@
 package org.ff4j.utils;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 
 /*
  * #%L
@@ -112,33 +110,6 @@ public class JsonUtils {
     }
     
     /**
-     * Serialize a map of objects as Json. Elements should override <code>toString()</code> to produce JSON.
-     *
-     * @param properties
-     *      target properties
-     * @return
-     *      target json expression
-     */
-    public static final Map <String, Property<?>> jsonAsMap(String jsonString) {
-      if (jsonString == null) {
-          return null;
-      } else if (jsonString.charAt(0) != '{' || jsonString.charAt(jsonString.length()-1) != '}') {
-          throw new IllegalArgumentException("Invalid String expected {...}");
-      } else if ("{}".equals(jsonString)) {
-          return new HashMap<>();
-      }
-      Map <String, Property<?>> response = new HashMap<>();
-      // trim { and }
-      jsonString = jsonString.substring(1, jsonString.length()-1);
-      // Will fail if a string value ends by ','
-      Arrays.stream(jsonString.split(",\"")).forEach(chunk -> {
-          //sString[] pair = chunk.split("\":");
-          //response.put(pair[0].replaceAll("\"", ""), pair[1].replaceAll("\"", ""));
-      });
-      return response;
-    }
-    
-    /**
      * Cache JSON expression for a store.
      *
      * @param store
@@ -168,7 +139,6 @@ public class JsonUtils {
     public static final String permissionsAsJson(final Set<String> permissions) {
         return collectionAsJson(permissions);
     }
-    
     
     /**
      * Serialized custom properties.

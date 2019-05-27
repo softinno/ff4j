@@ -156,7 +156,9 @@ public abstract class RepositoryRolesAndUsersTestSupport implements FF4jTestData
         testedStore.save(currentUser);
         // Then
         FF4jUser updatedUser = testedStore.read(USER_JOHN);
-        Assertions.assertEquals(newDescription, testedStore.read(USER_JOHN).getDescription().get());
+        Assertions.assertEquals(newDescription, updatedUser.getDescription().get());
+        Assertions.assertEquals(updatedUser.getLastName(), currentUser.getLastName());
+        Assertions.assertEquals(updatedUser.getFirstName(), currentUser.getFirstName());
         Assertions.assertTrue(updatedUser.getRoles().contains(ROLE_NEW));
     }
     

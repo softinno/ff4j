@@ -49,10 +49,7 @@ public abstract class ConfigurationFileParserXml extends ConfigurationFileParser
 
     /** TAG XML. */
     public static final String CDATA_END = "]]>";
-
-    /** XML Generation constants. */
-    protected static final String ENCODING = "UTF-8";
-
+    
     /** XML Generation constants. */
     protected static final String XML_HEADER = 
             "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"//

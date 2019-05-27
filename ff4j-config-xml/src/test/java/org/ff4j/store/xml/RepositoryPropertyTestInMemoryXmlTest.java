@@ -1,6 +1,4 @@
-package org.ff4j.property;
-
-import java.io.InputStream;
+package org.ff4j.store.xml;
 
 /*-
  * #%L
@@ -23,7 +21,8 @@ import java.io.InputStream;
  */
 
 import org.ff4j.feature.repository.FeatureRepository;
-import org.ff4j.parser.yaml.YamlParser;
+import org.ff4j.parser.xml.XmlParserV2;
+import org.ff4j.test.PropertyRepositoryTestSupport;
 import org.ff4j.property.repository.PropertyRepository;
 import org.ff4j.property.repository.PropertyRepositoryInMemory;
 import org.junit.jupiter.api.DisplayName;
@@ -33,14 +32,13 @@ import org.junit.jupiter.api.DisplayName;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@DisplayName("PropertyRepository::InMemory with YAML")
-public class RepositoryPropertyTestInMemoryYamlTest extends PropertyRepositoryTestSupport {
+@DisplayName("PropertyRepository::InMemory with XML")
+public class RepositoryPropertyTestInMemoryXmlTest extends PropertyRepositoryTestSupport {
 
     /** {@inheritDoc} */
     @Override
     public PropertyRepository initStore() {
-        InputStream in = getClass().getClassLoader().getResourceAsStream("ff4j-testDataset.yml");
-        return new PropertyRepositoryInMemory(new YamlParser().parse(in));
+        return new PropertyRepositoryInMemory(new XmlParserV2(), "ff4j-testDataset.xml");
     }
     
 }

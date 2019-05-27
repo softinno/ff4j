@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.ff4j.FF4j;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
-import org.ff4j.parser.xml.XmlParserV2;
 import org.ff4j.property.PropertyString;
 import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.test.AssertFF4j;
 import org.ff4j.test.FF4jTestDataSet;
+import org.ff4j.test.TestConfigurationParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +52,7 @@ public class FF4jTest implements FF4jTestDataSet {
     /** {@inheritDoc} */
     @BeforeEach
     public void init() {
-        ff4j = new FF4j(new XmlParserV2(), "ff4j-testDataSet.xml");
+        ff4j = new FF4j(new TestConfigurationParser().expectConfig());
         this.assertFf4j = new AssertFF4j(ff4j);
     }
 

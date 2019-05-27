@@ -28,7 +28,6 @@ import java.util.stream.Stream;
 
 import org.ff4j.FF4jEntity;
 import org.ff4j.security.FF4jPermission;
-import org.ff4j.utils.JsonUtils;
 
 /**
  * Set of permission wrapper identified as role.
@@ -53,12 +52,6 @@ public class FF4jRole extends FF4jEntity < FF4jRole > {
      */
     public FF4jRole(String uid) {
         super(uid);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
     }
     
     /**
@@ -122,19 +115,6 @@ public class FF4jRole extends FF4jEntity < FF4jRole > {
      */
     public void setPermissions(Set<FF4jPermission> permissions) {
         this.permissions = permissions;
-    }
-
-    /**
-     * Convert Feature to JSON.
-     * 
-     * @return target json
-     */
-    public String toJson() {
-        StringBuilder json = new StringBuilder("{");
-        json.append(super.baseJson());
-        json.append(",\"permissions\":" + JsonUtils.collectionAsJson(permissions));
-        json.append("}");
-        return json.toString();
     }
 
 }

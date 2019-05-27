@@ -21,6 +21,7 @@ package org.ff4j.property;
  */
 
 import java.util.Calendar;
+import java.util.Iterator;
 
 /**
  * Load property as list of {@link Calendar}.
@@ -39,6 +40,18 @@ public class PropertyListCalendar extends PropertyList<Calendar , PropertyCalend
     public PropertyListCalendar(String uid, Calendar ... value) {
         super(uid, value);
     }
-  
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getValueAsString() {
+        if (get() == null) return null;
+        Iterator<Calendar> it = get().iterator();
+        StringBuilder sb = new StringBuilder(SIMPLE_DATE_FORMAT.format(it.next().getTime()));
+        while (it.hasNext()) {
+            sb.append(listDelimiter);
+            sb.append(SIMPLE_DATE_FORMAT.format(it.next().getTime()));
+        }
+        return sb.toString();
+    }
 
 }

@@ -105,41 +105,6 @@ public abstract class FF4jEntity<T extends FF4jEntity<?>> implements Comparable<
     }
     
     /**
-     * Json common parts
-     * 
-     * @return
-     *      json expression for the common attributes
-     */
-    public String baseJson() {
-        StringBuilder json = new StringBuilder("\"uid\":" + valueAsJson(uid));
-        json.append(attributeAsJson("className", getClass().getName()));
-        description.ifPresent(
-                d -> json.append(attributeAsJson("description", d)));
-        owner.ifPresent(
-                d -> json.append(attributeAsJson("owner", d)));
-        creationDate.ifPresent(
-                d -> json.append(attributeAsJson("creationDate", d.format(FORMATTER))));
-        lastModifiedDate.ifPresent(
-                d -> json.append(attributeAsJson("lastModifiedDate", d.format(FORMATTER))));
-         json.append(", \"properties\":[");
-         boolean first = true;
-         for (Property<?> customProperty : properties.values()) {
-             json.append(first ? "" : ",");
-             json.append(customProperty.toJson());
-             first = false;
-         }
-         json.append("]");
-         json.append(", \"accessControlList\":" + getAccessControlList().toJson());
-         return json.toString();   
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(T otherObject) {
-        return this.uid.compareTo(otherObject.uid);
-    }
-    
-    /**
      * Each time a feature is edited, update the last modified date.
      * @return
      */
@@ -148,6 +113,36 @@ public abstract class FF4jEntity<T extends FF4jEntity<?>> implements Comparable<
         setLastModified(LocalDateTime.now());
         setCreationDate(getCreationDate().orElse(getLastModifiedDate().get()));
         return (T) this;
+    }
+    
+    // ------------------------------------------------------
+    // ------------------- Overriden default  ---------------
+    // ------------------------------------------------------
+    
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringBuilder json = new StringBuilder("{");
+        json.append("\"uid\":" + valueAsJson(getUid()));
+        json.append(attributeAsJson("type", getClass().getName()));
+        creationDate.ifPresent(d -> json.append(attributeAsJson("creationDate", d.format(FORMATTER))));
+        return json.append("}").toString();   
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(T otherObject) {
+        return this.uid.compareTo(otherObject.uid);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+        result = prime * result + ((uid == null) ? 0 : uid.hashCode());
+        return result;
     }
     
     // ------------------------------------------------------
@@ -354,6 +349,6 @@ public abstract class FF4jEntity<T extends FF4jEntity<?>> implements Comparable<
      */
     public T addProperty(Property<?> property) {
         return addProperties(property);
-    }
+    }    
 
 }

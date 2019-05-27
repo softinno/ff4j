@@ -21,6 +21,8 @@ package org.ff4j.property;
  */
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Iterator;
 
 /**
  * Load property as list of {@link Instant }.
@@ -39,6 +41,19 @@ public class PropertyListInstant extends PropertyList<Instant  , PropertyInstant
     public PropertyListInstant(String uid, Instant  ... value) {
         super(uid, value);
     }
-  
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getValueAsString() {
+        if (get() == null) return null;
+        Iterator<Instant> it = get().iterator();
+        StringBuilder sb = 
+                new StringBuilder(LocalDateTime.ofInstant(it.next(), ZONE).format(FORMATTER));
+        while (it.hasNext()) {
+            sb.append(listDelimiter);
+            sb.append(LocalDateTime.ofInstant(it.next(), ZONE).format(FORMATTER));
+        }
+        return sb.toString();
+    }
 
 }

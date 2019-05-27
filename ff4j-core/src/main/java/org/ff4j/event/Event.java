@@ -1,7 +1,5 @@
 package org.ff4j.event;
 
-import static org.ff4j.utils.JsonUtils.attributeAsJson;
-import static org.ff4j.utils.JsonUtils.objectAsJson;
 import static org.ff4j.utils.Util.inetAddressHostName;
 
 /*
@@ -103,38 +101,6 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
         super(uid);
         timestamp    = creationDate.get().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         hostName     = inetAddressHostName();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
-    }
-    
-    /**
-     * Serialized as a Json document.
-     *
-     * @return
-     *      current evetn as CSV item
-     */
-    public String toJson() {
-        StringBuilder sb = new StringBuilder("{");
-        sb.append(super.baseJson());
-        sb.append(objectAsJson("timestamp", timestamp));
-        sb.append(attributeAsJson("hostName", hostName));
-        sb.append(attributeAsJson("action", action));
-        sb.append(attributeAsJson("scope", scope));
-        sb.append(attributeAsJson("targetUid", targetUid));
-        sb.append(attributeAsJson("source", source));
-        value.ifPresent( d -> sb.append(attributeAsJson("value", d)));
-        duration.ifPresent( d -> sb.append(objectAsJson("duration", d)));
-        customKeys.ifPresent(cp -> {
-            cp.entrySet().stream().forEach(entry -> {
-                sb.append(attributeAsJson(entry.getKey(), entry.getValue()));
-            });
-        });
-        sb.append("}");
-        return sb.toString();
     }
     
     /**

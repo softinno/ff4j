@@ -65,7 +65,6 @@ public class PropertyTest {
         assertEquals(p2.getValueAsString(), p1.getValueAsString());
         p2.setValue(null);
         p2.setFixedValues((Set<String>) null);
-        assertNotNull(p2.toString(), p2.toJson());
         
         Set <String> values = new HashSet<>();
         values.add("v1");values.add("v2");values.add("v3");
@@ -79,7 +78,6 @@ public class PropertyTest {
         p1.setValue("v1");
         p1.addFixedValues(values);
         p1.addFixedValues((String) null);
-        assertEquals(p1.toString(), p1.toJson());
         
         PropertyString p3 = new PropertyString("p3", p1);
         assertEquals("p3", p3.getUid());
@@ -121,6 +119,22 @@ public class PropertyTest {
     public void propertyBoolean_withInvalidValueThrowErrors() {
         assertThrows(InvalidPropertyTypeException.class, () -> { 
             new PropertyBoolean("pb", "toto"); });
+    }
+    
+    @Test
+    public void propertyX_withInvalidValueThrowErrors() {
+        assertThrows(InvalidPropertyTypeException.class, () -> { 
+            new PropertyDouble("pd", "toto"); });
+        assertThrows(InvalidPropertyTypeException.class, () -> { 
+            new PropertyInt("pd", "toto"); });
+        assertThrows(InvalidPropertyTypeException.class, () -> { 
+            new PropertyLong("pd", "toto"); });
+        assertThrows(InvalidPropertyTypeException.class, () -> { 
+            new PropertyShort("pd", "toto"); });
+        assertThrows(InvalidPropertyTypeException.class, () -> { 
+            new PropertyBigDecimal("pd", "toto"); });
+        assertThrows(InvalidPropertyTypeException.class, () -> { 
+            new PropertyBigInteger("pd", "toto"); });
     }
     
     @Test

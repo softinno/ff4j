@@ -289,10 +289,112 @@ public class YamlParser extends ConfigurationFileParser {
     
     /** {@inheritDoc} */
     @Override
-    public String export(FF4jConfigFile config) {
-        // TODO Auto-generated method stub
-        return null;
-    }   
+    public String export(FF4jConfigFile ff4jConfig) {
+        AssertUtils.assertNotNull(ff4jConfig);
+        StringBuilder yamlFile =  new StringBuilder()
+            .append(yamlKey("ff4j", 0, false))
+            .append(yamlValue("autocreate", ff4jConfig.isAutoCreate(), 2, false))
+            .append(yamlValue("audit", ff4jConfig.isAudit(), 2, false));
+        
+        // Roles
+        yamlFile.append(yamlKey("roles", 2, false));
+        for (Map.Entry<String, FF4jRole> role : ff4jConfig.getRoles().entrySet()) {
+            yamlFile.append(yamlValue("name", role.getKey(), 4, true));
+            yamlFile.append(yamlValue("permissions", role.getValue().getPermissions(), 6, false));
+        }
+        
+        // Users
+        if (null != ff4jConfig.getUsers() && !ff4jConfig.getUsers().isEmpty()) {
+            yamlFile.append(yamlKey("users", 2, false));
+            for (Map.Entry<String, FF4jUser> user : ff4jConfig.getUsers().entrySet()) {
+                yamlFile.append(yamlValue("uid", user.getKey(), 4, true));
+                yamlFile.append(yamlValue("firstname", user.getValue().getFirstName(), 6, false));
+                yamlFile.append(yamlValue("lastname", user.getValue().getLastName(), 6, false));
+                user.getValue().getDescription().ifPresent(desc -> 
+                    yamlFile.append(yamlValue("description", desc, 6, false)));
+                yamlFile.append(yamlValue("permissions", user.getValue().getPermissions(), 6, false));
+                yamlFile.append(yamlValue("roles", user.getValue().getRoles(), 6, false));
+            }
+        }
+        
+        // Features
+        if (null != ff4jConfig.getFeatures() && !ff4jConfig.getFeatures().isEmpty()) {
+            yamlFile.append(yamlKey("features", 2, false));
+            for (Feature f : ff4jConfig.getFeatures().values()) {
+                yamlFile.append(yamlValue("uid", f.getUid(), 4, true));
+                yamlFile.append(yamlValue("enable", f.isEnabled(), 6, false));
+                f.getDescription().ifPresent(desc -> 
+                yamlFile.append(yamlValue("description", desc, 6, false)));
+                f.getGroup().ifPresent(g -> 
+                yamlFile.append(yamlValue("groupName", g, 6, false)));
+                if (!f.getProperties().isEmpty()) {
+                    yamlFile.append(yamlKey("properties", 6, false));
+                    if (!f.getProperties().isEmpty()) {
+                        f.getProperties().values().stream().forEach(p-> {
+                            yamlFile.append(yamlProperty(p,8));
+                        });
+                    }
+                }
+                if (!f.getToggleStrategies().isEmpty()) {
+                    yamlFile.append(yamlKey("toggleStrategies", 6, false));
+                    for (ToggleStrategy toggStrategy : f.getToggleStrategies()) {
+                        yamlFile.append(yamlValue("class", toggStrategy.getClassName(), 8, true));
+                        yamlFile.append(yamlKey("properties", 10, false));
+                        toggStrategy.getProperties()
+                                    .forEach(p-> { yamlFile.append(yamlProperty(p,12)); });
+                    }
+                }
+                if (!f.getAccessControlList().getPermissions().isEmpty()) {
+                    yamlFile.append(yamlKey("permissions", 6, false));
+                    for (Map.Entry<FF4jPermission, FF4jGrantees> acl : f.getAccessControlList().getPermissions().entrySet()) {
+                        yamlFile.append(yamlValue("name", acl.getKey(), 8, true));
+                        if (null != acl.getValue().getRoles() && !acl.getValue().getRoles().isEmpty()) {
+                            yamlFile.append(yamlValue("roles", acl.getValue().getRoles(), 10, false));
+                        }
+                        if (null != acl.getValue().getUsers() && !acl.getValue().getUsers().isEmpty()) {
+                            yamlFile.append(yamlValue("users", acl.getValue().getUsers(), 10, false));
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Properties
+        if (null != ff4jConfig.getProperties() && !ff4jConfig.getProperties().isEmpty()) {
+            yamlFile.append(yamlKey("properties", 2, false));
+            for (Property<?> prop : ff4jConfig.getProperties().values()) {
+                yamlFile.append(yamlProperty(prop, 4));
+            }
+        }
+        return yamlFile.toString();
+    }
     
+    private static final <T> String yamlProperty(Property<T> p, int offset) {
+        StringBuilder yamlProp = new StringBuilder();
+        yamlProp.append(yamlValue("name", p.getUid(), offset, true));
+        yamlProp.append(yamlValue("type", p.getClass().getCanonicalName(), offset+2, false));
+        yamlProp.append(yamlValue("value", p.getValueAsString(), offset+2, false));
+        p.getFixedValues().ifPresent(fixedValues -> {
+            yamlProp.append(yamlValue("fixedValues", fixedValues, offset+2, false));
+        });
+        return yamlProp.toString();
+    }
+    
+    private static final String yamlKey(String key, int offset, boolean isList) {
+        return  new StringBuilder()
+                    .append(new String(new char[offset]).replace('\0', ' '))
+                    .append(isList ? "- " : "")
+                    .append(key).append(": ")
+                    .append("\n").toString();
+    }
+    
+    private static final String yamlValue(String key, Object value, int offset, boolean isList) {
+       return new StringBuilder()
+                   .append(new String(new char[offset]).replace('\0', ' '))
+                   .append(isList ? "- " : "")
+                   .append(key).append(": ")
+                   .append(value)
+                   .append("\n").toString();
+    }
     
 }

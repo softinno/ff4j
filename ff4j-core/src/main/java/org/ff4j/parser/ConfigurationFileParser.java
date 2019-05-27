@@ -29,8 +29,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ff4j.parser.xml.XmlParserV2;
-
 /**
  * Operations to be implemented to allow reading files in different format (XML or YAML)
  *
@@ -77,6 +75,9 @@ public abstract class ConfigurationFileParser {
     public static final String TOGGLE_STRATEGY_PARAMVALUE = "value";
     public static final String PROPERTIES_CUSTOM_TAG2     = "properties";
     public static final String PROPERTIES_TAG             = "properties";
+    
+    /** XML Generation constants. */
+    public static final String ENCODING = "UTF-8";
     
     /**
      * <properties>
@@ -178,7 +179,7 @@ public abstract class ConfigurationFileParser {
     public FF4jConfigFile parse(String fileName) {
         assertHasLengthParam("fileName", 0, fileName);
         if (!cachedConfiguration.containsKey(fileName)) {
-            InputStream xmlIN = XmlParserV2.class.getClassLoader().getResourceAsStream(fileName);
+            InputStream xmlIN = ConfigurationFileParser.class.getClassLoader().getResourceAsStream(fileName);
             assertNotNullParam("fileName", 0, xmlIN, String.format("Cannot parse file : %s file not found", fileName));
             cachedConfiguration.put(fileName, parse(xmlIN));
         }

@@ -21,6 +21,7 @@ package org.ff4j.property;
  */
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 
 /**
  * Load property as list of {@link LocalDateTime }.
@@ -39,6 +40,18 @@ public class PropertyListLocalDateTime extends PropertyList<LocalDateTime  , Pro
     public PropertyListLocalDateTime(String uid, LocalDateTime  ... value) {
         super(uid, value);
     }
-  
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getValueAsString() {
+        if (get() == null) return null;
+        Iterator<LocalDateTime> it = get().iterator();
+        StringBuilder sb = new StringBuilder(it.next().format(FORMATTER));
+        while (it.hasNext()) {
+            sb.append(listDelimiter);
+            sb.append(it.next().format(FORMATTER));
+        }
+        return sb.toString();
+    }
 
 }

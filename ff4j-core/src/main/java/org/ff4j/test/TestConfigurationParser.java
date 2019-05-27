@@ -1,10 +1,10 @@
-package org.ff4j.features;
+package org.ff4j.test;
 
 /*-
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,27 @@ package org.ff4j.features;
  * #L%
  */
 
-import org.ff4j.feature.repository.FeatureRepository;
-import org.ff4j.feature.repository.FeatureRepositoryInMemory;
-import org.ff4j.parser.xml.XmlParserV2;
-import org.junit.jupiter.api.DisplayName;
+import java.io.InputStream;
+
+import org.ff4j.parser.ConfigurationFileParser;
+import org.ff4j.parser.FF4jConfigFile;
 
 /**
- * Testing implementation of {@link FeatureRepository} for DB : MEMORY
+ * Configuration test.
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@DisplayName("FeatureRepository::InMemory with XML")
-public class RepoFeatureInMemoryXmlTest extends FeatureRepositoryTestSupport {
+public class TestConfigurationParser extends ConfigurationFileParser implements FF4jTestDataSet {
 
     /** {@inheritDoc} */
     @Override
-    public FeatureRepository initStore() {
-        return new FeatureRepositoryInMemory(new XmlParserV2(), "ff4j-testDataset.xml");
+    public FF4jConfigFile parse(InputStream inputStream) {
+        return expectConfig();
     }
-    
+
+    @Override
+    public String export(FF4jConfigFile config) {
+        return "N/A";
+    }
+
 }

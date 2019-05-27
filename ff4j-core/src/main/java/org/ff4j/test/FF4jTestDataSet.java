@@ -172,11 +172,11 @@ public interface FF4jTestDataSet {
      */
     default Map < String, FF4jUser> expectedUsers() {
         Map < String, FF4jUser> users = new HashMap<>();
-        users.put(USER_JOHN, new FF4jUser(USER_JOHN).fisrtName("John").lastName("Connor")
+        users.put(USER_JOHN, new FF4jUser(USER_JOHN).firstName("John").lastName("Connor")
                             .description("sample description if OK")
                             .addPermission(FF4jPermission.ADMIN_FEATURES)
                             .addRole(ROLE_ADMIN));
-        users.put(USER_SARAH, new FF4jUser(USER_SARAH).fisrtName("Sarah").lastName("Connor")
+        users.put(USER_SARAH, new FF4jUser(USER_SARAH).firstName("Sarah").lastName("Connor")
                 .description("sample description if OK")
                 .addPermission(FF4jPermission.FEATURE_VIEW)
                 .addRole(ROLE_USER));

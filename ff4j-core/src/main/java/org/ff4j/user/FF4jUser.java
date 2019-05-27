@@ -1,7 +1,5 @@
 package org.ff4j.user;
 
-import static org.ff4j.utils.JsonUtils.attributeAsJson;
-
 /*-
  * #%L
  * ff4j-core
@@ -27,7 +25,6 @@ import java.util.Set;
 
 import org.ff4j.FF4jEntity;
 import org.ff4j.security.FF4jPermission;
-import org.ff4j.utils.JsonUtils;
 
 /**
  * Represent a user in FF4J.
@@ -59,28 +56,6 @@ public class FF4jUser extends FF4jEntity < FF4jUser > {
      */
     public FF4jUser(String uid) {
         super(uid);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
-    }
-
-    /**
-     * Convert Feature to JSON.
-     * 
-     * @return target json
-     */
-    public String toJson() {
-        StringBuilder json = new StringBuilder("{");
-        json.append(super.baseJson());
-        json.append(attributeAsJson("firstName", firstName));
-        json.append(attributeAsJson("lastName", lastName));
-        json.append(",\"roles\":" + JsonUtils.collectionAsJson(roles));
-        json.append(",\"permissions\":" + JsonUtils.collectionAsJson(permissions));
-        json.append("}");
-        return json.toString();
     }
     
     /**
@@ -123,7 +98,7 @@ public class FF4jUser extends FF4jEntity < FF4jUser > {
     /**
      * Fluent API to work with lastname.
      */
-    public FF4jUser fisrtName(String firstName) {
+    public FF4jUser firstName(String firstName) {
         setFirstName(firstName);
         return this;
     }

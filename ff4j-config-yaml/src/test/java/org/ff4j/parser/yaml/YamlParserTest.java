@@ -110,5 +110,16 @@ public class YamlParserTest implements FF4jTestDataSet {
         Assertions.assertNotNull(configFile.getProperties());
         Assertions.assertEquals(32, configFile.getProperties().size());
     }
+    
+    @Test
+    @DisplayName("When Exporting as Yaml I should have a working file")
+    public void testExportYAMLFile() {
+        // Given
+        InputStream in = getClass().getClassLoader().getResourceAsStream("ff4j-testDataset.yml");
+        
+        YamlParser parser = new YamlParser();
+        
+        System.out.println(parser.export(parser.parse(in)));
+    }
 }
     

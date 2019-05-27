@@ -326,7 +326,7 @@ public class AssertUtils {
     // -------------------------------------
     
     /** default error message. */
-    private static String DEFAULT_MESSAGE_NOTNULL = "<%s> is expected to be not null";
+    private static String DEFAULT_MESSAGE_NOTNULL = "<%s> must not be null";
     
     /**
      * Synchronous assertion test nullity of parameter
@@ -354,8 +354,6 @@ public class AssertUtils {
     
     /**
      * Predicate to evaluate if  string content is not empty
-     *
-     * @author Cedrick LUNVEN (@clunven)
      */
     private static final class StringHasLenghPredicate implements Predicate<String> {
         /** {@inheritDoc} */

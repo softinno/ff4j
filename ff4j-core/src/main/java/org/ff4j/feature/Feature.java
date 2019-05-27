@@ -4,7 +4,7 @@ package org.ff4j.feature;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2017 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.ff4j.feature;
  * limitations under the License.
  * #L%
  */
-import static org.ff4j.utils.JsonUtils.attributeAsJson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -230,44 +229,7 @@ public class Feature extends FF4jEntity < Feature > {
         this.enable = status;
         updateLastModifiedDate();
     }
-    
-    // --------- Overriding to String to work with JSON ------
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
-    }
-
-    /**
-     * Convert Feature to JSON.
-     * 
-     * @return target json
-     */
-    public String toJson() {
-        StringBuilder json = new StringBuilder("{");
-        json.append(super.baseJson());
-        json.append(attributeAsJson("enabled", enable));
-        group.ifPresent(g -> json.append(attributeAsJson("group", g)));
-        ttl.ifPresent(ttl -> json.append(attributeAsJson("ttl", ttl)));
-        if (!this.toggleStrategies.isEmpty()) {
-            json.append(",\"toggleStrategies\": [");
-            boolean first = true;
-            for (ToggleStrategy element : getToggleStrategies()) {
-                json.append(first ? "" : ",");
-                json.append(element.toJson());
-                first = false;
-            }
-            json.append("]");
-        }
-        json.append("}");
-        return json.toString();
-    }
-
-    public static Feature fromJson(String jsonString) {
-        return null;
-    }
-    
+        
     // ---- Working With Toggle Strategie ----
     
     /**

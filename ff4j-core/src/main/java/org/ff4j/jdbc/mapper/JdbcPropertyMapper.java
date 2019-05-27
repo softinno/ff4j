@@ -34,7 +34,7 @@ import org.ff4j.mapper.PropertyMapper;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyFactory;
 import org.ff4j.property.PropertyString;
-import org.ff4j.property.exception.PropertyAccessException;
+import org.ff4j.property.exception.InvalidPropertyTypeException;
 import org.ff4j.utils.Util;
 
 /**
@@ -55,7 +55,6 @@ public class JdbcPropertyMapper extends AbstractJdbcMapper  implements PropertyM
     public JdbcPropertyMapper(Connection sqlConn, JdbcQueryBuilder qbd) {
         super(sqlConn, qbd);
     }
-    
     
     /** {@inheritDoc} */
     @Override
@@ -96,7 +95,7 @@ public class JdbcPropertyMapper extends AbstractJdbcMapper  implements PropertyM
             populateFixedValues(fixedValues, p);
             return p;
         } catch (SQLException sqlEx) {
-            throw new PropertyAccessException("Cannot map Resultset into property", sqlEx);
+            throw new InvalidPropertyTypeException("Cannot map Resultset into property", sqlEx);
         }
     }
     

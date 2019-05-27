@@ -21,6 +21,7 @@ package org.ff4j.property;
  */
 
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * Load property as list of {@link Date}.
@@ -39,6 +40,19 @@ public class PropertyListDate extends PropertyList<Date, PropertyDate > {
    
     public PropertyListDate(String uid, Date  ... value) {
         super(uid, value);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getValueAsString() {
+        if (get() == null) return null;
+        Iterator<Date> it = get().iterator();
+        StringBuilder sb = new StringBuilder(SIMPLE_DATE_FORMAT.format(it.next().getTime()));
+        while (it.hasNext()) {
+            sb.append(listDelimiter);
+            sb.append(SIMPLE_DATE_FORMAT.format(it.next().getTime()));
+        }
+        return sb.toString();
     }
   
 

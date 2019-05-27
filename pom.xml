@@ -64,6 +64,10 @@
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<modules>
 		<module>ff4j-core</module>
+		<module>ff4j-test</module>
+		<module>ff4j-config-yaml</module>
+		<module>ff4j-config-xml</module>
+		
 	</modules>
 
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->

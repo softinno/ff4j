@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.parser.xml.XmlParserV2;
 import org.ff4j.property.Property;
 import org.ff4j.test.AssertUtils;
 /**
@@ -51,26 +50,6 @@ public class PropertyRepositoryInMemory extends PropertyRepositorySupport {
     
     /** Default constructor. */
     public PropertyRepositoryInMemory() {}
-    
-    /**
-     * Provide an xml file to initialize.
-     *
-     * @param fileName
-     *          target fileName
-     */
-    public PropertyRepositoryInMemory(String fileName) {
-        this(new XmlParserV2(), fileName);
-    }
-    
-    /**
-     * Provide an xml file to initialize.
-     *
-     * @param fileName
-     *          target fileName
-     */
-    public PropertyRepositoryInMemory(InputStream inputStream) {
-        this(new XmlParserV2(), inputStream);
-    }
     
     /**
      * Load data with a Parser and a fileName.

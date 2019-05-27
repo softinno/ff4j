@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.ff4j.FF4jEntity;
-import org.ff4j.utils.JsonUtils;
 import org.ff4j.utils.Util;
 
 /**
@@ -302,26 +301,6 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      */
     public Optional<Set<T>> getFixedValues() {
         return Optional.ofNullable(fixedValues);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
-    }
-
-    /** {@inheritDoc} */
-    public String toJson() {
-        StringBuilder jsonExpression = new StringBuilder("{ ");
-        jsonExpression.append(super.baseJson());
-        jsonExpression.append(",\"type\":\"" + className + "\"");
-        jsonExpression.append(",\"value\":");
-        jsonExpression.append((null == value) ? "null" : "\"" + getValueAsString() + "\"");
-        if (fixedValues != null) {
-            jsonExpression.append(",\"fixedValues\":" + JsonUtils.collectionAsJson(fixedValues));
-        }
-        jsonExpression.append("}");
-        return jsonExpression.toString();
     }
     
     public void addFixedValues(Set<String> fixedValues) {

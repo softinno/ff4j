@@ -38,7 +38,6 @@ import org.ff4j.FF4jEntity;
 import org.ff4j.exception.ItemNotFoundException;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.parser.xml.XmlParserV2;
 import org.ff4j.test.AssertUtils;
 import org.ff4j.user.FF4jRole;
 import org.ff4j.user.FF4jUser;
@@ -64,26 +63,6 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
      * Default constructor.
      */
     public RolesAndUsersRepositoryInMemory() {}
-    
-    /**
-     * Provide an xml file to initialize.
-     *
-     * @param fileName
-     *          target fileName
-     */
-    public RolesAndUsersRepositoryInMemory(String fileName) {
-        this(new XmlParserV2(), fileName);
-    }
-    
-    /**
-     * Provide an xml file to initialize.
-     *
-     * @param fileName
-     *          target fileName
-     */
-    public RolesAndUsersRepositoryInMemory(InputStream inputStream) {
-        this(new XmlParserV2(), inputStream);
-    }
     
     /**
      * Load data with a Parser and a fileName.

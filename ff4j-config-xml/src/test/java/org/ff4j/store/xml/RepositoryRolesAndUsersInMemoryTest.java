@@ -1,4 +1,7 @@
-package org.ff4j.user;
+package org.ff4j.store.xml;
+
+import org.ff4j.parser.xml.XmlParserV2;
+import org.ff4j.test.RepositoryRolesAndUsersTestSupport;
 
 /*-
  * #%L
@@ -29,7 +32,7 @@ public class RepositoryRolesAndUsersInMemoryTest extends RepositoryRolesAndUsers
 
     @Override
     public RolesAndUsersRepository initStore() {
-        return new RolesAndUsersRepositoryInMemory("ff4j-testDataset.xml");
+        return new RolesAndUsersRepositoryInMemory(new XmlParserV2(), "ff4j-testDataset.xml");
     }
 
 }

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- #%L ff4j-core %% Copyright (C) 2013 - 2017 FF4J %% Licensed under the 
+	Apache License, Version 2.0 (the "License"); you may not use this file except 
+	in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+	Unless required by applicable law or agreed to in writing, software distributed 
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+	the specific language governing permissions and limitations under the License. 
+	#L% -->
+<ff4j xmlns="http://www.ff4j.org/schema/ff4j" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://ff4j.org/schema/ff4j-2.0.xsd">
+	
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~ ROLES          ~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+
+	<roles>
+		<role name="EVERYONE">
+			<permission>VIEW_FEATURES</permission>
+			<permission>VIEW_PROPERTIES</permission>
+		</role>
+		<role name="USER">
+			<permission>VIEW_FEATURES</permission>
+			<permission>VIEW_PROPERTIES</permission>
+			<permission>VIEW_AUDITTRAIL</permission>
+			<permission>VIEW_FEATUREUSAGE</permission>
+		</role>
+		<role name="SUPERUSER">
+			<permission>TOGGLE_FEATURES</permission>
+			<permission>VIEW_FEATURES</permission>
+			<permission>VIEW_PROPERTIES</permission>
+			<permission>VIEW_AUDITTRAIL</permission>
+			<permission>VIEW_FEATUREUSAGE</permission>
+		</role>
+		<role name="ADMINISTRATOR">
+			<permission>ADMIN_FEATURES</permission>
+			<permission>ADMIN_PROPERTIES</permission>
+			<permission>TOGGLE_FEATURES</permission>
+			<permission>VIEW_FEATURES</permission>
+			<permission>VIEW_PROPERTIES</permission>
+			<permission>VIEW_AUDITTRAIL</permission>
+			<permission>VIEW_FEATUREUSAGE</permission>
+		</role>
+	</roles>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~ USERS          ~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+
+	<users>
+		<user uid="john" firstName="John" lastName="Connor"
+			description="sample description if OK">
+			<roles>
+				<role>ADMINISTRATOR</role>
+			</roles>
+			<permissions>
+				<permission>ADMIN_FEATURES</permission>
+			</permissions>
+		</user>
+		<user uid="sarah" firstName="Sarah" lastName="Connor"
+			description="sample description if OK">
+			<roles>
+				<role>USER</role>
+			</roles>
+			<permissions>
+				<permission>FEATURE_VIEW</permission>
+			</permissions>
+		</user>
+
+	</users>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~ FEATURES       ~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+
+	<features>
+	
+	    <feature uid="f1" enable="false" description="some desc" />
+	    
+		<feature uid="f2" enable="true" description="description" groupName="GRP1">
+			<permissions>
+				<permission name="FEATURE_TOGGLE">
+					 <users>
+					 	<user>john</user>
+					 </users>
+				</permission>
+				<permission name="FEATURE_VIEW">
+				 	<roles>
+						<role>EVERYONE</role>
+					</roles>
+				</permission>
+			</permissions>
+			<properties>
+			  <property name="ppint" 	  type="int"     value="12"   		/>
+			  <property name="ppdouble"   type="double"  value="12.5" 		/>
+			  <property name="ppboolean"  type="boolean" value="true" 		/>
+			  <property name="ppstring"   type="string"  value="hello"		/>
+			  <property name="ppListInt"  type="listInt" value="12,13,14" 	/>
+			  <property name="myLogLevel" type="logLevel" value="DEBUG" 		/>
+			  <property name="digitValue" type="org.ff4j.property.PropertyInt" value="1" >
+			  	<fixedValues>
+			 		<value>0</value>
+			 		<value>1</value>
+			 		<value>2</value>
+			 		<value>3</value>
+			 	</fixedValues>
+			  </property>
+			  <property name="regionIdentifier" value="NA" >
+			 	<fixedValues>
+			 		<value>NA</value>
+			 		<value>EMEA</value>
+			 		<value>APAC</value>
+			 	</fixedValues>
+			 </property>
+			</properties>
+			<toggleStrategies>
+			  <toggleStrategy class="org.ff4j.feature.togglestrategy.PonderationToggleStrategy">
+			     <properties>
+			  		<property name="weight" type="double" value="1" />
+			     </properties>
+			  </toggleStrategy>
+			</toggleStrategies>
+		</feature>
+		
+		<featureGroup name="GRP0">
+			<feature uid="f3" enable="false" description="description" >
+				<permissions>
+				  <permission name="FEATURE_VIEW">
+				 	<roles>
+						<role>USER</role>
+					</roles>
+				  </permission>
+			    </permissions>
+			</feature>
+		</featureGroup>
+		
+		<featureGroup name="GRP1">
+			<feature uid="f4" enable="true" description="description" >
+				 <toggleStrategies>
+					<toggleStrategy class="org.ff4j.feature.togglestrategy.expression.ExpressionToggleStrategy">
+						 <properties>
+			  				<property name="expression" type="string" value="f3 | f2" />
+			     		 </properties>
+					</toggleStrategy>
+				</toggleStrategies>
+			</feature>
+		</featureGroup>
+
+	</features>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~   PROPERTIES   ~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~ -->
+
+	<properties>
+		<property name="pBigDecimal" 	 type="bigDecimal"     value="1.5" 	  				/>
+		<property name="pBigInteger" 	 type="bigInteger"     value="123456" 				/>
+		<property name="pBoolean" 	 	 type="boolean"        value="true"   				/>
+		<property name="pByte"       	 type="byte" 	       value="p" 	  				/>
+		<property name="pCalendar"   	 type="calendar"       value="2018-12-24 23:00:00" 	/>
+		<property name="pDate"   	     type="date"           value="2018-12-24 23:00:00" 	/>
+		<property name="pClass"      	 type="class" 	       value="java.lang.String" 	/>
+		<property name="pDouble"    	 type="double"         value="20.0" 	  			/>
+		<property name="pFloat"      	 type="float" 	   	   value="20.0" 	  			/>
+		<property name="pInstant"    	 type="instant"        value="2018-12-24 23:00:00" 	/>
+		<property name="pLocal"      	 type="localDateTime"  value="2018-12-24 23:00:00" 	/>
+		<property name="pInt"        	 type="int" 	       value="10" 	  				/>
+		<property name="pLogLevel"   	 type="logLevel" 	   value="INFO" 	  			/>
+		<property name="pLong"       	 type="long" 	  	      value="123" 	  			    />
+		<property name="pShort"      	 type="short" 	          value="5" 	  			    />
+		<property name="pString"     	 type="string" 	          value="pString" 	  		    />
+		<property name="pListBigDecimal" type="listBigDecimal" 	  value="1.5,2.5" 	  		    />
+		<property name="pListBigInteger" type="listBigInteger"    value="123456,789012" 	  	/>
+		<property name="pListBoolean"    type="listBoolean"       value="true,false" 	  		/>
+		<property name="pListByte"       type="listByte" 	   	  value="p,l" 	  		        />
+		<property name="pListCalendar"   type="listCalendar"   	  value="2018-12-24 23:00:00,2019-01-01 23:00:00" />
+		<property name="pListDate"   	 type="listDate"          value="2018-12-24 23:00:00,2019-01-01 23:00:00" 	/>
+		<property name="pListClass"      type="listClass" 	      value="java.lang.String,java.lang.Integer" 	   />
+		<property name="pListDouble"     type="listDouble" 	      value="20.0,30.0" 	  		    			   />
+		<property name="pListFloat"      type="listFloat"         value="20.0,30.0" 	  		    			   />
+		<property name="plistInstant"    type="listInstant"       value="2018-12-24 23:00:00,2019-01-01 23:00:00" />
+		<property name="pListInt"        type="listInt" 	      value="10,20" 	  		    				   />
+		<property name="pListLogLevel"   type="listLogLevel"      value="INFO,DEBUG" 	  		                   />
+		<property name="pListLong"       type="listLong" 	      value="123,456" 	  		                       />
+		<property name="pListShort"      type="listShort" 	      value="5,6" 	  		    					   />
+		<property name="pListString"     type="listString" 	      value="pString,listString" 	  		    	   />
+		<property name="pListLocal"      type="listLocalDateTime" value="2018-12-24 23:00:00,2019-01-01 23:00:00" />
+	</properties>
+
+</ff4j>

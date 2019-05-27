@@ -1,5 +1,7 @@
 package org.ff4j.property;
 
+import java.util.Iterator;
+
 /*-
  * #%L
  * ff4j-core
@@ -36,6 +38,19 @@ public class PropertyListClass extends PropertyList<Class<?> , PropertyClass > {
    
     public PropertyListClass(String uid, Class<?> ... value) {
         super(uid, value);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String getValueAsString() {
+        if (get() == null) return null;
+        Iterator<Class<?>> it = get().iterator();
+        StringBuilder sb = new StringBuilder(it.next().getCanonicalName());
+        while (it.hasNext()) {
+            sb.append(listDelimiter);
+            sb.append(it.next().getCanonicalName());
+        }
+        return sb.toString();
     }
   
 

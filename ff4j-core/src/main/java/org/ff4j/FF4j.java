@@ -44,8 +44,6 @@ import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryInMemory;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.parser.xml.XmlParserV1;
-import org.ff4j.parser.xml.XmlParserV2;
 import org.ff4j.property.Property;
 import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.property.repository.PropertyRepository;
@@ -70,9 +68,6 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
     // -------------------------------------------------------------------------
     // ------------------- META-DATA         -----------------------------------
     // -------------------------------------------------------------------------
-    
-    public static final ConfigurationFileParser PARSER_XML_V1 = new XmlParserV1();
-    public static final ConfigurationFileParser PARSER_XML_V2 = new XmlParserV2();
     
     /** Top for startup in  order to compute uptime. */
     private final long startTime = System.currentTimeMillis();
@@ -131,12 +126,6 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
      * @param xmlFile
      *          Xml configuration file
      */
-    public FF4j(String fileName) {
-        this(PARSER_XML_V2, fileName);
-    }
-    public FF4j(InputStream xmlConfFileStream) {
-        this(PARSER_XML_V2, xmlConfFileStream);
-    }
     public FF4j(ConfigurationFileParser parser, String confFile) {
         this(parser.parse(confFile));
     }
