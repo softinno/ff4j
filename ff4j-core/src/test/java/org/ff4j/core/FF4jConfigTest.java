@@ -1,4 +1,4 @@
-package org.ff4j.property;
+package org.ff4j.core;
 
 /*-
  * #%L
@@ -20,23 +20,24 @@ package org.ff4j.property;
  * #L%
  */
 
-/**
- * Load property as list of {@link Integer }.
- *
- * @author Cedrick LUNVEN (@clunven)
- */
-public class PropertyListInt extends PropertyList<Integer, PropertyInt> {
-    
-    /** Serial Number. */
-    private static final long serialVersionUID = -8027880382680931498L;
-   
-    public PropertyListInt(String uid, String valueAsString) {
-        super(uid, valueAsString);
-    }
-   
-    public PropertyListInt(String uid, Integer  ... value) {
-        super(uid, value);
-    }
-  
+import org.ff4j.FF4j;
+import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.test.TestConfigurationParser;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
+public class FF4jConfigTest {
+
+    @Test
+    @DisplayName(value = "")
+    public void init_config_should_filled_fields() {
+        // Given
+        FF4j ff4j = new FF4j(new TestConfigurationParser().expectConfig());
+        // When
+        FF4jConfigFile ff4jConfig = new FF4jConfigFile(ff4j);
+        Assertions.assertNotNull(ff4jConfig);
+        
+        
+    }
 }

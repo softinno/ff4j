@@ -29,7 +29,7 @@ import org.ff4j.property.exception.InvalidPropertyTypeException;
  *
  * @author Cedrick Lunven (@clunven)
  */
-public class PropertyInt extends Property< Integer > {
+public class PropertyInteger extends Property< Integer > {
 
     /** serial. */
     private static final long serialVersionUID = -134543098672660987L;
@@ -42,7 +42,7 @@ public class PropertyInt extends Property< Integer > {
      * @param lvl
      *      current log level
      */
-    public PropertyInt(String uid) {
+    public PropertyInteger(String uid) {
        super(uid);
     }
     
@@ -54,7 +54,7 @@ public class PropertyInt extends Property< Integer > {
      * @param lvl
      *      current log level
      */
-    public PropertyInt(String uid, String value) {
+    public PropertyInteger(String uid, String value) {
        super(uid, value);
     }
     
@@ -66,7 +66,7 @@ public class PropertyInt extends Property< Integer > {
      * @param lvl
      *      current log level
      */
-    public PropertyInt(String uid, Integer value) {
+    public PropertyInteger(String uid, Integer value) {
        super(uid, value);
     }
 
@@ -78,7 +78,7 @@ public class PropertyInt extends Property< Integer > {
      * @param lvl
      *      current log level
      */
-    public PropertyInt(String uid, Integer value, Set <Integer> fixValues) {
+    public PropertyInteger(String uid, Integer value, Set <Integer> fixValues) {
        super(uid, value);
        setFixedValues(fixValues);
     }

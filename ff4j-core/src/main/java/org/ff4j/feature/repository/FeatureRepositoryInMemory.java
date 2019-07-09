@@ -50,15 +50,12 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
 
     /** serialVersionUID. */
     private static final long serialVersionUID = -3768339754263659120L;
-
-    /** XML File where features are load. */
-    private String fileName = null;
-
+    
     /** InMemory Feature Map */
-    private Map<String, Feature> mapOfFeatures = new LinkedHashMap<>();
+    protected Map<String, Feature> mapOfFeatures = new LinkedHashMap<>();
 
     /** Group structure for features. */
-    private Map<String, Set<String>> mapOfGroups = new HashMap<String, Set<String>>();
+    protected Map<String, Set<String>> mapOfGroups = new HashMap<String, Set<String>>();
 
     /** Default constructor. */
     public FeatureRepositoryInMemory() {}
@@ -184,7 +181,6 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
     /** {@inheritDoc} */
     @Override
     public Stream<String> findAllIds() {
-        if (mapOfFeatures ==  null) return null;
         return mapOfFeatures.keySet().stream();
     }
     
@@ -240,31 +236,6 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
                 .filter(item -> item.getGroup().isPresent())
                 .forEach(feature -> mapOfGroups.get(
                          feature.getGroup().get()).add(feature.getUid()));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String toJson() {
-        String json = super.toJson();
-        // Remove last } to enrich the json document
-        json = json.substring(0, json.length() - 1) + ",\"inputFile\":";
-        // No filename inputstream, set to true)
-        if (null == fileName) {
-            json += "null";
-        } else {
-            json += "\"" + this.fileName + "\"";
-        }
-        json += "}";
-        return json;
-    }
-
-    /**
-     * Getter accessor for attribute 'fileName'.
-     * 
-     * @return current value of 'fileName'
-     */
-    public String getFileName() {
-        return fileName;
-    }
+    }   
     
 }

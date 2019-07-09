@@ -97,7 +97,7 @@
 			  <property name="ppstring"   type="string"  value="hello"		/>
 			  <property name="ppListInt"  type="listInt" value="12,13,14" 	/>
 			  <property name="myLogLevel" type="logLevel" value="DEBUG" 		/>
-			  <property name="digitValue" type="org.ff4j.property.PropertyInt" value="1" >
+			  <property name="digitValue" type="org.ff4j.property.PropertyInteger" value="1" >
 			  	<fixedValues>
 			 		<value>0</value>
 			 		<value>1</value>

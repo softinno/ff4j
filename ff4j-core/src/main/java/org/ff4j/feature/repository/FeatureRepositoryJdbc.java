@@ -120,7 +120,6 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
         if (!isTableExist(ds, qb.getTableNameToggleStrategyProperties())) {
             executeUpdate(ds, qb.sqlCreateTableToggleStrategyProperties());
         }
-        JdbcUtils.createSchemaSecurity(ds);
     }
     
     /** {@inheritDoc} */

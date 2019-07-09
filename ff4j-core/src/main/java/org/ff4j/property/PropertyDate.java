@@ -71,7 +71,7 @@ public class PropertyDate extends Property< Date > {
     /** {@inheritDoc} */
     @Override
     public Date fromString(String v) {
-        if (v == null) return new Date();
+        if (v == null) return null;
         try {
             return SIMPLE_DATE_FORMAT.parse(v);
         } catch (ParseException e) {

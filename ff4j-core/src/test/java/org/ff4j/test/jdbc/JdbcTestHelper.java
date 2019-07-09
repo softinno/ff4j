@@ -68,24 +68,15 @@ public class JdbcTestHelper {
      * Execute expected SQL scripts.
      */
     public static void initDBSchema(DataSource dataSource) {
-        Connection sqlConnection = null;
-        try {
-            sqlConnection = dataSource.getConnection();
+        try(Connection sqlConnection = dataSource.getConnection()) {
             SqlScriptRunner ssr = new SqlScriptRunner(sqlConnection, true, true);
-            
-            try {
+            if (JdbcUtils.isTableExist(dataSource, new JdbcQueryBuilder().getTableNameFeatures())) {
                 ssr.runScript(new StringReader(new JdbcQueryBuilder().sqlDropSchema()));
-            } catch(Exception e) { 
-                // if table does not exist you may failed, not a big deal
             }
             ssr.runScript(new StringReader(new JdbcQueryBuilder().sqlCreateSchema()));
             ssr.runScript(new FileReader("src/test/resources/ff4j-testDataset.sql"));
-            
         } catch (Exception e) {
             throw new IllegalArgumentException("Cannot initialized DB", e);
-            
-        } finally {
-            JdbcUtils.closeConnection(sqlConnection);
         }
     }
 

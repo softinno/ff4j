@@ -69,6 +69,7 @@ public class PropertyCalendar extends Property< Calendar > {
     /** {@inheritDoc} */
     @Override
     public Calendar fromString(String v) {
+        if (v == null) return null;
         try {
         	Calendar c = Calendar.getInstance();
         	if (v != null) {

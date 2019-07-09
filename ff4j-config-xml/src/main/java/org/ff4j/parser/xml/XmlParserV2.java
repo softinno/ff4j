@@ -431,7 +431,10 @@ public final class XmlParserV2 extends ConfigurationFileParserXml {
                 String optionalType = attMap.getNamedItem(PROPERTY_PARAMTYPE).getNodeValue();
                     
                 // Substitution if relevant (e.g. 'int' -> 'org.ff4j.property.PropertyInt')
-                optionalType = Property.mapPropertyType(optionalType);
+                Optional<String> mappedType = Property.mapFromSimple2PropertyType(optionalType);
+                if (mappedType.isPresent()) {
+                    optionalType = mappedType.get();
+                }
                 
                 try {
                     // Constructor (String, String) is mandatory in Property interface

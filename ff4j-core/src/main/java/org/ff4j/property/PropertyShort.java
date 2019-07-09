@@ -1,5 +1,7 @@
 package org.ff4j.property;
 
+import java.util.Set;
+
 import org.ff4j.property.exception.InvalidPropertyTypeException;
 
 /*
@@ -66,6 +68,19 @@ public class PropertyShort extends Property< Short > {
      */
     public PropertyShort(String uid, Short value) {
        super(uid, value);
+    }
+    
+    /**
+     * Constructor by string expression.
+     *
+     * @param uid
+     *      unique name
+     * @param lvl
+     *      current log level
+     */
+    public PropertyShort(String uid, Short value, Set <Short> fixValues) {
+       super(uid, value);
+       setFixedValues(fixValues);
     }
     
     /** {@inheritDoc} */

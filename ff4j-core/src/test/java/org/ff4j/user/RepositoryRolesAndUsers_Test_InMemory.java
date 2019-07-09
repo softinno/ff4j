@@ -1,4 +1,6 @@
-package org.ff4j.property;
+package org.ff4j.user;
+
+import org.ff4j.test.TestConfigurationParser;
 
 /*-
  * #%L
@@ -20,20 +22,16 @@ package org.ff4j.property;
  * #L%
  */
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import org.ff4j.user.repository.RolesAndUsersRepository;
+import org.ff4j.user.repository.RolesAndUsersRepositoryInMemory;
+import org.junit.jupiter.api.DisplayName;
 
-public class PropertySetString extends PropertySet<String, PropertyString > {
+@DisplayName("RepositoryRolesAndUsers::In Memory with expected Data set")
+public class RepositoryRolesAndUsers_Test_InMemory extends RepositoryRolesAndUsersTestSupport {
 
-    /** Serial */
-    private static final long serialVersionUID = -7978535215652429543L;
-   
-    public PropertySetString(String uid, String valueAsString) {
-        super(uid, valueAsString);
+    @Override
+    public RolesAndUsersRepository initStore() {
+        return new RolesAndUsersRepositoryInMemory(new TestConfigurationParser(), "ff4j-testDataset.xml");
     }
-    public PropertySetString(String uid, String... value) {
-        super(uid, new LinkedHashSet<String>(Arrays.asList(value)));
-    }
-  
 
 }

@@ -71,7 +71,7 @@ ff4j:
           type: listInt
           value: 12,13,14                      
         - name: digitValue
-          type: org.ff4j.property.PropertyInt
+          type: org.ff4j.property.PropertyInteger
           value: 1
           fixedValues: [0, 1, 2, 3]
         - name: regionIdentifier

@@ -1,5 +1,7 @@
 package org.ff4j.jdbc.mapper;
 
+import static org.ff4j.utils.TimeUtils.asLocalDateTime;
+
 /*-
  * #%L
  * ff4j-core
@@ -24,8 +26,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 import org.ff4j.FF4jEntity;
 import org.ff4j.jdbc.JdbcConstants;
@@ -58,28 +58,10 @@ public abstract class AbstractJdbcMapper {
         this.queryBuilder = qbd;
     }
     
-    /**
-     * Utility to retrieve a {@link LocalDateTime} from SQl {@link Timestamp}.
-     * 
-     * @param rs
-     *      current resultset
-     * @param colName
-     *      current column name
-     * @return
-     *      the local time
-     */
-    protected LocalDateTime getLocalDateTime(ResultSet rs, String colName) {
+    public void mapEntity(ResultSet rs, FF4jEntity<?> e) {
         try {
-            return TimeUtils.asLocalDateTime(rs.getTimestamp(colName));
-        } catch (SQLException sqlEx) {
-            throw new IllegalArgumentException("Cannot retrieve localdate time", sqlEx);
-        }
-    }
-    
-    void mapEntity(ResultSet rs, FF4jEntity<?> e) {
-        try {
-            e.setCreationDate(getLocalDateTime(rs, JdbcConstants.COLUMN_CREATED));
-            e.setLastModified(getLocalDateTime(rs, JdbcConstants.COLUMN_LASTMODIFIED));
+            e.setCreationDate(asLocalDateTime(rs.getTimestamp(JdbcConstants.COLUMN_CREATED)));
+            e.setLastModified(asLocalDateTime(rs.getTimestamp(JdbcConstants.COLUMN_LASTMODIFIED)));
             e.setOwner(rs.getString(JdbcConstants.COLUMN_OWNER));
             e.setDescription(rs.getString(JdbcConstants.COLUMN_DESCRIPTION));
         } catch (SQLException sqlEx) {
@@ -87,7 +69,7 @@ public abstract class AbstractJdbcMapper {
         }
     }
     
-    void populateEntity(PreparedStatement stmt, FF4jEntity<?> ent) {
+    protected void populateEntity(PreparedStatement stmt, FF4jEntity<?> ent) {
         try {
             // Feature uid
             stmt.setString(1, ent.getUid());

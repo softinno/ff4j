@@ -1,5 +1,8 @@
 package org.ff4j.user.repository;
 
+import static org.ff4j.jdbc.JdbcUtils.executeUpdate;
+import static org.ff4j.jdbc.JdbcUtils.isTableExist;
+
 /*-
  * #%L
  * ff4j-core
@@ -43,6 +46,29 @@ public class RolesAndUsersRepositoryJdbc extends RolesAndUsersRepositorySupport 
 
     /** Default Constructor. */
     public RolesAndUsersRepositoryJdbc() {}
+    
+    
+    /** {@inheritDoc} */
+    @Override
+    public void createSchema() {
+        DataSource       ds = getDataSource();
+        JdbcQueryBuilder qb = getQueryBuilder();
+        if (!isTableExist(ds, qb.getTableNameUser())) {
+            executeUpdate(ds, qb.sqlCreateTableUser());
+        }
+        if (!isTableExist(ds, qb.getTableNameUserPermissions())) {
+            executeUpdate(ds, qb.sqlCreateTableUserPermissions());
+        }
+        if (!isTableExist(ds, qb.getTableNameRoles())) {
+            executeUpdate(ds, qb.sqlCreateTableRoles());
+        }
+        if (!isTableExist(ds, qb.getTableNameRolesPermissions())) {
+            executeUpdate(ds, qb.sqlCreateTableRolesPermissions());
+        }
+        if (!isTableExist(ds, qb.getTableNameRolesUsers())) {
+            executeUpdate(ds, qb.sqlCreateTableRolesUsers());
+        }
+    }
     
     /**
      * Constructor from DataSource.

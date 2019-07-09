@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -279,7 +280,10 @@ public final class XmlParserV1 extends ConfigurationFileParserXml {
                 String optionalType = attMap.getNamedItem(PROPERTY_PARAMTYPE).getNodeValue();
                
                 // Substitution if relevant (e.g. 'int' -> 'org.ff4j.property.PropertyInt')
-                optionalType = Property.mapPropertyType(optionalType);
+                Optional<String> mappedType = Property.mapFromSimple2PropertyType(optionalType);
+                if (mappedType.isPresent()) {
+                    optionalType = mappedType.get();
+                }
                 
                 try {
                     // Constructor (String, String) is mandatory in Property interface

@@ -19,19 +19,10 @@ package org.ff4j.property;
  * limitations under the License.
  * #L%
  */
-
-import static org.ff4j.test.AssertUtils.*;
+import static org.ff4j.test.AssertUtils.assertHasLength;
 
 import java.lang.reflect.Constructor;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-
-import org.ff4j.utils.Util;
 
 /**
  * Create {@link Property} from name type and value.
@@ -39,67 +30,11 @@ import org.ff4j.utils.Util;
  * @author Cedrick Lunven (@clunven)
  */
 public class PropertyFactory {
-
-    private static Map < Class<?> , Class<?> > validPropertyPrimitives = new HashMap<Class<?>, Class<?> >();
     
     /**
-     * Initialized Primitive to work with Properties.
+     * Hide constructor.
      */
-    static {
-        validPropertyPrimitives.put(Byte.class, PropertyByte.class);
-        validPropertyPrimitives.put(Short.class, PropertyShort.class);
-        validPropertyPrimitives.put(Integer.class, PropertyInt.class);
-        validPropertyPrimitives.put(Long.class, PropertyLong.class);
-        validPropertyPrimitives.put(Double.class, PropertyDouble.class);
-        validPropertyPrimitives.put(Boolean.class, PropertyBoolean.class);
-        validPropertyPrimitives.put(Float.class, PropertyFloat.class);
-        validPropertyPrimitives.put(BigInteger.class, PropertyBigInteger.class);
-        validPropertyPrimitives.put(BigDecimal.class, PropertyBigDecimal.class);
-        validPropertyPrimitives.put(PropertyLogLevel.LogLevel.class, PropertyLogLevel.class);
-        validPropertyPrimitives.put(String.class, PropertyString.class);
-    }
-
-    /**
-     * Factory method to create property.
-     *
-     * @param pName
-     *            property name.
-     * @param pType
-     *            property type
-     * @param pValue
-     *            property value
-     * @return
-     */
-    public static Property<?> createProperty(String pName, Object value) {
-        assertHasLength(pName);
-        assertNotNull(value);
-        if (validPropertyPrimitives.containsKey(value.getClass())) {
-            return PropertyFactory.createProperty(pName, 
-                    validPropertyPrimitives.get(value.getClass()).getName(), 
-                    String.valueOf(value));
-        }
-        if (value instanceof Date) {
-            return PropertyFactory.createProperty(pName, 
-                    PropertyDate.class.getName(),
-                    PropertyDate.SIMPLE_DATE_FORMAT.format(value));
-        }
-        if (value instanceof Calendar) {
-            Date valueDate = ((Calendar) value).getTime();
-            return PropertyFactory.createProperty(pName, 
-                    PropertyCalendar.class.getName(),
-                    PropertyCalendar.SIMPLE_DATE_FORMAT.format(valueDate));
-        }
-        if (value instanceof Property<?>) {
-            return (Property<?>) value;
-        }
-        // String Value
-        if (value.getClass().isArray() || Util.isCollection(value)) {
-            return PropertyFactory.createProperty(pName, 
-                    PropertyString.class.getName(), 
-                    Util.join(Util.asCollection(value), ","));
-        }
-        throw new IllegalArgumentException("Cannot create property with input type "  + value.getClass() + value.toString());
-    }
+    private PropertyFactory() {}
     
     /**
      * Factory method to create property.

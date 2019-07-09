@@ -156,23 +156,6 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
     public boolean test(String featureUid) {
         return check(featureUid);
     }
-    
-    public boolean test(String featureUid, FF4jContext executionContext) {
-        return check(featureUid, executionContext);
-    }
-    
-    /**
-     * Evaluate if a feature is toggled based on the information in store and
-     * current execution context (key/value as threadLocal).
-     *
-     * @param featureUid
-     *          feature unique identifier.
-     * @return 
-     *          current feature status.
-     */
-    public boolean check(String featureUid) {
-        return check(featureUid, getContext());
-    }
 
     /**
      * Evaluate if a feature is toggled based on the information in store and provided
@@ -180,18 +163,11 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
      * 
      * @param featureID
      *            feature unique identifier.
-     * @param executionContext
-     *            current execution context
      * @return current feature status
      */
-    public boolean check(String uid, FF4jContext executionContext) {
+    public boolean check(String uid) {
         Feature feature = readFeature(uid);
-        boolean featureToggled = false;
-        FF4jContext context = (executionContext == null) ? getContext() : executionContext;
-        if (feature.isEnabled()) {
-            featureToggled = feature.isToggled(context);
-        }
-        // Send information that feature will be used
+        boolean featureToggled = feature.isEnabled() && feature.isToggled(getContext());
         if (featureToggled) {
             this.notify((listener) -> listener.onFeatureHit(feature));
         }
@@ -278,7 +254,11 @@ public class FF4j extends FF4jRepositoryObserver < EventFeatureUsageListener > i
     public FF4j saveFeature(Feature fp) {
         getRepositoryFeatures().save(fp);
         return this;
-    }    
+    }
+    
+    public FF4j addFeature(Feature fp) {
+        return saveFeature(fp); 
+    }
     
     // -------------------------------------
     // ------ CRUD Properties (fluent) -----

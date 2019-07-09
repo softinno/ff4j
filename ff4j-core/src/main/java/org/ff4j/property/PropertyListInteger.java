@@ -1,10 +1,10 @@
-package org.ff4j.web;
+package org.ff4j.property;
 
-/*
+/*-
  * #%L
- * ff4j-web
+ * ff4j-core
  * %%
- * Copyright (C) 2013 - 2014 Ff4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,23 @@ package org.ff4j.web;
  * #L%
  */
 
-import org.ff4j.FF4j;
-
 /**
- * Loader for class ff4j within Embedded Administration Console.
+ * Load property as list of {@link Integer }.
  *
- * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
+ * @author Cedrick LUNVEN (@clunven)
  */
-public interface FF4jProvider {
-
-    /**
-     * Initialize the {@link FF4j} object to be injected within console.
-     *
-     * @return instance of ff4j for this application.
-     */
-    FF4j getFF4j();
+public class PropertyListInteger extends PropertyList<Integer, PropertyInteger> {
+    
+    /** Serial Number. */
+    private static final long serialVersionUID = -8027880382680931498L;
+   
+    public PropertyListInteger(String uid, String valueAsString) {
+        super(uid, valueAsString);
+    }
+   
+    public PropertyListInteger(String uid, Integer  ... value) {
+        super(uid, value);
+    }
+  
 
 }

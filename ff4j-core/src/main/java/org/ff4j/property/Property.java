@@ -109,8 +109,8 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
         
     public Property(String uid, Property<T> e) {
         super(uid, e);
-        this.className     = e.getClassName();
-        this.value    = e.getValue();
+        this.className = e.getClassName();
+        this.value     = e.getValue();
         if (e.getFixedValues().isPresent()) {
             for(T fixedValue : e.getFixedValues().get()) {
                 add2FixedValueFromString(fixedValue.toString());
@@ -135,35 +135,35 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      * Initialisation of substitution types
      */
     static {
-        PROPERTY_TYPES = new HashMap<String, String >();
-        PROPERTY_TYPES.put("bigDecimal", PropertyBigDecimal.class.getName());
-        PROPERTY_TYPES.put("bigInteger", PropertyBigInteger.class.getName());
-        PROPERTY_TYPES.put("boolean",    PropertyBoolean.class.getName());
-        PROPERTY_TYPES.put("byte",       PropertyByte.class.getName());
-        PROPERTY_TYPES.put("calendar",   PropertyCalendar.class.getName());
-        PROPERTY_TYPES.put("class",      PropertyClass.class.getName());
-        PROPERTY_TYPES.put("date",       PropertyDate.class.getName());
-        PROPERTY_TYPES.put("double",     PropertyDouble.class.getName());
-        PROPERTY_TYPES.put("float",      PropertyFloat.class.getName());
-        PROPERTY_TYPES.put("instant",    PropertyInstant.class.getName());
-        PROPERTY_TYPES.put("int",        PropertyInt.class.getName());
+        PROPERTY_TYPES = new HashMap<>();
+        PROPERTY_TYPES.put("bigDecimal",     PropertyBigDecimal.class.getName());
+        PROPERTY_TYPES.put("bigInteger",     PropertyBigInteger.class.getName());
+        PROPERTY_TYPES.put("boolean",        PropertyBoolean.class.getName());
+        PROPERTY_TYPES.put("byte",           PropertyByte.class.getName());
+        PROPERTY_TYPES.put("calendar",       PropertyCalendar.class.getName());
+        PROPERTY_TYPES.put("class",          PropertyClass.class.getName());
+        PROPERTY_TYPES.put("date",           PropertyDate.class.getName());
+        PROPERTY_TYPES.put("double",         PropertyDouble.class.getName());
+        PROPERTY_TYPES.put("float",          PropertyFloat.class.getName());
+        PROPERTY_TYPES.put("instant",        PropertyInstant.class.getName());
+        PROPERTY_TYPES.put("int",            PropertyInteger.class.getName());
         PROPERTY_TYPES.put("localDateTime",  PropertyLocalDateTime.class.getName());
-        PROPERTY_TYPES.put("logLevel",   PropertyLogLevel.class.getName());
-        PROPERTY_TYPES.put("long",       PropertyLong.class.getName());
-        PROPERTY_TYPES.put("short",      PropertyShort.class.getName());
-        PROPERTY_TYPES.put("string",     PropertyString.class.getName());
+        PROPERTY_TYPES.put("logLevel",       PropertyLogLevel.class.getName());
+        PROPERTY_TYPES.put("long",           PropertyLong.class.getName());
+        PROPERTY_TYPES.put("short",          PropertyShort.class.getName());
+        PROPERTY_TYPES.put("string",         PropertyString.class.getName());
         
         PROPERTY_TYPES.put("listBigDecimal", PropertyListBigDecimal.class.getName());
         PROPERTY_TYPES.put("listBigInteger", PropertyListBigInteger.class.getName());
         PROPERTY_TYPES.put("listBoolean",    PropertyListBoolean.class.getName());
-        PROPERTY_TYPES.put("listByte",       PropertyListByte.class.getName());
-        PROPERTY_TYPES.put("listCalendar",   PropertyListCalendar.class.getName());
-        PROPERTY_TYPES.put("listClass",      PropertyListClass.class.getName());
-        PROPERTY_TYPES.put("listDate",       PropertyListDate.class.getName());
-        PROPERTY_TYPES.put("listDouble",     PropertyListDouble.class.getName());
-        PROPERTY_TYPES.put("listFloat",      PropertyListFloat.class.getName());
-        PROPERTY_TYPES.put("listInstant",    PropertyListInstant.class.getName());
-        PROPERTY_TYPES.put("listInt",        PropertyListInt.class.getName());
+        PROPERTY_TYPES.put("listByte",          PropertyListByte.class.getName());
+        PROPERTY_TYPES.put("listCalendar",      PropertyListCalendar.class.getName());
+        PROPERTY_TYPES.put("listClass",         PropertyListClass.class.getName());
+        PROPERTY_TYPES.put("listDate",          PropertyListDate.class.getName());
+        PROPERTY_TYPES.put("listDouble",        PropertyListDouble.class.getName());
+        PROPERTY_TYPES.put("listFloat",         PropertyListFloat.class.getName());
+        PROPERTY_TYPES.put("listInstant",       PropertyListInstant.class.getName());
+        PROPERTY_TYPES.put("listInt",           PropertyListInteger.class.getName());
         PROPERTY_TYPES.put("listLocalDateTime",  PropertyListLocalDateTime.class.getName());
         PROPERTY_TYPES.put("listLogLevel",   PropertyListLogLevel.class.getName());
         PROPERTY_TYPES.put("listLong",       PropertyListLong.class.getName());
@@ -177,12 +177,11 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      * @param pType
      * @return
      */
-    public static String mapPropertyType(String pType) {
-        if (pType == null) return null;
-        if (PROPERTY_TYPES.containsKey(pType)) {
-           return PROPERTY_TYPES.get(pType);
+    public static Optional<String> mapFromSimple2PropertyType(String pType) {
+        if (pType != null && PROPERTY_TYPES.containsKey(pType)) {
+           return Optional.of(PROPERTY_TYPES.get(pType));
         }
-        return pType;
+        return Optional.empty();
     }
     
     /**
@@ -191,12 +190,11 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      * @param pType
      * @return
      */
-    public static String mapSimpleType(String className) {
-        if (className == null) return className;
-        if (PROPERTY_TYPES.containsValue(className)) {
-           return Util.getFirstKeyByValue(PROPERTY_TYPES, className);
+    public static Optional<String> mapFromProperty2SimpleType(String className) {
+        if (className != null && PROPERTY_TYPES.containsValue(className)) {
+           return Optional.of(Util.getFirstKeyByValue(PROPERTY_TYPES, className));
         }
-        return className;
+        return Optional.empty();
     }
 
     /**
@@ -205,9 +203,8 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
      * @param pType
      * @return
      */
-    public static String mapSimpleType(Class<?> pType) {
-        if (pType == null) return null;
-        return mapSimpleType(pType.getName());
+    public static Optional<String> mapFromProperty2SimpleType(Class<?> pType) {
+        return (pType == null) ? Optional.empty() : mapFromProperty2SimpleType(pType.getName());
     }
 
     /**
@@ -328,8 +325,8 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
     }
 
     @SuppressWarnings("unchecked")
-    public Property<T> addFixedValue(T permission) {
-        return addFixedValues(permission);
+    public Property<T> addFixedValue(T fValue) {
+        return (fValue != null) ? addFixedValues(fValue): this;
     }
 
     @SuppressWarnings("unchecked")

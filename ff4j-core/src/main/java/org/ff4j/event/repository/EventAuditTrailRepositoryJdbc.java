@@ -20,9 +20,6 @@ package org.ff4j.event.repository;
  * #L%
  */
 
-import static org.ff4j.jdbc.JdbcUtils.closeConnection;
-import static org.ff4j.jdbc.JdbcUtils.closeResultSet;
-import static org.ff4j.jdbc.JdbcUtils.closeStatement;
 import static org.ff4j.jdbc.JdbcUtils.executeUpdate;
 import static org.ff4j.jdbc.JdbcUtils.isTableExist;
 
@@ -86,7 +83,6 @@ public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository 
     @Override
     /** {@inheritDoc} */
     public void log(Event evt) {
-        
         throw new UnsupportedOperationException("Not implemented, yet");
     }
 
@@ -280,10 +276,6 @@ public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository 
             } 
         } catch (SQLException sqlEX) {
             throw new FeatureAccessException(CANNOT_BUILD_PIE_CHART_FROM_REPOSITORY, sqlEX);
-        } finally {
-            closeResultSet(rs);
-            closeStatement(ps);
-            closeConnection(sqlConn);
         }
         return hitCount;
     }

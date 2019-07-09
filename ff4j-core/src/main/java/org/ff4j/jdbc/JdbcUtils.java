@@ -24,7 +24,6 @@ import static org.ff4j.test.AssertUtils.assertHasLength;
 import static org.ff4j.test.AssertUtils.assertNotNull;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,34 +40,10 @@ import org.ff4j.feature.exception.FeatureAccessException;
  */
 public class JdbcUtils {
     
-    private static final JdbcQueryBuilder QUERY_BUILDER =  new JdbcQueryBuilder();
-    
-    private JdbcUtils() {
-    }
-    
     /**
-     * Any repository may need some security (ACL).
-     * 
-     * @param ds
-     *      current data source
-     */
-    public static void createSchemaSecurity(DataSource ds) {
-        if (!isTableExist(ds, QUERY_BUILDER.getTableNameUser())) {
-            executeUpdate(ds, QUERY_BUILDER.sqlCreateTableUser());
-        }
-        if (!isTableExist(ds, QUERY_BUILDER.getTableNameUserPermissions())) {
-            executeUpdate(ds, QUERY_BUILDER.sqlCreateTableUserPermissions());
-        }
-        if (!isTableExist(ds, QUERY_BUILDER.getTableNameRoles())) {
-            executeUpdate(ds, QUERY_BUILDER.sqlCreateTableRoles());
-        }
-        if (!isTableExist(ds, QUERY_BUILDER.getTableNameRolesPermissions())) {
-            executeUpdate(ds, QUERY_BUILDER.sqlCreateTableRolesPermissions());
-        }
-        if (!isTableExist(ds, QUERY_BUILDER.getTableNameRolesUsers())) {
-            executeUpdate(ds, QUERY_BUILDER.sqlCreateTableRolesUsers());
-        }
-    }
+     * Hide default constructor. 
+     **/
+    private JdbcUtils() {}
     
     /**
      * Check if target Table exist.
@@ -81,18 +56,12 @@ public class JdbcUtils {
     public static boolean isTableExist(DataSource ds, String tableName) {
         assertNotNull(ds);
         assertHasLength(tableName);
-        Connection sqlConn = null;
-        ResultSet rs = null;
-        try {
-            sqlConn = ds.getConnection();
-            DatabaseMetaData dbmd = sqlConn.getMetaData();
-            rs = dbmd.getTables(null, null, tableName, new String[] {"TABLE"});
-            return rs.next();
+        try (Connection sqlConn = ds.getConnection()) {
+            try (ResultSet rs = sqlConn.getMetaData().getTables(null, null, tableName, new String[] {"TABLE"})) {
+                return rs.next();
+            }
         } catch (SQLException sqlEX) {
             throw new FeatureAccessException("Cannot check table existence", sqlEX);
-        } finally {
-            closeResultSet(rs);
-            closeConnection(sqlConn);
         }
     }
     
@@ -105,19 +74,12 @@ public class JdbcUtils {
     public static void executeUpdate(DataSource ds, String sqlQuery) {
         assertNotNull(ds);
         assertHasLength(sqlQuery);
-        Connection sqlConn = null;
-        Statement  sqlStmt = null;
-        try {
-            // Create connection
-            sqlConn = ds.getConnection();
-            sqlStmt = sqlConn.createStatement();
-            sqlStmt.executeUpdate(sqlQuery);
+        try (Connection sqlConn = ds.getConnection()) {
+            try(Statement stmt = sqlConn.createStatement()) {
+                stmt.executeUpdate(sqlQuery);
+            }
         } catch (SQLException sqlEX) {
-            rollback(sqlConn);
             throw new FeatureAccessException("Cannot execute SQL " + sqlQuery, sqlEX);
-        } finally {
-            closeStatement(sqlStmt);
-            closeConnection(sqlConn);
         }
     }
     
@@ -142,85 +104,5 @@ public class JdbcUtils {
             }
         }
         return ps;
-    }
-
-    /**
-     * Close resultset.
-     * 
-     * @param rs
-     *            target resultset
-     */
-    public static void closeResultSet(ResultSet rs) {
-        try {
-            if (rs != null) {
-                rs.close();
-            }
-        } catch (SQLException e) {
-            throw new FeatureAccessException("An error occur when closing resultset", e);
-        }
-    }
-    
-    /**
-     * Utility method to close statement properly.
-     * 
-     * @param ps
-     * 
-     */
-    public static void closeStatement(PreparedStatement ps) {
-        try {
-            if (ps != null) {
-                ps.close();
-            }
-        } catch (SQLException e) {
-            throw new FeatureAccessException("An error occur when closing statement", e);
-        }
-    }
-    
-
-    /**
-     * Utility method to close statement properly.
-     * 
-     * @param ps
-     * 
-     */
-    public static void closeStatement(Statement ps) {
-        try {
-            if (ps != null) {
-                ps.close();
-            }
-        } catch (SQLException e) {
-            throw new FeatureAccessException("An error occur when closing statement", e);
-        }
-    }
-    
-    /**
-     * Return connection to pool.
-     *
-     * @param sqlConnection
-     */
-    public static void closeConnection(Connection sqlConnection) {
-        try {
-            if (sqlConnection != null && !sqlConnection.isClosed()) {
-                sqlConnection.close();
-            }
-        } catch (SQLException e) {
-            throw new FeatureAccessException("An error occur when closing statement", e);
-        }
-    }
-    
-    /**
-     * Utility method to perform rollback in correct way.
-     * 
-     * @param sqlConn
-     *            current sql connection
-     */
-    public static void rollback(Connection sqlConn) {
-        try {
-            if (sqlConn != null && !sqlConn.isClosed()) {
-                sqlConn.rollback();
-            }
-        } catch (SQLException e) {
-            throw new FeatureAccessException("Cannot rollback database, SQL ERROR", e);
-        }
     }
 }

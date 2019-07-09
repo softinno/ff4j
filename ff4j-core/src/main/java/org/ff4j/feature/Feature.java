@@ -152,8 +152,8 @@ public class Feature extends FF4jEntity < Feature > {
      *      current status
      */
     public boolean isToggled(FF4jContext context) {
-        if (!isEnabled()) return false;
-        boolean toggled = true;
+        boolean toggled = isEnabled();
+        if (!toggled) return false;
         if (!toggleStrategies.isEmpty()) {
             Iterator<ToggleStrategy> iter = toggleStrategies.iterator();
             // Break as soon as one of the strategy return false

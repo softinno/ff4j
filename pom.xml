@@ -10,7 +10,7 @@
 
 	<name>Feature Flipping 4 Java</name>
 	<packaging>pom</packaging>
-	<url>http://ff4j.github.io</url>
+	<url>http://ff4j.org</url>
 	<inceptionYear>2013</inceptionYear>
 	<description>
         FF4J, stands for Feature Flipping for Java, helps you implementing the 'feature toggle' agile development practice.
@@ -24,56 +24,55 @@
 		<!-- General -->
 		<github.login />
 		<version.jdk>11</version.jdk>
+		<version.maven.minimal>3.5.4</version.maven.minimal>
 		<encoding>UTF-8</encoding>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<!-- Third Parties -->
-		<version.jupiter-unit>5.5.0-M1</version.jupiter-unit>
-		<version.jupiter-platform>1.5.0-M1</version.jupiter-platform>
-		<version.snakeyaml>1.24</version.snakeyaml>
-		<version.hsqldb>2.4.1</version.hsqldb>
-		<version.commons-dbcp>1.4</version.commons-dbcp>
-		<version.jackson>2.9.9</version.jackson>
-		<version.mockito>2.27.0</version.mockito>
-
+		
 		<!-- License -->
 		<license.licenseName>apache_v2</license.licenseName>
 		<license.licenseResolver>${project.baseUri}src/license</license.licenseResolver>
-		<version.maven.plugin.license>1.19</version.maven.plugin.license>
 
-		<!-- MAVEN -->
-		<version.maven.plugin.resources>3.1.0</version.maven.plugin.resources>
-		<version.maven.plugin.javadoc>3.1.0</version.maven.plugin.javadoc>
-		<version.maven.plugin.source>3.0.1</version.maven.plugin.source>
-		<version.maven.plugin.release>2.5.3</version.maven.plugin.release>
+		<!-- Third Parties, please keep alphabetic order -->
+		<version.commons-dbcp>1.4</version.commons-dbcp>
+		<version.hsqldb>2.4.1</version.hsqldb>
+		<version.jackson>2.9.9</version.jackson>
+		<version.jupiter-platform>1.5.0-M1</version.jupiter-platform>
+		<version.jupiter-unit>5.5.0-M1</version.jupiter-unit>
+		<version.mockito>2.27.0</version.mockito>
+		<version.snakeyaml>1.24</version.snakeyaml>
+		
+		<!-- MAVEN, please keep alphabetic order -->
 		<version.maven.plugin.clean>3.1.0</version.maven.plugin.clean>
-		<version.maven.plugin.site>3.7.1</version.maven.plugin.site>
+		<version.maven.plugin.compiler>3.8.0</version.maven.plugin.compiler>
+		<version.maven.plugin.dependency>3.1.1</version.maven.plugin.dependency>
 		<version.maven.plugin.deploy>3.0.0-M1</version.maven.plugin.deploy>
+		<version.maven.plugin.enforce>3.0.0-M2</version.maven.plugin.enforce>
+		<version.maven.plugin.gpg>1.6</version.maven.plugin.gpg>
 		<version.maven.plugin.install>3.0.0-M1</version.maven.plugin.install>
 		<version.maven.plugin.jacoco>0.8.3</version.maven.plugin.jacoco>
-		<version.maven.plugin.versions>2.7</version.maven.plugin.versions>
-		<version.maven.plugin.nexus>1.6.8</version.maven.plugin.nexus>
-		<version.maven.plugin.compiler>3.8.0</version.maven.plugin.compiler>
 		<version.maven.plugin.jar>3.1.1</version.maven.plugin.jar>
-		<version.maven.plugin.dependency>3.1.1</version.maven.plugin.dependency>
-		<version.maven.plugin.gpg>1.6</version.maven.plugin.gpg>
+		<version.maven.plugin.javadoc>3.1.0</version.maven.plugin.javadoc>
+		<version.maven.plugin.license>1.19</version.maven.plugin.license>
+		<version.maven.plugin.nexus>1.6.8</version.maven.plugin.nexus>
+		<version.maven.plugin.release>2.5.3</version.maven.plugin.release>
+		<version.maven.plugin.resources>3.1.0</version.maven.plugin.resources>
+		<version.maven.plugin.site>3.7.1</version.maven.plugin.site>
+		<version.maven.plugin.source>3.0.1</version.maven.plugin.source>
 		<version.maven.plugin.surefire>2.22.1</version.maven.plugin.surefire>
+		<version.maven.plugin.versions>2.7</version.maven.plugin.versions>
+
 	</properties>
 
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- ~ CHILD MODULES ~ -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- Sub modules -->
 	<modules>
 		<module>ff4j-core</module>
-		<module>ff4j-test</module>
 		<module>ff4j-config-yaml</module>
 		<module>ff4j-config-xml</module>
-		
+		<module>ff4j-aop</module>
+		<module>ff4j-test</module>
 	</modules>
 
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- ~ DEPENDENCIES ~ -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- Enforce dependencies versions -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -129,13 +128,12 @@
 		</dependencies>
 	</dependencyManagement>
 
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- ~ BUILD ~ -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- Setting Build, packaging, release -->
 	<build>
 
 		<plugins>
 
+			<!-- Add header on each class at compile time -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
@@ -164,6 +162,7 @@
 				</executions>
 			</plugin>
 
+			<!-- Enforce surefire to all Jacoco to create proper output -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
@@ -171,6 +170,7 @@
 				</configuration>
 			</plugin>
 
+			<!-- Unit Test Coverage -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -191,7 +191,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Deploy nexus -->
+			<!-- Deploy to nexus (Central Maven) -->
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -204,10 +204,11 @@
 				</configuration>
 			</plugin>
 
+			<!-- Compiling with JDK 11 requires some minimal Maven version -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.0.0-M2</version>
+				<version>${version.maven.plugin.enforce}</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
@@ -217,7 +218,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.5.4</version>
+									<version>${version.maven.minimal}</version>
 								</requireMavenVersion>
 							</rules>
 						</configuration>

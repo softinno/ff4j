@@ -25,7 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("RepositoryRolesAndUsers::InMemory with JDBC")
 @Ignore
-public class RepositoryRolesAndUsersJdbcTest {} /*extends RepositoryRolesAndUsersTestSupport {
+public class RepositoryRolesAndUsers_Test_Jdbc {} /*extends RepositoryRolesAndUsersTestSupport {
     
     /** SQL DataSource. *
     private DataSource sqlDataSource;

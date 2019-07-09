@@ -29,7 +29,7 @@ import org.ff4j.property.PropertyDate;
 import org.ff4j.property.PropertyDouble;
 import org.ff4j.property.PropertyFloat;
 import org.ff4j.property.PropertyInstant;
-import org.ff4j.property.PropertyInt;
+import org.ff4j.property.PropertyInteger;
 import org.ff4j.property.PropertyListBigDecimal;
 import org.ff4j.property.PropertyListBigInteger;
 import org.ff4j.property.PropertyListBoolean;
@@ -40,7 +40,7 @@ import org.ff4j.property.PropertyListDate;
 import org.ff4j.property.PropertyListDouble;
 import org.ff4j.property.PropertyListFloat;
 import org.ff4j.property.PropertyListInstant;
-import org.ff4j.property.PropertyListInt;
+import org.ff4j.property.PropertyListInteger;
 import org.ff4j.property.PropertyListLocalDateTime;
 import org.ff4j.property.PropertyListLogLevel;
 import org.ff4j.property.PropertyListLong;
@@ -210,13 +210,13 @@ public interface FF4jTestDataSet {
         
         Feature f2 = new Feature(F2)
             .enable(true).group(GRP1).description("description")
-            .addProperty(new PropertyInt(P_F2_PPINT, 12))
+            .addProperty(new PropertyInteger(P_F2_PPINT, 12))
             .addProperty(new PropertyDouble(P_F2_PDOUBLE, 12.5))
             .addProperty(new PropertyBoolean("ppboolean", true))
             .addProperty(new PropertyString("ppstring", "hello"))
-            .addProperty(new PropertyListInt("ppListInt", 12,13,14))
+            .addProperty(new PropertyListInteger("ppListInt", 12,13,14))
             .addProperty(new PropertyLogLevel("myLogLevel",LogLevel.DEBUG))
-            .addProperty(new PropertyInt("digitValue", 1).addFixedValues(0,1,2,3))
+            .addProperty(new PropertyInteger("digitValue", 1).addFixedValues(0,1,2,3))
             .addProperty(new PropertyString("regionIdentifier", "NA").addFixedValues("NA", "APAC", "EMEA"));            
         
         Set < Property<?> > ponderationProperties = new HashSet<>();
@@ -269,7 +269,7 @@ public interface FF4jTestDataSet {
             r.put(PDouble,          new PropertyDouble(PDouble, Double.valueOf(20.0)));
             r.put(PFloat,           new PropertyFloat(PFloat, Float.valueOf(20.0f)));
             r.put(PInstant,         new PropertyInstant(PInstant, myInstant));
-            r.put(PInt,             new PropertyInt(PInt, 10));
+            r.put(PInt,             new PropertyInteger(PInt, 10));
             r.put(PLocal,           new PropertyLocalDateTime(PLocal, myLocalDateTime));
             r.put(PLogLevel,        new PropertyLogLevel(PLogLevel, LogLevel.INFO));
             r.put(PLong,            new PropertyLong(PLong, 123L));
@@ -286,7 +286,7 @@ public interface FF4jTestDataSet {
             r.put(PListDouble,      new PropertyListDouble(PListDouble, Double.valueOf(20.0), Double.valueOf(30.0) ));
             r.put(PListFloat,       new PropertyListFloat(PListFloat, Float.valueOf(20.0f), Float.valueOf(30.0f)));
             r.put(PListInstant,     new PropertyListInstant(PListInstant, myInstant, myInstant2));
-            r.put(PListInt,         new PropertyListInt(PListInt, 10, 20));
+            r.put(PListInt,         new PropertyListInteger(PListInt, 10, 20));
             r.put(PListLocal,       new PropertyListLocalDateTime(PListLocal, myLocalDateTime, myLocalDateTime2));
             r.put(PListLogLevel,    new PropertyListLogLevel(PListLogLevel, LogLevel.INFO, LogLevel.DEBUG));
             r.put(PListLong,        new PropertyListLong(PListLong, 123L, 456L));

@@ -41,7 +41,7 @@ import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyBoolean;
 import org.ff4j.property.PropertyDouble;
-import org.ff4j.property.PropertyInt;
+import org.ff4j.property.PropertyInteger;
 import org.ff4j.security.FF4jPermission;
 import org.ff4j.test.AssertFF4j;
 import org.ff4j.test.FF4jTestDataSet;
@@ -630,7 +630,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         assertFF4j.assertThatFeatureHasProperty(F2, P_F2_DIGITVALUE);
         Optional<Property<?>> opDigitValue = startFeature.getProperty(P_F2_DIGITVALUE);
         Assertions.assertTrue(opDigitValue.isPresent());
-        PropertyInt pDigitValue = (PropertyInt) opDigitValue.get();
+        PropertyInteger pDigitValue = (PropertyInteger) opDigitValue.get();
         Assertions.assertEquals(4, pDigitValue.getFixedValues().get().size()); 
         // WHen
         pDigitValue.addFixedValue(4);
@@ -638,7 +638,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         // Then
         Feature endFeature = testedStore.read(F2);
         Optional<Property<?>> opt2 = endFeature.getProperty(P_F2_DIGITVALUE);
-        PropertyInt digit2 = (PropertyInt) opt2.get();
+        PropertyInteger digit2 = (PropertyInteger) opt2.get();
         Assertions.assertEquals(5, digit2.getFixedValues().get().size()); 
 	}
 
@@ -651,7 +651,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         assertFF4j.assertThatFeatureHasProperty(F2, P_F2_DIGITVALUE);
         Optional<Property<?>> opDigitValue = startFeature.getProperty(P_F2_DIGITVALUE);
         Assertions.assertTrue(opDigitValue.isPresent());
-        PropertyInt pDigitValue = (PropertyInt) opDigitValue.get();
+        PropertyInteger pDigitValue = (PropertyInteger) opDigitValue.get();
         Assertions.assertEquals(4, pDigitValue.getFixedValues().get().size()); 
         // WHen
         pDigitValue.getFixedValues().get().remove(0);
@@ -661,7 +661,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         // Then
         Feature endFeature = testedStore.read(F2);
         Optional<Property<?>> opt2 = endFeature.getProperty(P_F2_DIGITVALUE);
-        PropertyInt digit2 = (PropertyInt) opt2.get();
+        PropertyInteger digit2 = (PropertyInteger) opt2.get();
         Assertions.assertEquals(1, digit2.getFixedValues().get().size()); 
     }
 	

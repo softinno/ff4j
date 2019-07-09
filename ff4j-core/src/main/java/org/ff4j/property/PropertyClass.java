@@ -67,6 +67,7 @@ public class PropertyClass extends Property< Class<?> > {
     /** {@inheritDoc} */
     @Override
     public Class<?> fromString(String v) {
+        if (v == null) return null;
         try {
             return Class.forName(v);
         } catch (ClassNotFoundException e) {

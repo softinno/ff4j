@@ -22,6 +22,7 @@ package org.ff4j.property;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * Creatoin of property.
@@ -85,8 +86,12 @@ public class PropertyInstant extends Property< Instant > {
     /** {@inheritDoc} */
     @Override
     public Instant fromString(String v) {
-        assertStringValueIsNotNull(v);
-        return LocalDateTime.parse(v, FORMATTER).toInstant(ZONE);
+        if (v == null) return null;
+        try {
+            return LocalDateTime.parse(v, FORMATTER).toInstant(ZONE);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Illegal expression for instant, expecting yyyy-MM-dd HH:mm:ss", e);
+        }
     }
 
 }

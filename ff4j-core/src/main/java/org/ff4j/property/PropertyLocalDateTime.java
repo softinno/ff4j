@@ -21,6 +21,7 @@ package org.ff4j.property;
  */
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * Creatoin of property.
@@ -80,8 +81,12 @@ public class PropertyLocalDateTime extends Property< LocalDateTime > {
     /** {@inheritDoc} */
     @Override
     public LocalDateTime fromString(String v) {
-        assertStringValueIsNotNull(v);
-        return LocalDateTime.parse(v, FORMATTER);
+        if (null == v) return null;
+        try {
+            return LocalDateTime.parse(v, FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Illegal expression for instant, expecting yyyy-MM-dd HH:mm:ss", e);
+        }
     }
 
 }

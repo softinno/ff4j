@@ -76,7 +76,7 @@ VALUES ('ppint', 'int', '12', NULL, 'f2'),
 	   ('ppstring', 'string', 'hello', NULL, 'f2'),
 	   ('ppListInt', 'listInt', '12,13,14', NULL, 'f2'), 
 	   ('myLogLevel', 'logLevel', 'DEBUG', NULL, 'f2'),
-	   ('digitValue', 'org.ff4j.property.PropertyInt', '1', '0,1,2,3', 'f2'), 
+	   ('digitValue', 'org.ff4j.property.PropertyInteger', '1', '0,1,2,3', 'f2'), 
 	   ('regionIdentifier', 'string', 'NA', 'NA,EMEA,APAC', 'f2');
 INSERT INTO FF4J_FEATURE_STRAT (FEAT_UID, TOGGLE_CLASS) 
 VALUES ('f2', 'org.ff4j.feature.togglestrategy.PonderationToggleStrategy');

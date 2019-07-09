@@ -82,43 +82,49 @@ public class PropertyLogLevel extends Property<LogLevel> {
     /**
      * update to trace
      */
-    public void trace() {
+    public PropertyLogLevel trace() {
         setValue(LogLevel.TRACE);
+        return this;
     }
 
     /**
      * update to debug
      */
-    public void debug() {
+    public PropertyLogLevel debug() {
         setValue(LogLevel.DEBUG);
+        return this;
     }  
 
     /**
      * update to ingo
      */
-    public void info() {
+    public PropertyLogLevel info() {
         setValue(LogLevel.INFO);
+        return this;
     }  
 
     /**
      * update to warn
      */
-    public void warn() {
+    public PropertyLogLevel warn() {
         setValue(LogLevel.WARN);
+        return this;
     }  
 
     /**
      * update to error
      */
-    public void error() {
+    public PropertyLogLevel error() {
         setValue(LogLevel.ERROR);
+        return this;
     }  
 
     /**
      * update to fatal
      */
-    public void fatal() {
+    public PropertyLogLevel fatal() {
         setValue(LogLevel.FATAL);
+        return this;
     }
        
 }

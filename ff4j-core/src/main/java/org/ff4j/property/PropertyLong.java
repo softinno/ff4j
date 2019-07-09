@@ -71,7 +71,7 @@ public class PropertyLong extends Property< Long > {
     /** {@inheritDoc} */
     @Override
     public Long fromString(String v) {
-        assertStringValueIsNotNull(v);
+        if (v == null) return null;
         try {
             return Long.valueOf(v);
         } catch(NumberFormatException nbe) {

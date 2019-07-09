@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.ff4j.feature.exception.FeatureAccessException;
 import org.ff4j.jdbc.JdbcConstants.PropertyColumns;
@@ -88,10 +89,12 @@ public class JdbcPropertyMapper extends AbstractJdbcMapper  implements PropertyM
     public Property<?> mapFeaturePropertyRepository(ResultSet rs) {
         try {
             String propertyUid   = rs.getString(PropertyColumns.UID.colname());
-            String propertyClass = Property.mapPropertyType(rs.getString(PropertyColumns.CLASSNAME.colname()));
             String propertyValue = rs.getString(PropertyColumns.VALUE.colname());
             String fixedValues   = rs.getString(PropertyColumns.FIXEDVALUES.colname());
-            Property<?> p = PropertyFactory.createProperty(propertyUid, propertyClass, propertyValue);
+            // Do we map to target names
+            Optional<String> propertyClass = Property.mapFromSimple2PropertyType(rs.getString(PropertyColumns.CLASSNAME.colname()));
+            Property<?> p = PropertyFactory.createProperty(propertyUid, 
+                    propertyClass.isPresent() ? propertyClass.get() : rs.getString(PropertyColumns.CLASSNAME.colname()), propertyValue);
             populateFixedValues(fixedValues, p);
             return p;
         } catch (SQLException sqlEx) {

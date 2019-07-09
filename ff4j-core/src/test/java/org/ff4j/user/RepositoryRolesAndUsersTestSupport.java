@@ -250,5 +250,10 @@ public abstract class RepositoryRolesAndUsersTestSupport implements FF4jTestData
         Assertions.assertEquals(testDataSet.getRoles().size(),  testedStore.countRoles());
     }
     
-    
+    @Test
+    @DisplayName("Delete an invalid user should throw UserNotFoundException")
+    public void deleteInvalidUserThrowError() {
+        assertFF4j.assertThatUserDoesNotExist("dummy");
+        assertThrows(UserNotFoundException.class, () -> { testedStore.delete("dummy"); });
+    }
 }
