@@ -1,4 +1,4 @@
-package org.ff4j.event.monitoring;
+package org.ff4j.audit;
 
 /*-
  * #%L
@@ -86,11 +86,11 @@ public class AuditTrailQuery {
      */
     public boolean match(Event evt) {
                // LowerBound
-        return ((from == null) || (from != null && evt.getTimestamp() >= from)) &&
+        return ((getFrom() == null) || (getFrom() != null && evt.getTimestamp() >= from)) &&
                // UpperBound
-               ((to == null) || (to != null && evt.getTimestamp() <= to)) &&
+               ((getTo() == null) || (to != null && evt.getTimestamp() <= to)) &&
                // Scope
-               ((scope == null) || scope.name().equalsIgnoreCase(evt.getScope())) &&
+               ((scope == null) || scope.name().equalsIgnoreCase(evt.getScope().name())) &&
                // Uid
                ((uid == null) || uid.equalsIgnoreCase(evt.getTargetUid()));
     }

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.ff4j.event.repository.EventAuditTrailRepository;
+import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.exception.ItemNotFoundException;
 
 /**
@@ -276,7 +276,7 @@ public interface FF4jRepository<ID extends Serializable, ENTITY extends FF4jEnti
      * @param auditTrail
      *            audit trail destination
      */
-    void registerAuditListener(EventAuditTrailRepository auditTrail);
+    void registerAuditListener(AuditTrailRepository auditTrail);
 
     /**
      * Enable auditing to the audit trail.

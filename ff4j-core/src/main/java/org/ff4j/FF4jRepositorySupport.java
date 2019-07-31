@@ -21,6 +21,8 @@ package org.ff4j;
  */
 import static org.ff4j.test.AssertUtils.assertHasLength;
 import static org.ff4j.test.AssertUtils.assertNotNull;
+import static org.ff4j.utils.JsonUtils.attributeAsJson;
+import static org.ff4j.utils.JsonUtils.cacheJson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -105,4 +107,18 @@ public abstract class FF4jRepositorySupport < E extends FF4jEntity<?>, LISTENER 
     protected void notImplementedYet() {
         throw new UnsupportedOperationException("Not implemented, yet");
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("{");
+        sb.append(attributeAsJson(JSON_ATTRIBUTE_CLASSNAME, this.getClass().getCanonicalName()));
+        sb.append(customToString());
+        sb.append(cacheJson(this));
+        sb.append("}");
+        return sb.toString();
+    }
+    
+    protected abstract String customToString();
+    
 }

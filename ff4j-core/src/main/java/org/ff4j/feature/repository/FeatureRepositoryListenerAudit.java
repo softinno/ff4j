@@ -1,5 +1,8 @@
 package org.ff4j.feature.repository;
 
+import org.ff4j.audit.AuditTrailListenerSupport;
+import org.ff4j.audit.AuditTrailRepository;
+
 /*-
  * #%L
  * ff4j-core
@@ -22,8 +25,6 @@ package org.ff4j.feature.repository;
 
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
-import org.ff4j.event.repository.EventAuditTrailListenerSupport;
-import org.ff4j.event.repository.EventAuditTrailRepository;
 import org.ff4j.feature.Feature;
 
 /**
@@ -31,10 +32,10 @@ import org.ff4j.feature.Feature;
  * 
  * @author Cedrick LUNVEN  (@clunven)
  */
-public class FeatureRepositoryListenerAudit extends EventAuditTrailListenerSupport < Feature > 
+public class FeatureRepositoryListenerAudit extends AuditTrailListenerSupport < Feature > 
                                              implements FeatureRepositoryListener {
     
-    public FeatureRepositoryListenerAudit(EventAuditTrailRepository auditTrail) {
+    public FeatureRepositoryListenerAudit(AuditTrailRepository auditTrail) {
         super(auditTrail, Scope.FEATURE, Scope.FEATURESTORE);
     }
     

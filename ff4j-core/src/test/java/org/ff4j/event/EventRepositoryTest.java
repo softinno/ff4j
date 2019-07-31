@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ff4j.FF4j;
-import org.ff4j.event.repository.EventFeatureUsageRepository;
-import org.ff4j.event.repository.EventRepositorySupport;
 import org.ff4j.exception.AssertionViolationException;
+import org.ff4j.feature.usage.repository.FeatureUsageRepository;
+import org.ff4j.feature.usage.repository.EventRepositorySupport;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.test.AssertFF4j;
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Superclass to test {@link EventFeatureUsageRepository}.
+ * Superclass to test {@link FeatureUsageRepository}.
  * 
  * @author Cedrick Lunven (@clunven)
  */
@@ -50,7 +50,7 @@ public abstract class EventRepositoryTest implements FF4jTestDataSet {
     protected FF4j ff4j = null;
     
     /** Tested Store. */
-    protected EventFeatureUsageRepository testedStore;
+    protected FeatureUsageRepository testedStore;
 
     /** Test Values */
     protected AssertFF4j assertFF4j;

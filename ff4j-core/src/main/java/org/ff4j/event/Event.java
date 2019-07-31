@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.ff4j.FF4jEntity;
+import org.ff4j.utils.JsonUtils;
 
 /**
  * Audit information relevant to features.
@@ -46,13 +47,13 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
     private long timestamp = 0;
    
     /** feature or property. */
-    private String scope = Scope.UNKNOWN.name();
+    private Scope scope = Scope.GENERAL;
     
     /** Action performed. */
-    private String action = Action.UNKNOWN.name();
+    private Action action = Action.UNKNOWN;
     
     /** Source. */
-    private String source = Source.UNKNOWN.name();
+    private Source source = Source.UNKNOWN;
     
     /** feature or property name. */
     private String targetUid;
@@ -77,8 +78,9 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
     }
     
     public enum Scope {
-        FF4J, FEATURE, FEATURE_GROUP, PROPERTY, USER, ROLE,
-        FEATURESTORE, PROPERTYSTORE, USERSTORE, UNKNOWN;
+        GENERAL, FF4J, FEATURE, FEATURE_GROUP, PROPERTY, USER, ROLE,
+        FEATURESTORE, PROPERTYSTORE, AUDIT_TRAIL, FEATURE_USAGE_STORE, 
+        USERSTORE, UNKNOWN;
     }
     
     public enum Source {
@@ -87,7 +89,6 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
     
     /**
      * Default constructor.
-     * 
      */
     public Event() {
         this(UUID.randomUUID().toString());
@@ -119,13 +120,37 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
         return this;
     }
     
+    /** {@inheritDoc} */
+    public String toString() {
+        String start = super.toString();
+        start = start.substring(0, start.length()-1);
+        StringBuilder sbEvent = new StringBuilder(start);
+        sbEvent.append(JsonUtils.attributeAsJson("hostname", hostName));
+        sbEvent.append(JsonUtils.attributeAsJson("source", source));
+        sbEvent.append(JsonUtils.attributeAsJson("action", action));
+        sbEvent.append(JsonUtils.attributeAsJson("scope", scope));
+        sbEvent.append(JsonUtils.attributeAsJson("targetUid", targetUid));
+        if (!duration.isEmpty()) {
+            sbEvent.append(JsonUtils.attributeAsJson("duration", duration.get()));
+        }
+        if (!value.isEmpty()) {
+            sbEvent.append(JsonUtils.attributeAsJson("value", value.get()));
+        }
+        if (!customKeys.isEmpty()) {
+            sbEvent.append(",\"customKeys\":" +  JsonUtils.mapAsJson(customKeys.get()));
+        }
+        sbEvent.append("}");
+        return sbEvent.toString();
+    }
+    
     /**
-     * 
-     * @param key
-     * @return
+     * Read key value (if present).
      */
-    public String getKey(String key) {
-        return getCustomKeys().get().get(key);
+    public Optional<String> getKey(String key) {
+        if (getCustomKeys().isPresent()) {
+            return Optional.ofNullable(getCustomKeys().get().get(key));
+        }
+        return Optional.empty();
     }
     
     /**
@@ -167,17 +192,13 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
      * @return
      *       current value of 'source'
      */
-    public String getSource() {
+    public Source getSource() {
         return source;
     }   
     
-    public Event source(String source) {
+    public Event source(Source source) {
         this.source = source;
         return this;
-    }
-    
-    public Event source(Source source) {
-        return source(source.name());
     }
     
     /**
@@ -201,17 +222,13 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
      * @return
      *       current value of 'type'
      */
-    public String getScope() {
+    public Scope getScope() {
         return scope;
     }
 
-    public Event scope(String scope) {
+    public Event scope(Scope scope) {
         this.scope = scope;
         return this;
-    }
-    
-    public Event scope(Scope scope) {
-        return this.scope(scope.name());
     }
     
     /**
@@ -220,19 +237,15 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
      * @return
      *       current value of 'action'
      */
-    public String getAction() {
+    public Action getAction() {
         return action;
     }
 
-    public Event action(String action) {
+    public Event action(Action action) {
         this.action = action;
         return this;
     }
     
-    public Event action(Action action) {
-        return action(action.name());
-    }
-
     /**
      * Getter accessor for attribute 'customKeys'.
      *

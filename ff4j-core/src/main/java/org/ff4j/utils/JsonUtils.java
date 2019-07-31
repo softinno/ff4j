@@ -1,5 +1,6 @@
 package org.ff4j.utils;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 /*
@@ -23,10 +24,10 @@ import java.util.Collection;
  */
 
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.ff4j.FF4jRepository;
 import org.ff4j.cache.CacheProxy;
-import org.ff4j.property.Property;
 
 /**
  * Custom implementation of serialization : faster + no jackson dependency
@@ -34,9 +35,15 @@ import org.ff4j.property.Property;
  * @author Cedrick Lunven (@clunven)
  */
 public class JsonUtils {
+    
+    public static final String COMMA     = "#COM#";
+    public static final String SEMICOLON = "#SEMCOL#";
+    public static final String QUOTE     = "#QUOTE#";
  
-    private JsonUtils() {
-    }
+    /**
+     * Hide default constructor
+     */
+    private JsonUtils() {}
     
     /**
      * Target primitive displayed as JSON.
@@ -47,9 +54,45 @@ public class JsonUtils {
      *      target json expression
      */
     public static final String valueAsJson(Object value) {
-        if (value == null )          return "null";
-        if (value instanceof String) return "\"" + value + "\"";
-        return value.toString();
+        if (value == null ) return "null";
+        return "\"" + value.toString() + "\"";
+    }
+    
+    /**
+     * Target primitive displayed as JSON.
+     *
+     * @param value
+     *      object value
+     * @return
+     *      target json expression
+     */
+    public static final String stringEscapeAsJson(String value) {
+        if (value == null ) return "null";
+        return "\"" + escapeJson(value) + "\"";
+    }
+    
+    /**
+     * Help parsing JSON, escape special char.
+     *
+     * @param value
+     *      current value
+     * @return
+     *      replacing special characters
+     */
+    public static final String unEscapeJson(String value) {
+        if (value == null ) return null;
+        value = value.replaceAll(COMMA,     ",");
+        value = value.replaceAll(SEMICOLON, ":");
+        value = value.replaceAll(QUOTE,     "\"");
+        return value;
+    }
+    
+    public static final String escapeJson(String value) {
+        if (value == null ) return null;
+        value = value.replaceAll(",",  COMMA);
+        value = value.replaceAll(":",  SEMICOLON);
+        value = value.replaceAll("\"", QUOTE);
+        return value;
     }
     
     public static final String attributeAsJson(String name, Object value) {
@@ -89,6 +132,8 @@ public class JsonUtils {
     /**
      * Serialize a map of objects as Json. Elements should override <code>toString()</code> to produce JSON.
      *
+     * { "key1":"value1","key2":"value2" }
+     *  
      * @param properties
      *      target properties
      * @return
@@ -110,14 +155,41 @@ public class JsonUtils {
     }
     
     /**
-     * Cache JSON expression for a store.
+     * Convert a Map<String,String> to expected Json escaping characters to parse.
+     * The Json value in DB should not be read directly.
+     */
+    public static final String mapMap2String(Map<String, String > map) {
+        return map.keySet()
+                  .stream()
+                  .filter(k-> null!=k)
+                  .map(k -> new StringBuilder(JsonUtils.valueAsJson(k))
+                              .append(":")
+                              .append(JsonUtils.stringEscapeAsJson(map.get(k)))
+                              .toString())
+                  .collect(Collectors.joining(",", "{", "}"));
+    }
+    
+    /**
+     * Reading a String back to Map<String, String> expecting the special chars to have
+     * been escaping with {@link #mapMap2String(Map)}.
+     */
+    public static final Map<String, String> mapString2Map(String mapAsString) {
+       return  Arrays.stream(mapAsString.split(","))
+                .map(entry -> entry.split(":"))
+                .collect(Collectors.toMap(
+                        entry -> entry[0], 
+                        entry -> JsonUtils.unEscapeJson(entry[1])));
+    }
+    
+    /**
+     * Cache JSON expression for a {@link FF4jRepository}.
      *
      * @param store
      *      current store
      * @return
      *      cache expression
      */
-    public static final String cacheJson(Object store) {
+    public static final String cacheJson(FF4jRepository<String, ?> store) {
         StringBuilder sb = new StringBuilder();
         if (store instanceof CacheProxy<?,?>) {
             CacheProxy<?,?> cacheProxy = (CacheProxy<?,?>) store;
@@ -129,27 +201,4 @@ public class JsonUtils {
         }
         return sb.toString();
     }
-    
-    /**
-     * Generate flipping strategy as json.
-     * 
-     * @return
-     *      flippling strategy as json.     
-     */
-    public static final String permissionsAsJson(final Set<String> permissions) {
-        return collectionAsJson(permissions);
-    }
-    
-    /**
-     * Serialized custom properties.
-     *
-     * @param customProperties
-     *      target properties
-     * @return
-     *      target json expression
-     */
-    public static final String customPropertiesAsJson(final Map<String, ? extends Property<?>> customProperties) {
-        return mapAsJson(customProperties);
-    }
-
 }

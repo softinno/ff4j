@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.audit;
 
 /*-
  * #%L
@@ -23,14 +23,13 @@ package org.ff4j.event.repository;
 import java.util.stream.Stream;
 
 import org.ff4j.event.Event;
-import org.ff4j.event.monitoring.AuditTrailQuery;
 
 /**
  * Audit Trail is READ ONLY.
  *
  * @author Cedrick LUNVEN  (@clunven)
  */
-public interface EventAuditTrailRepository {
+public interface AuditTrailRepository {
     
     /**
      * Create tables related to Audit Trail.

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.ff4j.event.Event;
-import org.ff4j.event.monitoring.HitCount;
 import org.ff4j.utils.JsonUtils;
 
 /*

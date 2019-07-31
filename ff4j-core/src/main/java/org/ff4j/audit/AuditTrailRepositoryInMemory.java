@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.audit;
 
 /*-
  * #%L
@@ -29,8 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.ff4j.event.Event;
+import org.ff4j.event.Event.Action;
+import org.ff4j.event.Event.Scope;
 import org.ff4j.event.EventSeries;
-import org.ff4j.event.monitoring.AuditTrailQuery;
 import org.ff4j.utils.Util;
 
 /**
@@ -38,29 +39,39 @@ import org.ff4j.utils.Util;
  *
  * @author Cedrick LUNVEN  (@clunven)
  */
-public class EventAuditTrailRepositoryInMemory implements EventAuditTrailRepository {
+public class AuditTrailRepositoryInMemory implements AuditTrailRepository {
 
-    /** default retention. */
+    /** Default Event retention, in memory */
     private final int DEFAULT_QUEUE_CAPACITY = 100000;
 
     /** current capacity. */
     private int queueCapacity = DEFAULT_QUEUE_CAPACITY;
     
-    /** Event <SCOPE> -> <ID> -> List Event related to user action in console (not featureUsage, not check OFF). */
-    private static Map< String , Map < String, EventSeries>> auditTrail = new ConcurrentHashMap<>();
+    /** Event 
+     * <SCOPE> ; @see {@link Scope}
+     * <ID> : Object ID
+     * List Event related to user action in console. 
+     */
+    private Map< String , Map < String, EventSeries>> auditTrail = new ConcurrentHashMap<>();
     
     /** Default constructor. */
-    public EventAuditTrailRepositoryInMemory() {}
+    public AuditTrailRepositoryInMemory() {}
     
     /** {@inheritDoc} */
     @Override
-    public void createSchema() {}
+    public void createSchema() {
+        // nothing need regarding the auditTrail HashMap
+        // We may send a dedicated event
+        log(new Event().action(Action.CREATE)
+                       .scope(Scope.AUDIT_TRAIL)
+                       .targetUid("createSchema"));
+    }
     
     /** {@inheritDoc} */
     @Override
     public void log(Event evt) {
         validateEvent(evt);
-        String scope = evt.getScope();
+        String scope = evt.getScope().name();
         if (!auditTrail.containsKey(scope)) {
             auditTrail.put(scope, new ConcurrentHashMap<>());
         }
@@ -78,8 +89,13 @@ public class EventAuditTrailRepositoryInMemory implements EventAuditTrailReposit
         assertNotNull(query);
         if (query.getScope().isPresent()) {
             // Filter event to get only
-            Event.Scope queryScope = query.getScope().get();
-            return searchInMapOfEventSeries(query, auditTrail.get(queryScope.toString())).stream();
+            Event.Scope queryScope    = query.getScope().get();
+            Map<String, EventSeries > subPerimeter = auditTrail.get(queryScope.toString());
+            if (subPerimeter!= null) {
+                return searchInMapOfEventSeries(query, subPerimeter).stream();
+            } else {
+                return Stream.empty();
+            }
         }
         Collection < Event > results = new ArrayList<>();
         auditTrail.values().stream().forEach(map -> results.addAll(searchInMapOfEventSeries(query, map)));
@@ -98,14 +114,20 @@ public class EventAuditTrailRepositoryInMemory implements EventAuditTrailReposit
      */
     private Collection < Event > searchInMapOfEventSeries(AuditTrailQuery query, Map < String, EventSeries > mapOfEventSeries) {
         assertNotNull(query);
+        Collection < Event > results = new ArrayList<>();
+        
         // Map of EventSeries
         if (query.getUid().isPresent()) {
             // Single EventSerie to search
             EventSeries targetSerie = mapOfEventSeries.get(query.getUid().get());
-            return query.filter(targetSerie);
+            if (targetSerie != null) {
+                return query.filter(targetSerie);
+            } else {
+                // Empty list here, the id has not been found
+                return results;
+            }
         }
         // No single EventSerie so will have to loop on each key
-        Collection < Event > results = new ArrayList<>();
         mapOfEventSeries.values().forEach(es -> results.addAll(query.filter(es)));
         return results;
     }
@@ -116,7 +138,7 @@ public class EventAuditTrailRepositoryInMemory implements EventAuditTrailReposit
         // Will get a stream of event to remove
         search(query).forEach(evt -> {
             // Get correct scope (Feature, Properties, ...)
-            auditTrail.get(evt.getScope())
+            auditTrail.get(evt.getScope().name())
                       // Get correct event series
                       .get(evt.getTargetUid())
                       // Remove from the Event Series

@@ -28,7 +28,7 @@ import org.ff4j.FF4jEntity;
 import org.ff4j.FF4jRepository;
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositoryObserver;
-import org.ff4j.event.repository.EventAuditTrailRepository;
+import org.ff4j.audit.AuditTrailRepository;
 
 /**
  * Cache abstraction for ff4j.
@@ -211,7 +211,7 @@ public class CacheProxy < K extends Serializable, V extends FF4jEntity<?> >
     }
 
     @Override
-    public void registerAuditListener(EventAuditTrailRepository auditTrail) {}
+    public void registerAuditListener(AuditTrailRepository auditTrail) {}
 
     @Override
     public void unRegisterAuditListener() {}

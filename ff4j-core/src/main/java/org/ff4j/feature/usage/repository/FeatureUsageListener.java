@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.feature.usage.repository;
 
 import org.ff4j.FF4jRepository;
 
@@ -30,13 +30,13 @@ import org.ff4j.feature.Feature;
  * There can be as many listeners as you want but the default implementation is to store
  * events into external DB leveraging on {@link FF4jRepository}.
  * 
- * @see {@link EventFeatureUsageRepository}
+ * @see {@link FeatureUsageRepository}
  * @see {@link EventRepositorySupport}
  * 
  * @author Cedrick LUNVEN  (@clunven)
  */
 @FunctionalInterface
-public interface EventFeatureUsageListener {
+public interface FeatureUsageListener {
     
     /** Key to register listeners on stores. */
     String KEY_USAGETRACKING_LISTENER  = "FeatureUsageListener";

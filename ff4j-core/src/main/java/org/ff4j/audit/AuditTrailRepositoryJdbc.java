@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.audit;
 
 /*-
  * #%L
@@ -22,6 +22,7 @@ package org.ff4j.event.repository;
 
 import static org.ff4j.jdbc.JdbcUtils.executeUpdate;
 import static org.ff4j.jdbc.JdbcUtils.isTableExist;
+import static org.ff4j.utils.Util.validateEvent;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,18 +36,20 @@ import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.ff4j.event.Event;
-import org.ff4j.event.monitoring.AuditTrailQuery;
-import org.ff4j.event.monitoring.HitCount;
+import org.ff4j.event.HitCount;
+import org.ff4j.feature.exception.AuditTrailAccessException;
 import org.ff4j.feature.exception.FeatureAccessException;
+import org.ff4j.feature.usage.repository.FeatureUsageRepository;
 import org.ff4j.jdbc.JdbcConstants.AuditTrailColumns;
 import org.ff4j.jdbc.JdbcQueryBuilder;
+import org.ff4j.jdbc.mapper.JdbcEventAuditTrailMapper;
 
 /**
- * Implementation of in memory {@link EventFeatureUsageRepository} with limited events.
+ * Implementation of in memory {@link FeatureUsageRepository} with limited events.
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository {
+public class AuditTrailRepositoryJdbc implements AuditTrailRepository {
     
     /** Error message 1. */
     public static final String CANNOT_READ_AUDITTABLE =  "Cannot read audit table from DB";
@@ -66,7 +69,7 @@ public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository 
      * @param jdbcDS
      *            native jdbc datasource
      */
-    public EventAuditTrailRepositoryJdbc(DataSource jdbcDS) {
+    public AuditTrailRepositoryJdbc(DataSource jdbcDS) {
         this.dataSource = jdbcDS;
     }
     
@@ -80,10 +83,17 @@ public class EventAuditTrailRepositoryJdbc implements EventAuditTrailRepository 
         }
     }
     
-    @Override
     /** {@inheritDoc} */
     public void log(Event evt) {
-        throw new UnsupportedOperationException("Not implemented, yet");
+        validateEvent(evt);
+        try (Connection sqlConn = dataSource.getConnection()) {
+            JdbcEventAuditTrailMapper mapper = new JdbcEventAuditTrailMapper(sqlConn, getQueryBuilder());
+            try (PreparedStatement ps1 = mapper.mapToRepository(evt)) {
+                ps1.executeUpdate();
+            }
+        } catch (SQLException sqlEX) {
+            throw new AuditTrailAccessException("Cannot insert event into audit trail", sqlEX);
+        }
     }
 
     @Override

@@ -28,6 +28,9 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 import org.ff4j.event.Event;
+import org.ff4j.event.Event.Action;
+import org.ff4j.event.Event.Scope;
+import org.ff4j.event.Event.Source;
 import org.ff4j.exception.AuditAccessException;
 import org.ff4j.jdbc.JdbcConstants.AuditTrailColumns;
 import org.ff4j.jdbc.JdbcQueryBuilder;
@@ -54,11 +57,11 @@ public class JdbcEventAuditTrailMapper extends AbstractJdbcMapper implements Eve
             populateEntity(stmt, evt);
             
             stmt.setTimestamp(6, new java.sql.Timestamp(evt.getTimestamp()));
-            stmt.setString( 7, evt.getScope());
+            stmt.setString( 7, evt.getScope().name());
             stmt.setString( 8, evt.getTargetUid());
-            stmt.setString( 9, evt.getAction());
+            stmt.setString( 9, evt.getAction().name());
             stmt.setString(10, evt.getHostName());
-            stmt.setString(11, evt.getSource());
+            stmt.setString(11, evt.getSource().name());
             stmt.setLong(  12, evt.getDuration().orElse(0L));
             stmt.setString(13, evt.getValue().orElse(null));
             stmt.setString(14, JsonUtils.mapAsJson(evt.getProperties()));
@@ -83,13 +86,21 @@ public class JdbcEventAuditTrailMapper extends AbstractJdbcMapper implements Eve
         try {
             Event evt = new Event(rs.getString(AuditTrailColumns.UID.colname()));
             mapEntity(rs, evt);
-            evt.scope(rs.getString(AuditTrailColumns.TYPE.colname()));
-            evt.targetUid(rs.getString(AuditTrailColumns.NAME.colname()));
-            evt.action(rs.getString(AuditTrailColumns.ACTION.colname()));
-            evt.hostName(rs.getString(AuditTrailColumns.HOSTNAME.colname()));
-            evt.source(rs.getString(AuditTrailColumns.SOURCE.colname()));
-            evt.duration(rs.getLong(AuditTrailColumns.DURATION.colname()));
-            evt.value(rs.getString(AuditTrailColumns.VALUE.colname()));
+            evt.scope(Scope.valueOf(
+                    rs.getString(AuditTrailColumns.TYPE.colname())));
+            evt.targetUid(
+                    rs.getString(AuditTrailColumns.NAME.colname()));
+            evt.action(Action.valueOf(
+                    rs.getString(AuditTrailColumns.ACTION.colname())));
+            evt.hostName(
+                    rs.getString(AuditTrailColumns.HOSTNAME.colname()));
+            evt.source(Source.valueOf(
+                    rs.getString(AuditTrailColumns.SOURCE.colname())));
+            evt.duration(
+                    rs.getLong(AuditTrailColumns.DURATION.colname()));
+            evt.value(
+                    rs.getString(AuditTrailColumns.VALUE.colname()));
+            
             //evt.setCustomKeys(JsonUtils.jsonAsMap(rs.getString(AuditTrailColumns.KEYS.colname())));
             ZoneOffset zof = ZoneId.systemDefault().getRules().getOffset(evt.getCreationDate().get());
             evt.setTimestamp(evt.getCreationDate().get().toEpochSecond(zof));

@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.feature.usage.repository;
 
 import static org.ff4j.test.AssertUtils.assertHasLength;
 import static org.ff4j.test.AssertUtils.assertNotNull;
@@ -42,16 +42,16 @@ import java.util.stream.Stream;
 import org.ff4j.event.Event;
 import org.ff4j.event.EventQueryDefinition;
 import org.ff4j.event.EventSeries;
+import org.ff4j.event.HitCount;
 import org.ff4j.event.Serie;
 import org.ff4j.event.TimeSeries;
-import org.ff4j.event.monitoring.HitCount;
 
 /**
- * Implementation of in memory {@link EventFeatureUsageRepository} with limited events.
+ * Implementation of in memory {@link FeatureUsageRepository} with limited events.
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public class EventFeatureUsageRepositoryInMemory extends EventRepositorySupport {
+public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
    
     /** serialVersionUID. */
     private static final long serialVersionUID = 2667121403242303018L;
@@ -69,7 +69,7 @@ public class EventFeatureUsageRepositoryInMemory extends EventRepositorySupport 
     /**
      * Default constructor with default capacity to 100.000
      */
-    public EventFeatureUsageRepositoryInMemory() {
+    public FeatureUsageRepositoryInMemory() {
         this(DEFAULT_QUEUE_CAPACITY);
     }
     
@@ -79,7 +79,7 @@ public class EventFeatureUsageRepositoryInMemory extends EventRepositorySupport 
      * @param queueCapacity
      *            default queue capacity
      */
-    public EventFeatureUsageRepositoryInMemory(int queueCapacity) {
+    public FeatureUsageRepositoryInMemory(int queueCapacity) {
         this.queueCapacity = queueCapacity;
     }
     
@@ -167,7 +167,7 @@ public class EventFeatureUsageRepositoryInMemory extends EventRepositorySupport 
     
     private boolean match(Event e) {
         return (e!= null) && e.getScope().equals(Event.Scope.FEATURE.name())
-                          && Event.Action.HIT.name().equalsIgnoreCase(e.getAction());
+                          && Event.Action.HIT.name().equalsIgnoreCase(e.getAction().name());
     }
     
     /** {@inheritDoc} */
@@ -194,10 +194,10 @@ public class EventFeatureUsageRepositoryInMemory extends EventRepositorySupport 
     public Map<String, HitCount> getSourceHitCount(EventQueryDefinition query) {
         Map<String, HitCount> hitRatio = new TreeMap<String, HitCount>();
         for (Event event : search(query)) {
-            if (!hitRatio.containsKey(event.getSource())) {
-                hitRatio.put(event.getSource(), new HitCount());
+            if (!hitRatio.containsKey(event.getSource().name())) {
+                hitRatio.put(event.getSource().name(), new HitCount());
              }
-             hitRatio.get(event.getSource()).inc();
+             hitRatio.get(event.getSource().name()).inc();
         }
         return hitRatio;
     }

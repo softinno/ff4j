@@ -24,6 +24,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ff4j.event.Event.Action;
+import org.ff4j.event.Event.Source;
 import org.ff4j.utils.TimeUtils;
 import org.ff4j.utils.Util;
 
@@ -44,16 +46,16 @@ public class EventQueryDefinition implements Serializable {
 	private long to = TimeUtils.getTomorrowMidnightTime();
 	
 	/** Filter about names (feature uid, property name). */
-	private Set < String > namesFilter = new HashSet<String>();
+	private Set < String > namesFilter = new HashSet<>();
 	
 	/** Filter on action @see {@link EventConstants}. */
-	private Set < String > actionFilters = new HashSet<String>();
+	private Set < Action > actionFilters = new HashSet<>();
 	
 	/** Filter on source @see {@link EventConstants}. */
-    private Set < String > sourceFilters = new HashSet<String>();
+    private Set < Source > sourceFilters = new HashSet<>();
     
     /** Filter on source @see {@link EventConstants}. */
-    private Set < String > hostFilters = new HashSet<String>();
+    private Set < String > hostFilters = new HashSet<>();
     
 	/**
 	 * Default constucot
@@ -74,12 +76,12 @@ public class EventQueryDefinition implements Serializable {
 	    return this;
 	}
 	
-	public EventQueryDefinition addFilterAction(String action) {
+	public EventQueryDefinition addFilterAction(Action action) {
         this.actionFilters.add(action);
         return this;
     }
 	
-	public EventQueryDefinition addFilterSource(String source) {
+	public EventQueryDefinition addFilterSource(Source source) {
         this.sourceFilters.add(source);
         return this;
     }
@@ -106,12 +108,13 @@ public class EventQueryDefinition implements Serializable {
                matchSource(evt.getSource());
 	}
 	
-	public boolean matchAction(String action) {
-	    return (actionFilters.isEmpty()) || (Util.hasLength(action) && actionFilters.contains(action));
+	// actionFilters.isEmpty() = No filter
+	public boolean matchAction(Action action) {
+	    return actionFilters.isEmpty() || actionFilters.contains(action);
 	}
 	
-	public boolean matchSource(String source) {
-	    return (sourceFilters.isEmpty()) || (Util.hasLength(source) && sourceFilters.contains(source));
+	public boolean matchSource(Source source) {
+	    return sourceFilters.isEmpty() ||  sourceFilters.contains(source);
     }
     
     public boolean matchHost(String host) {
@@ -187,7 +190,7 @@ public class EventQueryDefinition implements Serializable {
      * @return
      *       current value of 'actionFilters'
      */
-    public Set<String> getActionFilters() {
+    public Set<Action> getActionFilters() {
         return actionFilters;
     }
 
@@ -196,7 +199,7 @@ public class EventQueryDefinition implements Serializable {
      * @param actionFilters
      * 		new value for 'actionFilters '
      */
-    public void setActionFilters(Set<String> actionFilters) {
+    public void setActionFilters(Set<Action> actionFilters) {
         this.actionFilters = actionFilters;
     }
 
@@ -206,7 +209,7 @@ public class EventQueryDefinition implements Serializable {
      * @return
      *       current value of 'sourceFilters'
      */
-    public Set<String> getSourceFilters() {
+    public Set<Source> getSourceFilters() {
         return sourceFilters;
     }
 
@@ -215,7 +218,7 @@ public class EventQueryDefinition implements Serializable {
      * @param sourceFilters
      * 		new value for 'sourceFilters '
      */
-    public void setSourceFilters(Set<String> sourceFilters) {
+    public void setSourceFilters(Set<Source> sourceFilters) {
         this.sourceFilters = sourceFilters;
     }
 

@@ -23,7 +23,6 @@ package org.ff4j.feature.repository;
 import static org.ff4j.test.AssertUtils.assertHasLength;
 import static org.ff4j.test.AssertUtils.assertNotNull;
 import static org.ff4j.utils.JsonUtils.attributeAsJson;
-import static org.ff4j.utils.JsonUtils.cacheJson;
 import static org.ff4j.utils.JsonUtils.collectionAsJson;
 import static org.ff4j.utils.JsonUtils.objectAsJson;
 import static org.ff4j.utils.Util.setOf;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 import org.ff4j.FF4jRepository;
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
-import org.ff4j.event.repository.EventAuditTrailRepository;
+import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.exception.ItemNotFoundException;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
@@ -56,14 +55,8 @@ public abstract class FeatureRepositorySupport
 
     /** Json Attribute. */
     public static final String JSON_ATTRIBUTE_FEATURECOUNT = "featuresCount";
-    
-    /** Json Attribute. */
     public static final String JSON_ATTRIBUTE_FEATURENAMES = "featuresNames";
-    
-    /** Json Attribute. */
     public static final String JSON_ATTRIBUTE_GROUPCOUNT   = "groupsCount";
-    
-    /** Json Attribute. */
     public static final String JSON_ATTRIBUTE_GROUPNAMES   = "groupNames";
     
     /** Listener Name. */
@@ -107,9 +100,8 @@ public abstract class FeatureRepositorySupport
     }
     
     /** {@inheritDoc} */
-    protected String toJson() {
-        StringBuilder sb = new StringBuilder("{");
-        sb.append(attributeAsJson(JSON_ATTRIBUTE_CLASSNAME, this.getClass().getCanonicalName()));
+    protected String customToString() {
+        StringBuilder sb = new StringBuilder();
         // Features
         Set<String> myFeatures = setOf(findAll().map(Feature::getUid));
         sb.append(attributeAsJson(JSON_ATTRIBUTE_FEATURECOUNT, myFeatures.size()));
@@ -118,17 +110,8 @@ public abstract class FeatureRepositorySupport
         Set<String> groups = listGroupNames().collect(Collectors.toSet());
         sb.append(attributeAsJson(JSON_ATTRIBUTE_GROUPCOUNT, groups.size()));
         sb.append(objectAsJson(JSON_ATTRIBUTE_GROUPNAMES, collectionAsJson(groups)));
-        // Cache
-        sb.append(cacheJson(this));
-        sb.append("}");
         return sb.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
-    }
+    }    
     
     /** {@inheritDoc} */
     public void save(Iterable<Feature> iterFeatures) {
@@ -227,7 +210,7 @@ public abstract class FeatureRepositorySupport
     
     /** {@inheritDoc} */
     @Override
-    public void registerAuditListener(EventAuditTrailRepository auditTrail) {
+    public void registerAuditListener(AuditTrailRepository auditTrail) {
         this.registerListener(LISTENERNAME_AUDIT, new FeatureRepositoryListenerAudit(auditTrail));
     }
     

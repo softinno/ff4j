@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.feature.usage.repository;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,8 +34,8 @@ import org.ff4j.event.Event;
 import org.ff4j.event.Event.Scope;
 import org.ff4j.event.EventQueryDefinition;
 import org.ff4j.event.EventSeries;
+import org.ff4j.event.HitCount;
 import org.ff4j.event.TimeSeries;
-import org.ff4j.event.monitoring.HitCount;
 import org.ff4j.feature.Feature;
 
 /**
@@ -43,7 +43,7 @@ import org.ff4j.feature.Feature;
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public interface EventFeatureUsageRepository extends FF4jRepository < String, Event > {
+public interface FeatureUsageRepository extends FF4jRepository < String, Event > {
     
     /** Create key. */
     SimpleDateFormat KDF = new SimpleDateFormat("yyyyMMdd");

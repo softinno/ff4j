@@ -22,9 +22,9 @@ package org.ff4j.user.repository;
 
 import org.ff4j.FF4jEntity;
 import org.ff4j.FF4jRepositoryListener;
+import org.ff4j.audit.AuditTrailListenerSupport;
+import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.event.Event.Scope;
-import org.ff4j.event.repository.EventAuditTrailListenerSupport;
-import org.ff4j.event.repository.EventAuditTrailRepository;
 import org.ff4j.user.FF4jUser;
 
 /**
@@ -36,7 +36,7 @@ import org.ff4j.user.FF4jUser;
  * @param <ENTITY>
  *    {@link FF4jEntity} to be specialized by type of store 
  */
-public class RepositoryUserListener extends EventAuditTrailListenerSupport < FF4jUser > implements FF4jRepositoryListener< FF4jUser > {
+public class RepositoryUserListener extends AuditTrailListenerSupport < FF4jUser > implements FF4jRepositoryListener< FF4jUser > {
 
     /**
      * Default implementation of User Listener.
@@ -44,7 +44,7 @@ public class RepositoryUserListener extends EventAuditTrailListenerSupport < FF4
      * @param auditTrail
      *      target audit trail to fill
      */
-    public RepositoryUserListener(EventAuditTrailRepository auditTrail) {
+    public RepositoryUserListener(AuditTrailRepository auditTrail) {
         super(auditTrail, Scope.USER, Scope.USERSTORE);
     }
     

@@ -1,8 +1,11 @@
-package org.ff4j.event.repository;
+package org.ff4j.feature.usage.repository;
+
+import static org.ff4j.utils.JsonUtils.attributeAsJson;
 
 import org.ff4j.FF4jRepositoryEventListener;
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
+import org.ff4j.audit.AuditTrailRepository;
 
 /*-
  * #%L
@@ -35,10 +38,13 @@ import org.ff4j.test.AssertUtils;
  */
 public abstract class EventRepositorySupport 
                 extends FF4jRepositorySupport < Event , FF4jRepositoryEventListener> 
-                implements EventFeatureUsageListener, EventFeatureUsageRepository {
+                implements FeatureUsageListener, FeatureUsageRepository {
 
     /** serialVersionUID. */
     private static final long serialVersionUID = -8194421012227669426L;
+    
+    /** Json Attribute. */
+    public static final String JSON_ATTRIBUTE_EVENTCOUNT   = "eventsCount";
     
     /** {@inheritDoc} */
     @Override
@@ -77,7 +83,7 @@ public abstract class EventRepositorySupport
     
     /** {@inheritDoc} */
     @Override
-    public void registerAuditListener(EventAuditTrailRepository auditTrail) {
+    public void registerAuditListener(AuditTrailRepository auditTrail) {
         // Don't register audit on audit
     }
     
@@ -86,4 +92,11 @@ public abstract class EventRepositorySupport
     public void unRegisterAuditListener() {
         // Don't register audit on audit
     }
+    
+    /** {@inheritDoc} */
+    protected String customToString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(attributeAsJson(JSON_ATTRIBUTE_EVENTCOUNT, count()));
+        return sb.toString();
+    }   
 }

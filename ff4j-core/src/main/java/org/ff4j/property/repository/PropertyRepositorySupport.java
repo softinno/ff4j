@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
-import org.ff4j.event.repository.EventAuditTrailRepository;
+import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.exception.ItemNotFoundException;
 import org.ff4j.property.Property;
 import org.ff4j.property.exception.PropertyNotFoundException;
@@ -53,8 +53,6 @@ public abstract class PropertyRepositorySupport
     
     /** Json Attribute. */
     public static final String JSON_ATTRIBUTE_PROPERTIESCOUNT = "propertiesCount";
-    
-    /** Json Attribute. */
     public static final String JSON_ATTRIBUTE_PROPERTIESNAMES = "propertiesNames";
     
     // -- Assertion --
@@ -69,24 +67,6 @@ public abstract class PropertyRepositorySupport
     
     protected void assertPropertyNotNull(Property<?> property) {
         assertNotNull(property);
-    }
-    
-    /** {@inheritDoc} */
-    public String toJson() {
-        StringBuilder sb = new StringBuilder("{");
-        sb.append(attributeAsJson(JSON_ATTRIBUTE_CLASSNAME, this.getClass().getCanonicalName()));
-        // Properties
-        Set<String> myProperties = setOf(findAll().map(Property::getUid));
-        sb.append(attributeAsJson(JSON_ATTRIBUTE_PROPERTIESCOUNT, myProperties.size()));
-        sb.append(objectAsJson(JSON_ATTRIBUTE_PROPERTIESNAMES, collectionAsJson(myProperties)));
-        sb.append("}");
-        return sb.toString();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return toJson();
     }
     
     /** {@inheritDoc} */
@@ -142,7 +122,7 @@ public abstract class PropertyRepositorySupport
     
     /** {@inheritDoc} */
     @Override
-    public void registerAuditListener(EventAuditTrailRepository auditTrail) {
+    public void registerAuditListener(AuditTrailRepository auditTrail) {
         this.registerListener(LISTENERNAME_AUDIT, new PropertyRepositoryListenerAudit(auditTrail));
     }
     
@@ -151,5 +131,14 @@ public abstract class PropertyRepositorySupport
     public void unRegisterAuditListener() {
         this.unregisterListener(LISTENERNAME_AUDIT);
     }
+    
+    /** {@inheritDoc} */
+    protected String customToString() {
+        StringBuilder sb = new StringBuilder();
+        Set<String> myProperties = setOf(findAll().map(Property::getUid));
+        sb.append(attributeAsJson(JSON_ATTRIBUTE_PROPERTIESCOUNT, myProperties.size()));
+        sb.append(objectAsJson(JSON_ATTRIBUTE_PROPERTIESNAMES, collectionAsJson(myProperties)));
+        return sb.toString();
+    }  
     
 }

@@ -1,9 +1,10 @@
-package org.ff4j.event;
+package org.ff4j.audit;
+
 /*-
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,23 +20,15 @@ package org.ff4j.event;
  * #L%
  */
 
-import org.ff4j.feature.repository.FeatureRepository;
-import org.ff4j.feature.usage.repository.FeatureUsageRepositoryInMemory;
-import org.ff4j.feature.usage.repository.EventRepositorySupport;
-import org.junit.jupiter.api.DisplayName;
-
 /**
- * Testing implementation of {@link FeatureRepository} for DB : MEMORY
- *
- * @author Cedrick LUNVEN (@clunven)
+ * Testing all scenarii of {@link AuditTrailTestSupport} for InMemory implementation
  */
-@DisplayName(" EventRepository::InMemory")
-public class EventRepositoryTestInMemory extends EventRepositoryTest {
- 
+public class AuditTrailInMemoryTest extends AuditTrailTestSupport {
+
     /** {@inheritDoc} */
     @Override
-    public EventRepositorySupport initRepository() {
-        return new FeatureUsageRepositoryInMemory();
+    protected AuditTrailRepository initAuditTrailRepository() {
+        return new AuditTrailRepositoryInMemory();
     }
-    
+
 }

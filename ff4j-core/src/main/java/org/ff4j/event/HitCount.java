@@ -1,4 +1,4 @@
-package org.ff4j.event.monitoring;
+package org.ff4j.event;
 
 import java.util.function.Supplier;
 

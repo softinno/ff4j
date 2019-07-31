@@ -871,9 +871,6 @@ public class JdbcQueryBuilder {
     public String sqlSelectAuditById() {
         return sqlSelectWhere(false, AuditTrailColumns.UID, AuditTrailColumns.values());
     }
-
-    //TODO
-    
     
     // ---------------------------------
     // -------     UPDATE    -----------

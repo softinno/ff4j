@@ -166,9 +166,9 @@ public class Util {
      */
     public static void validateEvent(Event evt) {
         AssertUtils.assertNotNull(evt);
-        AssertUtils.assertHasLength(evt.getScope());
+        AssertUtils.assertNotNull(evt.getScope());
+        AssertUtils.assertNotNull(evt.getAction());
         AssertUtils.assertHasLength(evt.getTargetUid());
-        AssertUtils.assertHasLength(evt.getAction());
     }
 
     /**

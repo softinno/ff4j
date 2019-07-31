@@ -129,13 +129,12 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlFindAllFeaturesId())) {
                 try (ResultSet rs1 = ps1.executeQuery()) {
                     while (rs1.next()) {
-                        String featureUid = rs1.getString(FeaturesColumns.UID.colname());
-                        if (Util.hasLength(featureUid)) {
-                            setOFIds.add(featureUid);
-                        } 
+                        setOFIds.add(rs1.getString(FeaturesColumns.UID.colname()));
                     }
                 }
             }
+            setOFIds.remove(null);
+            setOFIds.remove("");
             return setOFIds.stream();
         } catch (SQLException sqlEX) {
             throw new FeatureAccessException("Cannot list groups, error related to database", sqlEX);
@@ -620,13 +619,6 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
 			queryBuilder = new JdbcQueryBuilder();
 		}
 		return queryBuilder;
-	}
-
-	/**
-	 * @param queryBuilder the queryBuilder to set
-	 */
-	public void setQueryBuilder(JdbcQueryBuilder queryBuilder) {
-		this.queryBuilder = queryBuilder;
-	}   
+	}  
 
 }

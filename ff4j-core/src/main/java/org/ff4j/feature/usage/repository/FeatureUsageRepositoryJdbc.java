@@ -1,4 +1,4 @@
-package org.ff4j.event.repository;
+package org.ff4j.feature.usage.repository;
 
 /*-
  * #%L
@@ -33,17 +33,17 @@ import javax.sql.DataSource;
 import org.ff4j.event.Event;
 import org.ff4j.event.EventQueryDefinition;
 import org.ff4j.event.EventSeries;
+import org.ff4j.event.HitCount;
 import org.ff4j.event.TimeSeries;
-import org.ff4j.event.monitoring.HitCount;
 import org.ff4j.jdbc.JdbcConstants.FeatureUsageColumns;
 import org.ff4j.jdbc.JdbcQueryBuilder;
 
 /**
- * Implementation of in memory {@link EventFeatureUsageRepository} with limited events.
+ * Implementation of in memory {@link FeatureUsageRepository} with limited events.
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public class EventFeatureUsageRepositoryJdbc extends EventRepositorySupport {
+public class FeatureUsageRepositoryJdbc extends EventRepositorySupport {
    
     /** Serial */
     private static final long serialVersionUID = -5636652530816030318L;
@@ -60,7 +60,7 @@ public class EventFeatureUsageRepositoryJdbc extends EventRepositorySupport {
      * @param jdbcDS
      *            native jdbc datasource
      */
-    public EventFeatureUsageRepositoryJdbc(DataSource jdbcDS) {
+    public FeatureUsageRepositoryJdbc(DataSource jdbcDS) {
         this.dataSource = jdbcDS;
     }
     

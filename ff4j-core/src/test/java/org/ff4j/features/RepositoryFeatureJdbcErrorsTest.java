@@ -27,26 +27,47 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.mockito.Mockito;
-
-
 import org.ff4j.feature.exception.FeatureAccessException;
+import org.ff4j.feature.repository.FeatureRepository;
+import org.ff4j.feature.repository.FeatureRepositoryJdbc;
 import org.ff4j.jdbc.JdbcUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * Enhancing test coverage ration by generating error on mocked data source. 
  */
 public class RepositoryFeatureJdbcErrorsTest {
     
+    /** SQL DataSource. */
+    private static DataSource sqlDataSourceMock;
+    
+    private static FeatureRepository repository;
+    
+    /** {@inheritDoc} */
+    @BeforeAll
+    public static void setUp() throws Exception {
+        sqlDataSourceMock = Mockito.mock(DataSource.class);
+        doThrow(new SQLException()).when(sqlDataSourceMock).getConnection();
+        repository = new FeatureRepositoryJdbc(sqlDataSourceMock);
+    }
+    
     @Test
     public void testExecuteUpdate()  throws SQLException {
         assertThrows(FeatureAccessException.class, () -> { 
-            DataSource mockDS = Mockito.mock(DataSource.class);
-            doThrow(new SQLException()).when(mockDS).getConnection();
-            JdbcUtils.executeUpdate(mockDS, "toto"); 
+            JdbcUtils.executeUpdate(sqlDataSourceMock, "toto"); 
         });
-       
+    }
+    
+    @Test
+    public void testExecutionErrors() {
+        assertThrows(FeatureAccessException.class, repository::findAll);
+        assertThrows(FeatureAccessException.class, repository::findAllIds);
+        assertThrows(FeatureAccessException.class, repository::count);
+        assertThrows(FeatureAccessException.class, 
+                () -> {repository.exists("ok");});
+        
     }
     
 }

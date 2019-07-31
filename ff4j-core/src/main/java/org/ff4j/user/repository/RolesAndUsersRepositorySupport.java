@@ -2,8 +2,13 @@ package org.ff4j.user.repository;
 
 import static org.ff4j.test.AssertUtils.assertNotEmpty;
 import static org.ff4j.test.AssertUtils.assertNotNull;
+import static org.ff4j.utils.JsonUtils.attributeAsJson;
+import static org.ff4j.utils.JsonUtils.collectionAsJson;
+import static org.ff4j.utils.JsonUtils.objectAsJson;
+import static org.ff4j.utils.Util.setOf;
 
 import java.util.Arrays;
+import java.util.Set;
 
 /*-
  * #%L
@@ -27,7 +32,7 @@ import java.util.Arrays;
 
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
-import org.ff4j.event.repository.EventAuditTrailRepository;
+import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.exception.ItemNotFoundException;
 import org.ff4j.user.FF4jUser;
 import org.ff4j.user.exception.UserNotFoundException;
@@ -49,6 +54,10 @@ public abstract class RolesAndUsersRepositorySupport
     
     /** Listener Name. */
     protected static final String LISTENERNAME_AUDIT_ROLE = "RepositoryRoleAuditListener";
+    
+    /** Json Attribute. */
+    public static final String JSON_ATTRIBUTE_USERS_COUNT = "userCount";
+    public static final String JSON_ATTRIBUTE_USERS_NAMES = "userNames";
     
     /** Specialized method for users : CREATE */
     protected abstract void saveUser(FF4jUser user);
@@ -108,7 +117,7 @@ public abstract class RolesAndUsersRepositorySupport
     
     /** {@inheritDoc} */
     @Override
-    public void registerAuditListener(EventAuditTrailRepository auditTrail) {
+    public void registerAuditListener(AuditTrailRepository auditTrail) {
         this.registerListener(LISTENERNAME_AUDIT, new RepositoryUserListener(auditTrail));
     }
     
@@ -116,6 +125,15 @@ public abstract class RolesAndUsersRepositorySupport
     @Override
     public void unRegisterAuditListener() {
         this.unregisterListener(LISTENERNAME_AUDIT);
+    }
+    
+    /** {@inheritDoc} */
+    protected String customToString() {
+        StringBuilder sb = new StringBuilder();
+        Set<String> myProperties = setOf(findAll().map(FF4jUser::getUid));
+        sb.append(attributeAsJson(JSON_ATTRIBUTE_USERS_COUNT, myProperties.size()));
+        sb.append(objectAsJson(JSON_ATTRIBUTE_USERS_NAMES, collectionAsJson(myProperties)));
+        return sb.toString();
     }
 
 }

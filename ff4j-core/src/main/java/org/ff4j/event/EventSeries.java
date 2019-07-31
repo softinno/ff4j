@@ -24,8 +24,6 @@ import java.util.Optional;
 
 import java.util.TreeSet;
 
-import org.ff4j.event.monitoring.HitCount;
-
 /**
  * Proposal of data structure to store a set of events.
  *
