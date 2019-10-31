@@ -24,20 +24,18 @@ import org.ff4j.FF4j;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.test.TestConfigurationParser;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class FF4jConfigTest {
 
     @Test
-    @DisplayName(value = "")
-    public void init_config_should_filled_fields() {
+    public void should_property_export_config() {
         // Given
-        FF4j ff4j = new FF4j(new TestConfigurationParser().expectConfig());
+        FF4jConfigFile expectedConfig = new TestConfigurationParser().expectConfig();
         // When
+        FF4j ff4j = new FF4j(expectedConfig);
         FF4jConfigFile ff4jConfig = new FF4jConfigFile(ff4j);
+        // Then
         Assertions.assertNotNull(ff4jConfig);
-        
-        
     }
 }

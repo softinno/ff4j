@@ -74,7 +74,7 @@ public class Feature extends FF4jEntity < Feature > {
      *       unique identifier
      */
     public Feature(final String uid) {
-        super(uid);
+        this(uid, false);        
     }
     
     /**

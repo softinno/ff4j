@@ -35,16 +35,18 @@ import org.ff4j.feature.Feature;
  */
 public interface FeatureRepositoryListener extends FF4jRepositoryListener< Feature > {
     
+    /**
+     * Triggered if a feature is toggled (Observer Pattern).
+     */
     void onToggleOnFeature(String uid);
-    
     void onToggleOffFeature(String uid);
-    
     void onToggleOnGroup(String groupName);
-    
     void onToggleOffGroup(String groupname);
     
+    /**
+     * Triggered for operation on feature and group
+     */
     void onAddFeatureToGroup(String uid, String groupName);
-    
     void onRemoveFeatureFromGroup(String uid, String groupName);
     
 }

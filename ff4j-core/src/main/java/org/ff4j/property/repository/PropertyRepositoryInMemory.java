@@ -35,6 +35,7 @@ import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
 import org.ff4j.test.AssertUtils;
+
 /**
  * Implementation of {@link PropertyRepository} to keep properties in memory.
  *
@@ -171,5 +172,6 @@ public class PropertyRepositoryInMemory extends PropertyRepositorySupport {
      */
     public void setProperties(Map<String, Property<?>> properties) {
         this.mapOfProperties = properties;
-    }     
+    }
+      
 }

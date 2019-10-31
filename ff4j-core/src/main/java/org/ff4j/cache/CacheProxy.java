@@ -123,7 +123,6 @@ public class CacheProxy < K extends Serializable, V extends FF4jEntity<?> >
             entities.forEach(p -> cacheManager.evict(p));
         }
     }
-    
 
     /** {@inheritDoc} */
     @Override
@@ -164,13 +163,11 @@ public class CacheProxy < K extends Serializable, V extends FF4jEntity<?> >
         return true;
     }
 
-    /** {@inheritDoc} */
-    public String getCacheProvider() {
+    public Optional<String> getCacheProvider() {
         if (cacheManager != null) {
-            return cacheManager.getCacheProviderName();
-        } else {
-            return null;
+            return Optional.ofNullable(cacheManager.getCacheProviderName());
         }
+        return Optional.empty();
     }
     
     /** {@inheritDoc} */
@@ -185,8 +182,34 @@ public class CacheProxy < K extends Serializable, V extends FF4jEntity<?> >
     
     /** {@inheritDoc} */
     public Stream<String> findAllIds() {
-    	return null;
+    	return Stream.empty();
 	}
+    
+    /** {@inheritDoc} */
+    @Override
+    public void registerAuditListener(AuditTrailRepository auditTrail) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public void unRegisterAuditListener() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public Stream<String> listListenerNames() {
+        return Stream.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<FF4jRepositoryListener<V>> readListener(String listenerName) {
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<? extends FF4jRepositoryListener<V>> readAuditListener() {
+        return Optional.empty();
+    }
     
     /**
      * Getter accessor for attribute 'cacheManager'.
@@ -210,11 +233,7 @@ public class CacheProxy < K extends Serializable, V extends FF4jEntity<?> >
         return targetStore;
     }
 
-    @Override
-    public void registerAuditListener(AuditTrailRepository auditTrail) {}
-
-    @Override
-    public void unRegisterAuditListener() {}
+    
 	
 
 }

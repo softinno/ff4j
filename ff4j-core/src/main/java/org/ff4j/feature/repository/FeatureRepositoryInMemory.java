@@ -170,6 +170,7 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
     public void deleteAll() {
        mapOfFeatures.clear();
        mapOfGroups.clear();
+       this.notify(l -> l.onDeleteAll());
     }
     
     /** {@inheritDoc} */
@@ -236,6 +237,5 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
                 .filter(item -> item.getGroup().isPresent())
                 .forEach(feature -> mapOfGroups.get(
                          feature.getGroup().get()).add(feature.getUid()));
-    }   
-    
+    }    
 }

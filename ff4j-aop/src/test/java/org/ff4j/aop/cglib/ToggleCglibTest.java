@@ -22,6 +22,8 @@ package org.ff4j.aop.cglib;
 
 import org.ff4j.FF4j;
 import org.ff4j.aop.GreetingService;
+import org.ff4j.feature.Feature;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -32,23 +34,29 @@ import net.sf.cglib.proxy.Enhancer;
  * 
  * @author Cedrick LUNVEN (@clunven)
  */
-public class FeatureToggleAopTest {
+public class ToggleCglibTest {
     
     @Test
     public void testAOP() {
+        
         // Given
-        FF4j ff4j = new FF4j();
-        ToggledFeatureInterceptor interceptor = new ToggledFeatureInterceptor(ff4j);
+        FF4j ff4j = new FF4j().withFeatureAutoCreate()
+                .withoutFeatureUsageTracking()
+                .withFeature(new Feature("french", false));
+        ToggledFeatureCglibInterceptor interceptor 
+                  = new ToggledFeatureCglibInterceptor(ff4j);
+        
+        // Cglib Proxy
         Enhancer e = new Enhancer();
         e.setSuperclass(GreetingService.class);
         e.setCallback(interceptor);
-        // When
+        
+        // Given
         GreetingService service = (GreetingService) e.create();
-        System.out.println(service.greetings("Cedrick"));
+        Assertions.assertTrue(service.greetings("Cedrick").startsWith("Hello"));
+        // When
+        ff4j.toggleOn("french");
         // Then
-        e.setSuperclass(GreetingService.class);
-        service = (GreetingService) e.create();
-        System.out.println(service.greetings("Cedrick"));
+        Assertions.assertTrue(service.greetings("Cedrick").startsWith("Bonjour"));
     }
-
 }

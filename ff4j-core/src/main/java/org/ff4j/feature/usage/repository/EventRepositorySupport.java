@@ -2,6 +2,9 @@ package org.ff4j.feature.usage.repository;
 
 import static org.ff4j.utils.JsonUtils.attributeAsJson;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.ff4j.FF4jRepositoryEventListener;
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
@@ -73,7 +76,6 @@ public abstract class EventRepositorySupport
         AssertUtils.assertHasLength(e.getUid());
     }
     
-    
     /** {@inheritDoc} */
     @Override
     public void registerListener(String name, FF4jRepositoryListener<Event> listener) {
@@ -91,6 +93,25 @@ public abstract class EventRepositorySupport
     @Override
     public void unRegisterAuditListener() {
         // Don't register audit on audit
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Stream<String> listListenerNames() {
+        // Don't register audit on audit
+        return Stream.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<FF4jRepositoryListener<Event>> readListener(String listenerName) {
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<? extends FF4jRepositoryListener<Event>> readAuditListener() {
+        return Optional.empty();
     }
     
     /** {@inheritDoc} */

@@ -60,7 +60,8 @@ public class FeatureRepositoryListenerAudit extends AuditTrailListenerSupport < 
     /** {@inheritDoc} */
     @Override
     public void onToggleOffGroup(String groupName) {
-        log(createEvent(Action.TOGGLE_OFF, Scope.FEATURE_GROUP).targetUid(groupName));
+        log(createEvent(Action.TOGGLE_OFF, Scope.FEATURE_GROUP)
+                .targetUid(groupName));
     }
 
     /** {@inheritDoc} */

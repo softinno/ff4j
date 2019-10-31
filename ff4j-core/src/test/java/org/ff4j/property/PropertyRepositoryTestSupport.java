@@ -63,9 +63,9 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     @BeforeEach
     public void setUp() throws Exception {
         ConfigurationFileParser.clearCache();
-        ff4j        = new FF4j().withRepositoryProperties(initStore());
+        testedStore = initStore();
+        ff4j        = new FF4j().withRepositoryProperties(testedStore);
         assertFF4j  = new AssertFF4j(ff4j);
-        testedStore = ff4j.getRepositoryProperties();
         testDataSet = expectConfig();
     }
     

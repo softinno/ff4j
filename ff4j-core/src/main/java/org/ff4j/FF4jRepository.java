@@ -271,6 +271,36 @@ public interface FF4jRepository<ID extends Serializable, ENTITY extends FF4jEnti
     void registerListener(String name, FF4jRepositoryListener<ENTITY> listener);
 
     /**
+     * Explicitely unregister a listener by its unique name.
+     *
+     * @param name
+     *            listener name
+     */
+    void unregisterListener(String name);
+    
+    /**
+     * List existing listeners on current Store.
+     * 
+     * @return
+     *      names for listeners
+     */
+    Stream<String> listListenerNames();
+    
+    /**
+     * Retrieve listener instance if exist.
+     *
+     * @param listenerName
+     *      name for listener
+     * @return
+     *      listener of exists
+     */
+    Optional< FF4jRepositoryListener<ENTITY> > readListener(String listenerName);
+    
+    // ---------------------------------------
+    //   Specialization for  Audit Listener
+    // ---------------------------------------
+    
+    /**
      * Enable auditing to the audit trail.
      *
      * @param auditTrail
@@ -285,13 +315,12 @@ public interface FF4jRepository<ID extends Serializable, ENTITY extends FF4jEnti
      *            audit trail destination
      */
     void unRegisterAuditListener();
-
+    
     /**
-     * Explicitely unregister a listener by its unique name.
+     * Read audit listener information if exists.
      *
-     * @param name
-     *            listener name
+     * @return
      */
-    void unregisterListener(String name);
-
+    Optional< ? extends FF4jRepositoryListener<ENTITY> > readAuditListener();
+    
 }

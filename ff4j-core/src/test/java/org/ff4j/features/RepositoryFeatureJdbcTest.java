@@ -1,5 +1,7 @@
 package org.ff4j.features;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 /*-
  * #%L
  * ff4j-core
@@ -25,8 +27,10 @@ import javax.sql.DataSource;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryJdbc;
 import org.ff4j.test.jdbc.JdbcTestHelper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("FeatureRepository::Jdbc (HQL)")
 public class RepositoryFeatureJdbcTest extends FeatureRepositoryTestSupport {
@@ -48,5 +52,17 @@ public class RepositoryFeatureJdbcTest extends FeatureRepositoryTestSupport {
         super.setUp();
         JdbcTestHelper.initDBSchema(sqlDataSource);
     }
-
+    
+    @Test
+    public void should_throw_IllegalStateException_if_no_datasource() {
+        assertThrows(IllegalStateException.class, () -> { new FeatureRepositoryJdbc().getDataSource(); });
+    }
+    
+    @Test
+    public void should_init_ok() {
+        FeatureRepositoryJdbc store = new FeatureRepositoryJdbc();
+        sqlDataSource = JdbcTestHelper.createInMemoryHQLDataSource();
+        store.setDataSource(sqlDataSource);
+        Assertions.assertTrue(store.count() >0) ;
+    }   
 }

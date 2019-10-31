@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.ff4j.event.Event;
 import org.ff4j.event.EventSeries;
+import org.ff4j.utils.JsonUtils;
 
 public class AuditTrailQuery {
     
@@ -97,6 +98,17 @@ public class AuditTrailQuery {
     
     public Collection < Event > filter(EventSeries es) {
         return es.stream().filter(this::match).collect(Collectors.toList());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringBuilder sbEvent = new StringBuilder();
+        sbEvent.append(JsonUtils.attributeAsJson("from", from));
+        sbEvent.append(JsonUtils.attributeAsJson("to", to));
+        sbEvent.append(JsonUtils.attributeAsJson("scope", scope));
+        sbEvent.append(JsonUtils.attributeAsJson("uid", uid));
+        return sbEvent.toString();
     }
 
 }

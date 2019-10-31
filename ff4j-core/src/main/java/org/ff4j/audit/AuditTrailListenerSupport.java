@@ -55,9 +55,7 @@ public abstract class AuditTrailListenerSupport<E extends FF4jEntity<?>> impleme
     }
     
     protected Event createEvent(Action action, Scope scope) {
-        Event evt = new Event().source(source).action(action).scope(scope);
-        //populateOwner(evt);
-        return evt;
+        return new Event().source(source).action(action).scope(scope);
     }
     
     protected void log(Event evt) {

@@ -27,8 +27,10 @@ import static org.ff4j.utils.JsonUtils.collectionAsJson;
 import static org.ff4j.utils.JsonUtils.objectAsJson;
 import static org.ff4j.utils.Util.setOf;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.ff4j.FF4jRepository;
 import org.ff4j.FF4jRepositoryListener;
@@ -60,7 +62,7 @@ public abstract class FeatureRepositorySupport
     public static final String JSON_ATTRIBUTE_GROUPNAMES   = "groupNames";
     
     /** Listener Name. */
-    private static final String LISTENERNAME_AUDIT = "FeatureStoreAuditListener";
+    public static final String LISTENERNAME_AUDIT = "FeatureStoreAuditListener";
    
     /**
      * Validate feature uid.
@@ -157,14 +159,7 @@ public abstract class FeatureRepositorySupport
         // AuditTrail or any subscriber
         notify(l -> l.onToggleOffFeature(uid));
     }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void deleteAll() {
-        delete(findAllIds());
-        this.notify(l -> l.onDeleteAll());
-    }
-    
+   
     /** {@inheritDoc} */
     @Override
     public void toggleOnGroup(String groupName) {
@@ -218,6 +213,29 @@ public abstract class FeatureRepositorySupport
     @Override
     public void unRegisterAuditListener() {
         this.unregisterListener(LISTENERNAME_AUDIT);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Stream<String> listListenerNames() {
+        return this.listeners.keySet().stream();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Optional<FF4jRepositoryListener<Feature>> readListener(String listenerName) {
+        return Optional.ofNullable(this.listeners.get(listenerName));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<FeatureRepositoryListenerAudit> readAuditListener() {
+        Optional<FF4jRepositoryListener<Feature>> current = readListener(LISTENERNAME_AUDIT);
+        // Enforcing type for audit listener
+        if (current.isPresent()) {
+            return Optional.ofNullable( (FeatureRepositoryListenerAudit) current.get());
+        }
+        return Optional.empty();
     }
     
 }

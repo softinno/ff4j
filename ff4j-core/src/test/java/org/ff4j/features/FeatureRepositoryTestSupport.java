@@ -29,11 +29,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ff4j.FF4j;
+import org.ff4j.audit.AuditTrailRepositoryInMemory;
 import org.ff4j.exception.AssertionViolationException;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
 import org.ff4j.feature.exception.GroupNotFoundException;
 import org.ff4j.feature.repository.FeatureRepository;
+import org.ff4j.feature.repository.FeatureRepositoryListenerAudit;
+import org.ff4j.feature.repository.FeatureRepositorySupport;
 import org.ff4j.feature.togglestrategy.PonderationToggleStrategy;
 import org.ff4j.feature.togglestrategy.ToggleStrategy;
 import org.ff4j.parser.ConfigurationFileParser;
@@ -48,14 +51,12 @@ import org.ff4j.test.FF4jTestDataSet;
 import org.ff4j.utils.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Abtract class used to test multiple implementation of {@link FeatureRepository} in order to behave the
- * same.
+ * Mutualization of unit tests for every implementation of {@link FeatureRepository}.
  * 
- * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
+ * @author Cedrick LUNVEN (@clunven)
  */
 public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 
@@ -75,9 +76,10 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	@BeforeEach
 	public void setUp() throws Exception {
 	    ConfigurationFileParser.clearCache();
-	    ff4j        = new FF4j().withRepositoryFeatures(initStore());
-		assertFF4j  = new AssertFF4j(ff4j);
-		testedStore = ff4j.getRepositoryFeatures();
+	    testedStore = initStore();
+	    ff4j = new FF4j().withRepositoryFeatures(testedStore)
+	                     .withAudit(new AuditTrailRepositoryInMemory());
+	    assertFF4j  = new AssertFF4j(ff4j);
         testDataSet = expectConfig();
 	}
 
@@ -91,20 +93,17 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	protected abstract FeatureRepository initStore();
 
 	@Test
-	@DisplayName("When configuration file is null, expecting violation exception")
-	public void readWithNullShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_with_null_filename() {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.read(null); });
 	}
 
 	@Test
-	@DisplayName("When configuration file is empty, expecting violation exception")
-	public void readWithEmptyShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_with_empty_filename() {
         assertThrows(AssertionViolationException.class, () -> { testedStore.read(""); });
 	}
 	
 	@Test
-    @DisplayName("When parsing configuration file, should have expected test DataSet")
-    public void readAllConfFileShouldMatchExpectedFeatureNames() {
+    public void should_match_expected_features_when_findIds() {
         // Given
         assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size());
         Set < String > featuresNames = Util.asSet(testedStore.findAllIds());
@@ -116,8 +115,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-    @DisplayName("When parsing configuration file, should have expected test DataSet")
-    public void readAllConfFileShouldMatchExpectedDataSet() {
+    public void should_match_expected_features_when_findAll() {
         // Given
         assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size());
         assertFF4j.assertThatFeatureExist(F1);
@@ -158,14 +156,12 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 	
 	@Test
-	@DisplayName("When accessing unkown feature uid, expecting FeatureNotFoundException")
-	public void readWithUnknownFeatureShouldThrowFeatureNotFoundException() {
+	public void should_throw_FeatureNotFoundException_when_read_invalid_feature() {
         assertThrows(FeatureNotFoundException.class, () -> { testedStore.read("do-not-exist"); });
 	}
 
 	@Test
-	@DisplayName("When reading feature from dataSet, everything must have been populated")
-	public void readFeatureFromConfFileShouldMatchExpectedDataSet() {
+	public void should_match_dataset_when_read_f2() {
 		// Given
 	    Feature expectedF2 = testDataSet.getFeatures().get(F2);
 	    // When
@@ -200,30 +196,25 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-	@DisplayName("When toggling  with null feature uid, expecting AssertionViolationException")
-	public void toggleWithNullShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_when_toggle_null() {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOn(null); });
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOff(null); });
 	}
 	
 	@Test
-	@DisplayName("When toggling  with empty feature uid, expecting AssertionViolationException")
-	public void toggleWithEmptyShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_when_toggle_empty() {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOn(""); });
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOff(""); });
-        
 	}
 	
 	@Test
-	@DisplayName("When toggling with unkown feature uid, expecting FeatureNotFoundException")
-	public void toggleWithUnknownFeatureShouldThrowFeatureNotFoundException() {
+	public void should_throw_FeatureNotFoundException_when_toggle_unexisting_feature() {
 		assertThrows(FeatureNotFoundException.class, () -> { testedStore.toggleOn("does-not-exist"); });
 		assertThrows(FeatureNotFoundException.class, () -> { testedStore.toggleOff("does-not-exist"); });
 	}
 	
 	@Test
-	@DisplayName("When toggling ON/OFF feature, expecting feature has been toggled")
-	public void toggleFeatureShouldChangeFeatureStatus() {
+	public void should_change_status_when_toggle_feature() {
 		// Given
 		assertFF4j.assertThatFeatureExist(F1);
 		assertFF4j.assertThatFeatureIsDisabled(F1);
@@ -236,14 +227,12 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-	@DisplayName("When creating feature with null param, expecting AssertionViolationException")
-	public void createWithNullShouldThrowViolationException() throws Exception {
+	public void should_throw_AssertionViolationException_when_saveFeature_null() throws Exception {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.saveFeature(null); });
 	}
 	
 	@Test
-	@DisplayName("When creating new feature, it becomes available")
-	public void createShouldMakeNewFeatureAvailable() throws Exception {
+	public void should_create_feature_when_save() throws Exception {
 		assertFF4j.assertThatFeatureDoesNotExist(FEATURE_FOR_TEST);
 		Feature fp = new Feature(FEATURE_FOR_TEST).toggleOn().description("description").group(GRP1);
 		testedStore.save(fp);
@@ -253,8 +242,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
     @Test
-    @DisplayName("When deleting new feature, it is not available anymore")
-    public void deleteShouldRemoveFeatureAvailable() throws Exception {
+    public void should_remove_feature_when_delete() throws Exception {
         assertFF4j.assertThatFeatureExist(F1);
         testedStore.delete(F1);
         assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size() - 1);
@@ -262,14 +250,12 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 	
 	@Test
-	@DisplayName("When deleting feature with null param, expecting AssertionViolationException")
-	public void deleteFeatureWithNullShouldThrowViolationException() throws Exception {
+	public void should_throw_AssertionViolationException_when_delete_null() throws Exception {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.deleteFeature((String) null); });
 	}
 	
 	@Test
-	@DisplayName("When deleting feature with null param, expecting FeatureNotFoundException")
-	public void deleteUnknownFeatureShouldThrowFeatureNotFound() throws Exception {
+	public void should_throw_FeatureNotFoundException_when_delete_unexisting_feature() throws Exception {
 	    assertFF4j.assertThatFeatureDoesNotExist(FEATURE_FOR_TEST);
 	    assertThrows(FeatureNotFoundException.class, () -> { 
 	        testedStore.delete(FEATURE_FOR_TEST); 
@@ -277,24 +263,21 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When updating feature with null param, expecting AssertionViolationException")
-    public void updateFeatureWithNullShouldThrowViolationException() throws Exception {
+    public void should_throw_AssertionViolationException_when_save_null() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { 
             testedStore.save((Feature) null); 
         });
     }
 	
 	@Test
-    @DisplayName("When updating feature with unknowm param, creating the feature")
-    public void updatedUnknownFeatureShouldThrowFeatureNotFound() throws Exception {
+    public void should_create_feature_when_save_new() throws Exception {
         assertFF4j.assertThatFeatureDoesNotExist(FEATURE_FOR_TEST);
         testedStore.save(new Feature(FEATURE_FOR_TEST));
         assertFF4j.assertThatFeatureExist(FEATURE_FOR_TEST);
     }
-
+	
 	@Test
-	@DisplayName("When updating feature, metadata should be updated")
-	public void testUpdateFeatureCoreData() {
+	public void should_udpate_feature_when_save_existing() {
 	    // Givens
 	    String newDescription = "new-description";
         assertFF4j.assertThatFeatureExist(F1);
@@ -317,22 +300,19 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When test feature existence with null param, expecting AssertionViolationException")
-    public void existWithNullShouldThrowViolationException() throws Exception {
+    public void should_throw_AssertionViolationException_when_exist_with_null() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { testedStore.exists(null); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.exists(""); });
     }
 	
 	@Test
-    @DisplayName("When test group existence with null param, expecting AssertionViolationException")
-    public void existGroupWitNullShouldThrowViolationException() throws Exception {
+    public void should_throw_AssertionViolationException_when_existGroup_with_null() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { testedStore.existGroup(null); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.existGroup(""); });
     }
 	
 	@Test
-	@DisplayName("When group exist should return true and false if not exists")
-	public void existGroupShouldReturnGroupExistenceStatus() {
+	public void should_return_correct_flag_when_existGroup() {
 		// Given
 	    assertFF4j.assertThatGroupExist(GRP1);
 	    assertFF4j.assertThatGroupDoesNotExist("GRPY");
@@ -342,17 +322,29 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-	@DisplayName("When toggle group with null param, expecting AssertionViolationException")
-    public void toggleGroupWitEmptyShouldThrowViolationException() throws Exception {
+	public void should_throw_AssertionViolationException_when_nullorEmpty() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOnGroup(""); });
-        assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOffGroup(""); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOnGroup(null); });
+        
+        assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOffGroup(""); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOffGroup(null); });
+        
+        assertThrows(AssertionViolationException.class, () -> { testedStore.readGroup(null); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.readGroup(""); });
+        
+        assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup(null, GRP1); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup("", GRP1); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup(F1, null); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup(F1, ""); });
+        
+        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup(null, GRP1); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup("", GRP1); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup(F1, null); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup(F1, ""); });
     }
 
 	@Test
-    @DisplayName("When enable group all features should be enabled")
-	public void toggleOffGroupShouldToggleAllfeaturesOfGroup() {
+    public void should_toggle_all_related_features_when_toggle_group() {
 		// Given
 	    assertFF4j.assertThatGroupExist(GRP1);
 	    assertFF4j.assertThatFeatureIsInGroup(F2, GRP1);
@@ -372,23 +364,14 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-    @DisplayName("When enabling unknown group, expecting GroupNotFoundException ")
-	public void toggleUnknownGroupShouldThrowGroupNotFoundException() {
+    public void should_throw_GroupNotFoundExceptionn_when_group_does_not_exist() {
 	    assertFF4j.assertThatGroupDoesNotExist(GRPX);
 	    assertThrows(GroupNotFoundException.class, () -> { testedStore.toggleOnGroup(GRPX); });
 	    assertThrows(GroupNotFoundException.class, () -> { testedStore.toggleOffGroup(GRPX); });
 	}
-
-	@Test
-    @DisplayName("When reading group with null or empty, expecting AssertionViolationException")
-    public void readGroupWitNullShouldThrowViolationException() throws Exception {
-        assertThrows(AssertionViolationException.class, () -> { testedStore.readGroup(null); });
-        assertThrows(AssertionViolationException.class, () -> { testedStore.readGroup(""); });
-    }
 	
 	@Test
-    @DisplayName("When reading group, returning all features in the group")
-	public void readGroupShouldReturnAllGroupElements() {
+    public void should_return_expected_features_when_read_group() {
 		// Given
 	    assertFF4j.assertThatGroupExist(GRP1);
 	    assertFF4j.assertThatFeatureIsInGroup(F2, GRP1);
@@ -402,30 +385,18 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-    @DisplayName("When reading unknown group, expecting GroupNotFoundException ")
-    public void readUnknownGroupShouldThrowGroupNotFoundException() {
+    public void should_throw_GroupNotFoundException_when_readGroup_doesnotexist() {
 	    assertFF4j.assertThatGroupDoesNotExist(GRPX);
         assertThrows(GroupNotFoundException.class, () -> { testedStore.readGroup(GRPX); });
     }
-
-	@Test
-    @DisplayName("When adding to groupNull should throw ViolationException")
-	public void addingToNullOrEmptyGroupShouldThrowViolationException() throws Exception {
-	    assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup(null, GRP1); });
-	    assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup("", GRP1); });
-	    assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup(F1, null); });
-	    assertThrows(AssertionViolationException.class, () -> { testedStore.addToGroup(F1, ""); });
-	}
 	
 	@Test
-    @DisplayName("When adding unknow feature to group should throw FeatureNotFound")
-    public void addingUknownFeatureToGroupThrowFeatureNotFound() throws Exception {
+    public void should_throw_FeatureNotFoundException_when_addToGroup_feature_doesnotexist() throws Exception {
 	    assertThrows(FeatureNotFoundException.class, () -> { testedStore.addToGroup(FEATURE_FOR_TEST, GRP1); });
 	}
 	
 	@Test
-    @DisplayName("When adding to feature to unknow group, create group")
-    public void addingFeatureToUknownGroupCreateTheGroup() throws Exception {
+    public void should_create_group_when_addToGroup_in_group_doesnotexist() throws Exception {
 	    // Given
         assertFF4j.assertThatGroupDoesNotExist(GRPX);
         // When
@@ -437,17 +408,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 	
 	@Test
-    @DisplayName("When removing from group Null should throw ViolationException")
-    public void removingToNullOrEmptyGroupShouldThrowViolationException() throws Exception {
-        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup(null, GRP1); });
-        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup("", GRP1); });
-        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup(F1, null); });
-        assertThrows(AssertionViolationException.class, () -> { testedStore.removeFromGroup(F1, ""); });
-    }
-	
-	@Test
-    @DisplayName("When removing from group, group should be empty and size decrease from 1")
-	public void removingFromGroupShouldUpdateFeatureAndGroup() throws Exception {
+    public void should_reduce_group_size_when_removeFromGroup() throws Exception {
 	    // Given
 	    assertFF4j.assertThatGroupExist(GRP1);
 	    assertFF4j.assertThatGroupHasSize(2, GRP1);
@@ -460,8 +421,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When removing last item of a group remove group")
-    public void removingLastFeatureOfGroupDeleteGroup() {
+    public void should_delete_group_when_removeFromGroup_last_feature() {
 		// Given
 	    assertFF4j.assertThatGroupExist(GRP0);
         assertFF4j.assertThatGroupHasSize(1, GRP0);
@@ -474,8 +434,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When removing a feature does not exist throw FeatureNotFoundException")
-	public void removingUnknownFeatureFromGroupThrowFeatureNotFound() {
+    public void should_throw_FeatureNotFoundException_when_removeFromGroup_feature_doesnotexist() {
 		// Given
 	    assertFF4j.assertThatGroupExist(GRP0);
 	    assertFF4j.assertThatFeatureDoesNotExist(FEATURE_FOR_TEST);
@@ -484,8 +443,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-    @DisplayName("When removing a feature from unknown group throw GroupNotFound")
-    public void removingFeatureFromUnknownGroupTHrowGroupNotFound() {
+    public void should_throw_GroupNotFoundException_when_removeFromGroup_group_doesnotexist() {
         assertFF4j.assertThatGroupDoesNotExist(GRPX);
         assertFF4j.assertThatFeatureExist(F1);
         assertThrows(GroupNotFoundException.class, () -> { 
@@ -493,8 +451,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 	
 	@Test
-    @DisplayName("When removing a feature from wrong group is OK")
-    public void removingFeatureFromWrongGroupIsOK() {
+    public void should_pass_when_removeFromGroup_invalid_group() {
         // Given
 	    assertFF4j.assertThatGroupExist(GRP0);
         assertFF4j.assertThatGroupExist(GRP1);
@@ -507,8 +464,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When read all groups everything is there")
-	public void readingAllGroupsFromTestDataSets() {
+    public void should_match_expected_dataset_when_listGroupNames() {
 		// Given
 	    assertFF4j.assertThatStoreHasNumberOfGroups(2);
 	    assertFF4j.assertThatGroupExist(GRP0);
@@ -523,8 +479,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When updating toggle strategies store is updated")
-	public void updatingToggleStrategiesShouldUpdateStore() {
+    public void should_update_feature_when_add_toggleStrategy() {
 		// Given
 	    assertFF4j.assertThatFeatureExist(F3);
 	    Feature startFeature = testedStore.read(F3);
@@ -544,8 +499,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When removing toggle strategies store is updated")
-	public void testUpdateRemoveFlippingStrategy() {
+    public void should_update_feature_when_remove_toggleStrategy() {
 		// Given
 	    assertFF4j.assertThatFeatureExist(F4);
         Feature startFeature = testedStore.read(F4);
@@ -559,20 +513,17 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-    @DisplayName("When invoking clear all features are deleted")
-	public void testClear() {
-	    assertFF4j.assertThatFeatureExist(F1);
-	    assertFF4j.assertThatFeatureExist(F2);
-	    assertFF4j.assertThatFeatureExist(F3);
-	    assertFF4j.assertThatFeatureExist(F4);
+    public void should_empty_store_when_deleteAll() {
+	    // Given
+	    Assertions.assertNotEquals(0, testedStore.findAll().count());
+	    // When
 		testedStore.deleteAll();
 		// Then
 		Assertions.assertEquals(0, testedStore.findAll().count());
 	}
 
 	@Test
-    @DisplayName("When updating properties store is updated")
-    public void addingPropertiesShouldUpdateStore() {
+    public void should_update_feature_when_add_property() {
         // Given
         assertFF4j.assertThatFeatureExist(F3);
         Feature startFeature = testedStore.read(F3);
@@ -590,8 +541,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-    @DisplayName("When removing properties store is updated")
-    public void removingPropertiesShouldUpdateStore() {
+    public void should_update_feature_when_remove_property() {
         // Given
         assertFF4j.assertThatFeatureExist(F2);
         Feature startFeature = testedStore.read(F2);
@@ -605,8 +555,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 	
 	@Test
-    @DisplayName("When updating properties store is updated")
-    public void updatingPropertyValueShouldUpdateStore() {
+    public void should_update_feature_when_update_property() {
         // Given
         assertFF4j.assertThatFeatureExist(F2);
         Feature startFeature = testedStore.read(F2);
@@ -622,8 +571,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 
     @Test
-    @DisplayName("When adding properties fixed values store is updated")
-	public void testUpdateEditPropertyAddFixedValues() {
+    public void should_update_feature_when_addFixedValue_property() {
         // Given
         assertFF4j.assertThatFeatureExist(F2);
         Feature startFeature    = testedStore.read(F2);
@@ -643,8 +591,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
     @Test
-    @DisplayName("When removing properties fixed values store is updated")
-    public void testUpdateEditPropertyREmoveFixedValues() {
+    public void should_update_feature_when_removeFixedValue_property() {
         // Given
         assertFF4j.assertThatFeatureExist(F2);
         Feature startFeature    = testedStore.read(F2);
@@ -664,5 +611,39 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         PropertyInteger digit2 = (PropertyInteger) opt2.get();
         Assertions.assertEquals(1, digit2.getFixedValues().get().size()); 
     }
-	
+    
+    @Test
+    public void should_generate_json_when_toString() {
+        Assertions.assertNotNull(testedStore.toString());
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void should_have_auditListener_and_remove_if_unregister() {
+        // Given
+        Optional<FeatureRepositoryListenerAudit> auditListener = 
+                (Optional<FeatureRepositoryListenerAudit>) testedStore.readAuditListener();
+        Assertions.assertTrue(auditListener.isPresent());
+        Assertions.assertEquals(1, testedStore.listListenerNames().count());
+        Assertions.assertEquals(auditListener, 
+                testedStore.readListener(FeatureRepositorySupport.LISTENERNAME_AUDIT));
+        // When
+        testedStore.unRegisterAuditListener();
+        // Then
+        Assertions.assertEquals(0, testedStore.listListenerNames().count());
+        Assertions.assertFalse(testedStore.readAuditListener().isPresent());
+    }
+    
+    @Test
+    public void should_add_Listener_when_register() throws InterruptedException {
+        // Given
+        Assertions.assertEquals(1, testedStore.listListenerNames().count());
+        // When
+        testedStore.registerListener("Sample", new FeatureRepositoryListenerConsole());
+        // Then
+        Assertions.assertEquals(2, testedStore.listListenerNames().count());
+        testedStore.createSchema();
+        // Do not close test before logging of console
+        Thread.sleep(500);
+    }
 }

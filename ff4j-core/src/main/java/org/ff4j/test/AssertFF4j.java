@@ -150,7 +150,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureFlipped(String featureName) {
 		assertThatFeatureExist(featureName);
-		assertTrue(ff4j.check(featureName), String.format("'%s' is not flipped where it should", featureName));
+		assertTrue(ff4j.test(featureName), String.format("'%s' is not flipped where it should", featureName));
 		return this;
 	}
 
@@ -163,7 +163,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureNotFlipped(String featureName) {
 		assertThatFeatureExist(featureName);
-		assertFalse(ff4j.check(featureName), String.format("'%s' is not flipped where it shouldn't", featureName));
+		assertFalse(ff4j.test(featureName), String.format("'%s' is not flipped where it shouldn't", featureName));
 		return this;
 	}
 
@@ -240,7 +240,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureIsInGroup(String featureName, String groupName) {
 		assertThatFeatureExist(featureName);
-		Feature currentFeature = ff4j.readFeature(featureName);
+		Feature currentFeature = ff4j.getRepositoryFeatures().read(featureName);
 		assertTrue(
 		        currentFeature.getGroup().isPresent() && 
 		        groupName.equals(currentFeature.getGroup().get()),
@@ -260,7 +260,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureNotInGroup(String featureName, String groupName) {
 		assertThatFeatureExist(featureName);
-		String group = ff4j.readFeature(featureName).getGroup().orElse(null);
+		String group = ff4j.getRepositoryFeatures().read(featureName).getGroup().orElse(null);
 		assertTrue(group == null || !groupName.equals(group));
 		return this;
 	}
@@ -345,8 +345,8 @@ public class AssertFF4j {
 	 * @return current object
 	 */
 	public final AssertFF4j assertThatFeatureHasFlippingStrategy(String featureName) {
-	    assertNotNull(ff4j.readFeature(featureName).getToggleStrategies()); 
-		assertFalse(ff4j.readFeature(featureName).getToggleStrategies().isEmpty(), 
+	    assertNotNull(ff4j.getRepositoryFeatures().read(featureName).getToggleStrategies()); 
+		assertFalse(ff4j.getRepositoryFeatures().read(featureName).getToggleStrategies().isEmpty(), 
 		        FEATURE + featureName + "' must have a FlippingStrategy but doesn't");
 		return this;
 	}
@@ -360,7 +360,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureHasProperties(String featureName) {
 		assertThatFeatureExist(featureName);
-		assertTrue(ff4j.readFeature(featureName).getProperties().size() > 0, "Properties are required");
+		assertTrue(ff4j.getRepositoryFeatures().read(featureName).getProperties().size() > 0, "Properties are required");
 		return this;
 	}
 
@@ -373,7 +373,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureDoesNotHaveProperties(String featureName) {
 		assertThatFeatureExist(featureName);
-		assertTrue(ff4j.readFeature(featureName).getProperties().isEmpty(), "Properties are forbidden");
+		assertTrue(ff4j.getRepositoryFeatures().read(featureName).getProperties().isEmpty(), "Properties are forbidden");
 		return this;
 	}
 
@@ -386,7 +386,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureHasProperty(String featureName, String propertyName) {
 	    assertThatFeatureHasProperties(featureName);
-        Map<String, Property<?>> properties = ff4j.readFeature(featureName).getProperties();
+        Map<String, Property<?>> properties = ff4j.getRepositoryFeatures().read(featureName).getProperties();
         assertTrue(properties.containsKey(propertyName), "Feature must contain property " + propertyName);
         return this;
 	}
@@ -400,7 +400,7 @@ public class AssertFF4j {
 	 */
 	public final AssertFF4j assertThatFeatureHasNotProperty(String featureName, String propertyName) {
 	    assertThatFeatureExist(featureName);
-        Map<String, Property<?>> properties = ff4j.readFeature(featureName).getProperties();
+        Map<String, Property<?>> properties = ff4j.getRepositoryFeatures().read(featureName).getProperties();
         assertTrue((properties == null) || !properties.containsKey(propertyName), "Feature must contain property " + propertyName);
         return this;
 	}

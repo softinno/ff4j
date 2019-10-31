@@ -51,16 +51,6 @@ public interface FeatureRepository extends FF4jRepository < String, Feature > {
      */
     void toggleOff(String uid);
     
-    /**
-     * Syntax sugar.
-     *
-     * @return
-     *      list of features names.
-     */
-    default Stream < String > listFeatureNames() {
-        return findAllIds();
-    }
-    
     // ---------------------------------
     // --------- GROUPS  ---------------
     // ---------------------------------

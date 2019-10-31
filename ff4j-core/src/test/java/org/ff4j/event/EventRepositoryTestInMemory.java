@@ -19,18 +19,17 @@ package org.ff4j.event;
  * #L%
  */
 
-import org.ff4j.feature.repository.FeatureRepository;
-import org.ff4j.feature.usage.repository.FeatureUsageRepositoryInMemory;
+import org.ff4j.audit.AuditTrailInMemoryTest;
+import org.ff4j.audit.AuditTrailRepositoryInMemory;
 import org.ff4j.feature.usage.repository.EventRepositorySupport;
+import org.ff4j.feature.usage.repository.FeatureUsageRepositoryInMemory;
 import org.junit.jupiter.api.DisplayName;
 
 /**
- * Testing implementation of {@link FeatureRepository} for DB : MEMORY
- *
- * @author Cedrick LUNVEN (@clunven)
+ * Unit tests for {@link AuditTrailRepositoryInMemory}, in-memory store for {@link AuditTrailInMemoryTest}
  */
 @DisplayName(" EventRepository::InMemory")
-public class EventRepositoryTestInMemory extends EventRepositoryTest {
+public class EventRepositoryTestInMemory extends EventRepositoryTestSupport {
  
     /** {@inheritDoc} */
     @Override

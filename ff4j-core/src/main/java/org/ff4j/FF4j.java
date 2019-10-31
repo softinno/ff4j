@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.ff4j.audit.AuditTrailRepository;
-import org.ff4j.audit.AuditTrailRepositoryInMemory;
 import org.ff4j.cache.CacheManager;
 import org.ff4j.cache.CacheProxyFeatures;
 import org.ff4j.cache.CacheProxyProperties;
@@ -44,7 +43,6 @@ import org.ff4j.feature.usage.repository.FeatureUsageRepositoryInMemory;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
-import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.property.repository.PropertyRepository;
 import org.ff4j.property.repository.PropertyRepositoryInMemory;
 import org.ff4j.user.repository.RolesAndUsersRepository;
@@ -148,23 +146,22 @@ public class FF4j extends FF4jRepositoryObserver < FeatureUsageListener > implem
 
     /** {@inheritDoc} */
     @Override
-    public boolean test(String featureUid) {
-        return check(featureUid);
-    }
-
-    /**
-     * Evaluate if a feature is toggled based on the information in store and provided
-     * execution context (key/value)
-     * 
-     * @param featureID
-     *            feature unique identifier.
-     * @return current feature status
-     */
-    public boolean check(String uid) {
-        Feature feature = readFeature(uid);
+    public boolean test(String uid) {
+        Feature feature;
+        try {
+            feature = getRepositoryFeatures().read(uid);
+        } catch (FeatureNotFoundException fnfe) {
+            if (this.autoCreateFeatures) {
+                feature = new Feature(uid).toggleOff();
+                getRepositoryFeatures().save(feature);
+            } else {
+                throw fnfe;
+            }
+        }
         boolean featureToggled = feature.isEnabled() && feature.isToggled(getContext());
         if (featureToggled) {
-            this.notify((listener) -> listener.onFeatureHit(feature));
+            final Feature featureNotif = feature;
+            this.notify((listener) -> listener.onFeatureHit(featureNotif));
         }
         return featureToggled;
     }
@@ -210,87 +207,11 @@ public class FF4j extends FF4jRepositoryObserver < FeatureUsageListener > implem
              }
         }
         return this;
-    }
+    }  
     
-    // -------------------------------------
-    // ------ CRUD Features (fluent) -------
-    // -------------------------------------
-    
-    public Optional<Feature> findFeature(String uid) {
-        return getRepositoryFeatures().find(uid);
-    }
-    
-    /**
-     * The feature will be create automatically if the boolea, autocreate is enabled.
-     * 
-     * @param featureID
-     *            target feature ID
-     * @return target feature.
-     */
-    public Feature readFeature(String uid) throws FeatureNotFoundException {
-        Optional <Feature > oFeature = findFeature(uid);
-        if (!oFeature.isPresent()) {
-            if (autoCreateFeatures) {
-                Feature autoFeature = new Feature(uid).toggleOff();
-                getRepositoryFeatures().save(autoFeature);
-                return autoFeature;
-            }
-            throw new FeatureNotFoundException(uid);
-        }
-        return oFeature.get();
-    }
-    
-    /**
-     * Create new Feature.
-     * 
-     * @param featureID
-     *            unique feature identifier.
-     */
-    public FF4j saveFeature(Feature fp) {
+    public FF4j withFeature(Feature fp) {
         getRepositoryFeatures().save(fp);
-        return this;
-    }
-    
-    public FF4j addFeature(Feature fp) {
-        return saveFeature(fp); 
-    }
-    
-    // -------------------------------------
-    // ------ CRUD Properties (fluent) -----
-    // -------------------------------------
-    
-    /**
-     * Find a property by its id.
-     *
-     * @param uid
-     *      property unique identifier
-     * @return
-     *      property
-     */
-    public Optional<Property<?>> findProperty(String uid) {
-        return getRepositoryProperties().find(uid);
-    }
-    
-    /**
-     * Find a REQUIRED property by its id
-     * 
-     * @param featureID
-     *            target feature ID
-     * @return target feature.
-     */ 
-    public Property<?> readProperty(String propertyName) throws PropertyNotFoundException {
-       return getRepositoryProperties().read(propertyName);
-    }
-    
-    /**
-     * Create new Property.
-     * 
-     * @param featureID
-     *            unique feature identifier.
-     */
-    public FF4j saveProperty(Property<?> prop) {
-        getRepositoryProperties().save(prop);
-        return this;
+        return this; 
     }
     
     /**
@@ -600,22 +521,12 @@ public class FF4j extends FF4jRepositoryObserver < FeatureUsageListener > implem
         return this;
     }
     /**
-     * Register listener to work on audit.
-     *
-     * @return
-     *      current ff4j instance
-     */
-    public FF4j withAudit() {
-        return withAudit(new AuditTrailRepositoryInMemory());
-    }
-    
-    /**
      * Unregister listener to work on audit.
      *
      * @return
      *      current ff4j instance
      */
-    public FF4j withoutAudit() {
+    public FF4j stopAudit() {
         this.auditTrail = Optional.empty();
         getRepositoryFeatures().unRegisterAuditListener();
         getRepositoryProperties().unRegisterAuditListener();

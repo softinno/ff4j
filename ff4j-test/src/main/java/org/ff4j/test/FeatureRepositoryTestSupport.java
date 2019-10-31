@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.ff4j.FF4j;
+import org.ff4j.audit.AuditTrailRepositoryInMemory;
 import org.ff4j.exception.AssertionViolationException;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
@@ -75,9 +76,10 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	@BeforeEach
 	public void setUp() throws Exception {
 	    ConfigurationFileParser.clearCache();
-	    ff4j        = new FF4j().withRepositoryFeatures(initStore());
+	    testedStore = initStore();
+	    ff4j = new FF4j().withRepositoryFeatures(testedStore)
+	                     .withAudit(new AuditTrailRepositoryInMemory());
 		assertFF4j  = new AssertFF4j(ff4j);
-		testedStore = ff4j.getRepositoryFeatures();
         testDataSet = expectConfig();
 	}
 
@@ -91,20 +93,17 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	protected abstract FeatureRepository initStore();
 
 	@Test
-	@DisplayName("When configuration file is null, expecting violation exception")
-	public void readWithNullShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_with_null_filename() {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.read(null); });
 	}
 
 	@Test
-	@DisplayName("When configuration file is empty, expecting violation exception")
-	public void readWithEmptyShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_with_empty_filename() {
         assertThrows(AssertionViolationException.class, () -> { testedStore.read(""); });
 	}
 	
 	@Test
-    @DisplayName("When parsing configuration file, should have expected test DataSet")
-    public void readAllConfFileShouldMatchExpectedFeatureNames() {
+    public void findIds_should_match_expected_features_dataset() {
         // Given
         assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size());
         Set < String > featuresNames = Util.asSet(testedStore.findAllIds());
@@ -116,8 +115,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-    @DisplayName("When parsing configuration file, should have expected test DataSet")
-    public void readAllConfFileShouldMatchExpectedDataSet() {
+    public void findAll_should_match_expected_features_dataset() {
         // Given
         assertFF4j.assertThatStoreHasSize(testDataSet.getFeatures().size());
         assertFF4j.assertThatFeatureExist(F1);
@@ -158,14 +156,12 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
     }
 	
 	@Test
-	@DisplayName("When accessing unkown feature uid, expecting FeatureNotFoundException")
-	public void readWithUnknownFeatureShouldThrowFeatureNotFoundException() {
+	public void should_throw_FeatureNotFoundException_when_read_invalid_feature() {
         assertThrows(FeatureNotFoundException.class, () -> { testedStore.read("do-not-exist"); });
 	}
 
 	@Test
-	@DisplayName("When reading feature from dataSet, everything must have been populated")
-	public void readFeatureFromConfFileShouldMatchExpectedDataSet() {
+	public void read_f2_should_match_expected_dataset() {
 		// Given
 	    Feature expectedF2 = testDataSet.getFeatures().get(F2);
 	    // When
@@ -200,30 +196,25 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 
 	@Test
-	@DisplayName("When toggling  with null feature uid, expecting AssertionViolationException")
-	public void toggleWithNullShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_when_toggle_null() {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOn(null); });
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOff(null); });
 	}
 	
 	@Test
-	@DisplayName("When toggling  with empty feature uid, expecting AssertionViolationException")
-	public void toggleWithEmptyShouldThrowViolationException() {
+	public void should_throw_AssertionViolationException_when_toggle_empty() {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOn(""); });
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.toggleOff(""); });
-        
 	}
 	
 	@Test
-	@DisplayName("When toggling with unkown feature uid, expecting FeatureNotFoundException")
-	public void toggleWithUnknownFeatureShouldThrowFeatureNotFoundException() {
+	public void should_throw_FeatureNotFoundException_when_toggle_invalid_feature() {
 		assertThrows(FeatureNotFoundException.class, () -> { testedStore.toggleOn("does-not-exist"); });
 		assertThrows(FeatureNotFoundException.class, () -> { testedStore.toggleOff("does-not-exist"); });
 	}
 	
 	@Test
-	@DisplayName("When toggling ON/OFF feature, expecting feature has been toggled")
-	public void toggleFeatureShouldChangeFeatureStatus() {
+	public void should_change_status_when_toggle_feature() {
 		// Given
 		assertFF4j.assertThatFeatureExist(F1);
 		assertFF4j.assertThatFeatureIsDisabled(F1);
@@ -236,8 +227,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	}
 	
 	@Test
-	@DisplayName("When creating feature with null param, expecting AssertionViolationException")
-	public void createWithNullShouldThrowViolationException() throws Exception {
+	public void should_throw_AssertionViolationException_when_save_null() throws Exception {
 	    assertThrows(AssertionViolationException.class, () -> { testedStore.saveFeature(null); });
 	}
 	
@@ -644,7 +634,7 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 
     @Test
     @DisplayName("When removing properties fixed values store is updated")
-    public void testUpdateEditPropertyREmoveFixedValues() {
+    public void testUpdateEditPropertyRemoveFixedValues() {
         // Given
         assertFF4j.assertThatFeatureExist(F2);
         Feature startFeature    = testedStore.read(F2);
@@ -663,6 +653,18 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         Optional<Property<?>> opt2 = endFeature.getProperty(P_F2_DIGITVALUE);
         PropertyInteger digit2 = (PropertyInteger) opt2.get();
         Assertions.assertEquals(1, digit2.getFixedValues().get().size()); 
+    }
+    
+    @Test
+    @DisplayName("When removing properties fixed values store is updated")
+    public void testToStringAsJson() {
+        Assertions.assertNotNull(testedStore.toString());
+    }
+    
+    @Test
+    @DisplayName("When removing properties fixed values store is updated")
+    public void testUnRegisterListener() {
+        testedStore.unRegisterAuditListener();
     }
 	
 }

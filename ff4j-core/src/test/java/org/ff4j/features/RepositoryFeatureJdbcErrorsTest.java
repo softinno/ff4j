@@ -27,6 +27,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureAccessException;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryJdbc;
@@ -61,13 +62,19 @@ public class RepositoryFeatureJdbcErrorsTest {
     }
     
     @Test
-    public void testExecutionErrors() {
+    public void should_throw_FeatureAccessException_when_invalid_datasource() {
         assertThrows(FeatureAccessException.class, repository::findAll);
         assertThrows(FeatureAccessException.class, repository::findAllIds);
         assertThrows(FeatureAccessException.class, repository::count);
-        assertThrows(FeatureAccessException.class, 
-                () -> {repository.exists("ok");});
-        
+        assertThrows(FeatureAccessException.class, repository::deleteAll);
+        assertThrows(FeatureAccessException.class, repository::listGroupNames);
+        assertThrows(FeatureAccessException.class, () -> {repository.exists("ok");});
+        assertThrows(FeatureAccessException.class, () -> {repository.find("f1");});
+        assertThrows(FeatureAccessException.class, () -> {repository.delete("ok");});
+        assertThrows(FeatureAccessException.class, () -> {repository.existGroup("g1");});
+        assertThrows(FeatureAccessException.class, () -> {repository.readGroup("g1");});
+        assertThrows(FeatureAccessException.class, () -> {repository.saveFeature(new Feature("fx", true));});
+        assertThrows(FeatureAccessException.class, () -> {repository.toggleOnGroup("g1");});
     }
     
 }

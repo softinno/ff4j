@@ -8,7 +8,9 @@ import static org.ff4j.utils.JsonUtils.objectAsJson;
 import static org.ff4j.utils.Util.setOf;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /*-
  * #%L
@@ -112,13 +114,13 @@ public abstract class RolesAndUsersRepositorySupport
     /** {@inheritDoc} */
     @Override
     public void registerListener(String name, FF4jRepositoryListener<FF4jUser> listener) {
-        registerListener(name, (RepositoryUserListener) listener);
+        registerListener(name, (RepositoryUserListenerAudit) listener);
     }
     
     /** {@inheritDoc} */
     @Override
     public void registerAuditListener(AuditTrailRepository auditTrail) {
-        this.registerListener(LISTENERNAME_AUDIT, new RepositoryUserListener(auditTrail));
+        this.registerListener(LISTENERNAME_AUDIT, new RepositoryUserListenerAudit(auditTrail));
     }
     
     /** {@inheritDoc} */
@@ -126,6 +128,30 @@ public abstract class RolesAndUsersRepositorySupport
     public void unRegisterAuditListener() {
         this.unregisterListener(LISTENERNAME_AUDIT);
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Stream<String> listListenerNames() {
+        return this.listeners.keySet().stream();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<FF4jRepositoryListener<FF4jUser>> readListener(String listenerName) {
+        return Optional.ofNullable(this.listeners.get(listenerName));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<RepositoryUserListenerAudit> readAuditListener() {
+        Optional<FF4jRepositoryListener<FF4jUser>> current = readListener(LISTENERNAME_AUDIT);
+        // Enforcing type for audit listener
+        if (current.isPresent()) {
+            return Optional.ofNullable( (RepositoryUserListenerAudit) current.get());
+        }
+        return Optional.empty();
+    }
+    
     
     /** {@inheritDoc} */
     protected String customToString() {

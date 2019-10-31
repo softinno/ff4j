@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public abstract class EventRepositoryTest implements FF4jTestDataSet {
+public abstract class EventRepositoryTestSupport implements FF4jTestDataSet {
    
     /** Initialize */
     protected FF4j ff4j = null;

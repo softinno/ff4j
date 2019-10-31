@@ -25,7 +25,7 @@ import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.audit.AuditTrailListenerSupport;
 import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.event.Event.Scope;
-import org.ff4j.user.FF4jRole;
+import org.ff4j.user.FF4jUser;
 
 /**
  * Public Interface of a Listener on CRUD repository.
@@ -36,7 +36,7 @@ import org.ff4j.user.FF4jRole;
  * @param <ENTITY>
  *    {@link FF4jEntity} to be specialized by type of store 
  */
-public class RepositoryRoleListener extends AuditTrailListenerSupport < FF4jRole > implements FF4jRepositoryListener< FF4jRole > {
+public class RepositoryUserListenerAudit extends AuditTrailListenerSupport < FF4jUser > implements FF4jRepositoryListener< FF4jUser > {
 
     /**
      * Default implementation of User Listener.
@@ -44,7 +44,7 @@ public class RepositoryRoleListener extends AuditTrailListenerSupport < FF4jRole
      * @param auditTrail
      *      target audit trail to fill
      */
-    public RepositoryRoleListener(AuditTrailRepository auditTrail) {
+    public RepositoryUserListenerAudit(AuditTrailRepository auditTrail) {
         super(auditTrail, Scope.USER, Scope.USERSTORE);
     }
     

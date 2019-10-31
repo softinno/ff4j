@@ -23,6 +23,7 @@ package org.ff4j.aop.aspect;
 import org.ff4j.FF4j;
 import org.ff4j.aop.GreetingService;
 import org.ff4j.feature.Feature;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -36,17 +37,23 @@ public class ToggleAspectTest {
     @Test
     @DisplayName("Unit testing of aspects")
     public void testYourAspect() {
+        
+        // Given
         FF4j ff4j = new FF4j().withFeatureAutoCreate()
-                              .withoutFeatureUsageTracking()
-                              .withoutAudit()
-                              .addFeature(new Feature("french", false));
+                              .withFeature(new Feature("french", false));
+        
+        // AspectJ
         ToggledFeatureAspect.ff4j = ff4j;
         
+        // Given
         GreetingService service = new GreetingService();
-        System.out.println(service.greetings("Cedrick"));
+        Assertions.assertTrue(service.greetings("Cedrick").startsWith("Hello"));
         
+        // When
         ff4j.toggleOn("french");
-        System.out.println(service.greetings("Cedrick"));
+        
+        // Then
+        Assertions.assertTrue(service.greetings("Cedrick").startsWith("Bonjour"));
     }
     
 }

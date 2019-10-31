@@ -40,13 +40,13 @@ public class RepositoryFeatureInMemoryTest extends FeatureRepositoryTestSupport 
     /** {@inheritDoc} */
     @Override
     public FeatureRepository initStore() {
-        return new FeatureRepositoryInMemory(new TestConfigurationParser(), "ff4j-testDataset.xml");
+        return new FeatureRepositoryInMemory(
+                new TestConfigurationParser(), "ff4j-testDataset.xml");
     }
     
     @Test
     @SuppressWarnings({"unchecked","rawtypes"})
-    @DisplayName("Feature store should be initialized with a file a parser")
-    public void initStoreWithFile() {
+    public void should_init_with_file() {
         Assertions.assertNotNull(new FeatureRepositoryInMemory(
                 new TestConfigurationParser(), "ff4j-testDataset.xml"));
         Assertions.assertNotNull(new FeatureRepositoryInMemory(

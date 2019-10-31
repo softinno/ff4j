@@ -32,7 +32,6 @@ import org.ff4j.test.AssertFF4j;
 import org.ff4j.test.FF4jTestDataSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
@@ -54,9 +53,6 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
         auditTrail = ff4j.getAuditTrail().get();
     }
     
-    /**
-     * Each implementation of audit trail may have the same 
-     */
     protected abstract AuditTrailRepository initAuditTrailRepository();
     
     protected static Event genEventCreatureFeature(String featureName) {
@@ -72,8 +68,7 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("Should not allow invalid events for logging")
-    public void log_with_invalid_event_shouldThrow_ViolationException() {
+    public void should_throw_AssertionViolationException_when_invalid_event() {
         assertThrows(AssertionViolationException.class, () -> { auditTrail.log(null); });
         Event e = new Event().scope(null).action(null).targetUid(null);
         assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e); });
@@ -87,8 +82,7 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("Event inserted in DB should be there")
-    public void inserted_event_should_generate_entry() {
+    public void should_create_record_when_log_event() {
         // Given an empty repo
         AuditTrailQuery last5Days = new AuditTrailQuery(
                 System.currentTimeMillis() - 1000*3600*24*5, 
@@ -107,8 +101,7 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("Purge event in DB should delete")
-    public void purge_event_should_delete_entry() {
+    public void should_delete_entry_when_purge_event() {
         AuditTrailQuery last5Days = new AuditTrailQuery()
                 .from(System.currentTimeMillis() - 1000*3600*24*5)
                 .to(System.currentTimeMillis() + 10);
@@ -122,8 +115,7 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("When creating schema expected resources has been created")
-    public void createSchema_should_create_resources() {
+    public void should_create_resources_when_createSchema() {
         // Given no info
         AuditTrailQuery last5Days = new AuditTrailQuery()
                 .from(System.currentTimeMillis() - 1000*3600*24*5)

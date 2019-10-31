@@ -1,5 +1,7 @@
 package org.ff4j.property;
 
+import java.util.Collection;
+
 /*-
  * #%L
  * ff4j-core
@@ -24,7 +26,9 @@ import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.property.repository.PropertyRepository;
 import org.ff4j.property.repository.PropertyRepositoryInMemory;
 import org.ff4j.test.TestConfigurationParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing implementation of {@link FeatureRepository} for DB : MEMORY
@@ -32,12 +36,23 @@ import org.junit.jupiter.api.DisplayName;
  * @author Cedrick LUNVEN (@clunven)
  */
 @DisplayName("PropertyRepository::InMemory with static DataSet")
-public class RepositoryProperty_Test_InMemory extends PropertyRepositoryTestSupport {
+public class RepositoryPropertyInMemoryTest extends PropertyRepositoryTestSupport {
 
     /** {@inheritDoc} */
     @Override
     public PropertyRepository initStore() {
         return new PropertyRepositoryInMemory(new TestConfigurationParser(), "ff4j-testDataset.xml");
+    }
+    
+    @Test
+    @SuppressWarnings({"unchecked","rawtypes"})
+    public void initStoreWithFile() {
+        Assertions.assertNotNull(new PropertyRepositoryInMemory(
+                new TestConfigurationParser(), "ff4j-testDataset.xml"));
+        Assertions.assertNotNull(new PropertyRepositoryInMemory(
+                new TestConfigurationParser(), 
+                    getClass().getClassLoader().getResourceAsStream("ff4j-testDataset.xml")));
+        Assertions.assertNotNull(new PropertyRepositoryInMemory( (Collection) null));
     }
     
 }

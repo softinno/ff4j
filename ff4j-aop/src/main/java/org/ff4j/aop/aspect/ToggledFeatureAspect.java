@@ -40,7 +40,7 @@ import org.ff4j.aop.ToggledFeature;
  */
 @Aspect
 public class ToggledFeatureAspect {
-
+    
     /**
      * Hold instance of Aspect
      */
@@ -93,35 +93,34 @@ public class ToggledFeatureAspect {
             Method          method    = signature.getMethod();
             ToggledFeature  toggleAnn = method.getAnnotation(ToggledFeature.class);
             Object          currentObject = joinPoint.getTarget();
+            
             // Read feature name
             String featureName = toggleAnn.feature();
             if (!"".equals(toggleAnn.value())) {
                 featureName = toggleAnn.value();
             }
-            //System.out.println("+ Processing " + featureName);
-
+            
             // Feature Name has been provided ...or do nothing
             if (!"".equals(featureName)) {
-                String targetMethodName = toggleAnn.methodName();
-                //System.out.println("+ Invoking " + targetMethodName);
-                // Method Name has been provided ...or do nothing
-                if (!"".equals(targetMethodName)) {
-                    Class<?> targetClass = toggleAnn.className();
-                    // From this point FF4j can be checked
-                    //System.out.println("+ FF4j evaluation " + featureName);
-                    if (ff4j.test(featureName)) {
+                // Log testing
+                if (ff4j.test(featureName)) {
+                    // Method Name has been provided ...or do nothing
+                    String targetMethodName = toggleAnn.methodName();
+                    if (!"".equals(targetMethodName)) {
+                        // Is same class ?
+                        Class<?> targetClass = toggleAnn.className();
                         if (NullType.class.equals(targetClass)) {
-                            //System.out.println("+ In same bean");
                             return currentObject.getClass().getMethod(targetMethodName, signature.getParameterTypes())
                                                 .invoke(currentObject, joinPoint.getArgs());
                         } else {
                             return targetClass.getMethod(targetMethodName, signature.getParameterTypes())
                                               .invoke(targetClass.getDeclaredConstructor().newInstance(), joinPoint.getArgs());
                         }
+                    } else {
+                        // Feature name is provided but not method to invoke, do nothing
                     }
                 }
             }
-            // Do nothing
             return joinPoint.proceed();
         } catch (Throwable throwable) {
             throw throwable;

@@ -398,6 +398,5 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
             }
         }
         return null;
-    }
-
+    }    
 }

@@ -6,7 +6,9 @@ import static org.ff4j.utils.JsonUtils.collectionAsJson;
 import static org.ff4j.utils.JsonUtils.objectAsJson;
 import static org.ff4j.utils.Util.setOf;
 
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.FF4jRepositorySupport;
@@ -130,6 +132,29 @@ public abstract class PropertyRepositorySupport
     @Override
     public void unRegisterAuditListener() {
         this.unregisterListener(LISTENERNAME_AUDIT);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Stream<String> listListenerNames() {
+        return this.listeners.keySet().stream();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<FF4jRepositoryListener<Property<?>>> readListener(String listenerName) {
+        return Optional.ofNullable(this.listeners.get(listenerName));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<PropertyRepositoryListenerAudit> readAuditListener() {
+        Optional<FF4jRepositoryListener<Property<?>>> current = readListener(LISTENERNAME_AUDIT);
+        // Enforcing type for audit listener
+        if (current.isPresent()) {
+            return Optional.ofNullable((PropertyRepositoryListenerAudit) current.get());
+        }
+        return Optional.empty();
     }
     
     /** {@inheritDoc} */

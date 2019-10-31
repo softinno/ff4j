@@ -1,10 +1,10 @@
 package org.ff4j.core;
 
-/*
+/*-
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 Ff4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,8 @@ package org.ff4j.core;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.ff4j.FF4j;
 import org.ff4j.feature.Feature;
-import org.ff4j.feature.exception.FeatureNotFoundException;
-import org.ff4j.property.PropertyString;
-import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.test.AssertFF4j;
 import org.ff4j.test.FF4jTestDataSet;
 import org.ff4j.test.TestConfigurationParser;
@@ -55,57 +50,26 @@ public class FF4jTest implements FF4jTestDataSet {
         ff4j = new FF4j(new TestConfigurationParser().expectConfig());
         this.assertFf4j = new AssertFF4j(ff4j);
     }
-
-    @Test
-    @DisplayName("When toggling with unkown feature uid, expecting FeatureNotFoundException")
-    public void readDataNotAvailableShouldThrowNotFoundException() {
-        assertThrows(FeatureNotFoundException.class,  () -> { ff4j.readFeature("i-dont-exist");  });
-        assertThrows(PropertyNotFoundException.class, () -> { ff4j.readProperty("i-dont-exist"); });
-    }
     
     @Test
-    @DisplayName("When saving a feature, it becomes available")
-    public void savingFeatureShouldCreateItInRepository() {
-        FF4j ff4j = new FF4j().withAudit();
+    public void should_enable_feature_when_toggle_on() {
+        FF4j ff4j = new FF4j();
         Assertions.assertFalse(ff4j.getRepositoryFeatures().exists(FEATURE_FOR_TEST));
-        ff4j.saveFeature(new Feature(FEATURE_FOR_TEST).toggleOn());
-        Assertions.assertTrue(ff4j.getRepositoryFeatures().exists(FEATURE_FOR_TEST));
-        ff4j.getRepositoryFeatures().delete(FEATURE_FOR_TEST);
-        Assertions.assertFalse(ff4j.getRepositoryFeatures().exists(FEATURE_FOR_TEST));
-    }
-    
-    @Test
-    @DisplayName("When saving a property, it becomes available")
-    public void savingPropertyShouldCreateEntryInRepository() {
-        FF4j ff4j = new FF4j().withAudit();
-        Assertions.assertFalse(ff4j.getRepositoryProperties().exists(PROPERTY_FOR_TEST));
-        ff4j.saveProperty(new PropertyString(PROPERTY_FOR_TEST, "v1"));
-        Assertions.assertTrue(ff4j.getRepositoryProperties().exists(PROPERTY_FOR_TEST));
-        ff4j.getRepositoryProperties().delete(PROPERTY_FOR_TEST);
-        Assertions.assertFalse(ff4j.getRepositoryProperties().exists(PROPERTY_FOR_TEST));
-    }
-    
-    @Test
-    @DisplayName("Toggling on a feature should make the feature enabled")
-    public void togglingOnShouldMakeFeatureEnabled() {
-        FF4j ff4j = new FF4j().withAudit();
-        Assertions.assertFalse(ff4j.getRepositoryFeatures().exists(FEATURE_FOR_TEST));
-        ff4j.saveFeature(new Feature(FEATURE_FOR_TEST).toggleOff());
-        Assertions.assertFalse(ff4j.check(FEATURE_FOR_TEST));
+        ff4j.getRepositoryFeatures().save(new Feature(FEATURE_FOR_TEST).toggleOff());
+        Assertions.assertFalse(ff4j.test(FEATURE_FOR_TEST));
         ff4j.toggleOn(FEATURE_FOR_TEST);
-        Assertions.assertTrue(ff4j.check(FEATURE_FOR_TEST));
+        Assertions.assertTrue(ff4j.test(FEATURE_FOR_TEST));
     }
     
     @Test
-    @DisplayName("Toggling off a feature should make the feature disabled")
-    public void togglingOffShouldMakeFeatureDisabled() {
-        FF4j ff4j = new FF4j().withAudit();
+    public void should_disable_feature_when_toggle_off() {
+        FF4j ff4j = new FF4j();
         Assertions.assertFalse(ff4j.getRepositoryFeatures().exists(FEATURE_FOR_TEST));
-        ff4j.saveFeature(new Feature(FEATURE_FOR_TEST).toggleOn());
+        ff4j.getRepositoryFeatures().save(new Feature(FEATURE_FOR_TEST).toggleOn());
         Assertions.assertTrue(ff4j.getRepositoryFeatures().exists(FEATURE_FOR_TEST));
-        Assertions.assertTrue(ff4j.check(FEATURE_FOR_TEST));
+        Assertions.assertTrue(ff4j.test(FEATURE_FOR_TEST));
         ff4j.toggleOff(FEATURE_FOR_TEST);
-        Assertions.assertFalse(ff4j.check(FEATURE_FOR_TEST));
+        Assertions.assertFalse(ff4j.test(FEATURE_FOR_TEST));
     }
  
 }

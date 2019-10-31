@@ -21,7 +21,7 @@ package org.ff4j.audit;
  */
 
 /**
- * Testing all scenarii of {@link AuditTrailTestSupport} for InMemory implementation
+ * Unit tests for {@link AuditTrailRepositoryInMemory}, in-memory store for {@link AuditTrailInMemoryTest}
  */
 public class AuditTrailInMemoryTest extends AuditTrailTestSupport {
 
