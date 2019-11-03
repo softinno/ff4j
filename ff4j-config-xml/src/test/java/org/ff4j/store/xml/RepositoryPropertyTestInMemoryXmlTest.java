@@ -22,9 +22,9 @@ package org.ff4j.store.xml;
 
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.parser.xml.XmlParserV2;
-import org.ff4j.test.PropertyRepositoryTestSupport;
 import org.ff4j.property.repository.PropertyRepository;
 import org.ff4j.property.repository.PropertyRepositoryInMemory;
+import org.ff4j.test.properties.PropertyRepositoryTestSupport;
 import org.junit.jupiter.api.DisplayName;
 
 /**

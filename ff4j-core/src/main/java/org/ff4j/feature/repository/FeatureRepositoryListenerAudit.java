@@ -80,4 +80,10 @@ public class FeatureRepositoryListenerAudit extends AuditTrailListenerSupport < 
                 .put("targetGroup", groupName));
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void onCreate(Feature bo) {
+        log(createEvent(Action.CREATE, Scope.FEATURE).targetUid(bo.getUid()));
+    }
+
 }

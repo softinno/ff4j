@@ -1,4 +1,4 @@
-package org.ff4j.features;
+package org.ff4j.property;
 
 /*-
  * #%L
@@ -27,12 +27,10 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.ff4j.feature.Feature;
-import org.ff4j.feature.exception.FeatureAccessException;
 import org.ff4j.feature.exception.RepositoryAccessException;
-import org.ff4j.feature.repository.FeatureRepository;
-import org.ff4j.feature.repository.FeatureRepositoryJdbc;
 import org.ff4j.jdbc.JdbcUtils;
+import org.ff4j.property.exception.PropertyAccessException;
+import org.ff4j.property.repository.PropertyRepositoryJdbc;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -40,19 +38,19 @@ import org.mockito.Mockito;
 /**
  * Enhancing test coverage ration by generating error on mocked data source. 
  */
-public class RepositoryFeatureJdbcErrorsTest {
+public class RepositoryPropertyJdbcErrorsTest {
     
     /** SQL DataSource. */
     private static DataSource sqlDataSourceMock;
     
-    private static FeatureRepository repository;
+    private static PropertyRepositoryJdbc repository;
     
     /** {@inheritDoc} */
     @BeforeAll
     public static void setUp() throws Exception {
         sqlDataSourceMock = Mockito.mock(DataSource.class);
         doThrow(new SQLException()).when(sqlDataSourceMock).getConnection();
-        repository = new FeatureRepositoryJdbc(sqlDataSourceMock);
+        repository = new PropertyRepositoryJdbc(sqlDataSourceMock);
     }
     
     @Test
@@ -64,18 +62,16 @@ public class RepositoryFeatureJdbcErrorsTest {
     
     @Test
     public void should_throw_FeatureAccessException_when_invalid_datasource() {
-        assertThrows(FeatureAccessException.class, repository::findAll);
-        assertThrows(FeatureAccessException.class, repository::findAllIds);
-        assertThrows(FeatureAccessException.class, repository::count);
-        assertThrows(FeatureAccessException.class, repository::deleteAll);
-        assertThrows(FeatureAccessException.class, repository::listGroupNames);
-        assertThrows(FeatureAccessException.class, () -> {repository.exists("ok");});
-        assertThrows(FeatureAccessException.class, () -> {repository.find("f1");});
-        assertThrows(FeatureAccessException.class, () -> {repository.delete("ok");});
-        assertThrows(FeatureAccessException.class, () -> {repository.existGroup("g1");});
-        assertThrows(FeatureAccessException.class, () -> {repository.readGroup("g1");});
-        assertThrows(FeatureAccessException.class, () -> {repository.saveFeature(new Feature("fx", true));});
-        assertThrows(FeatureAccessException.class, () -> {repository.toggleOnGroup("g1");});
+        assertThrows(PropertyAccessException.class, repository::findAll);
+        assertThrows(PropertyAccessException.class, repository::findAllIds);
+        assertThrows(PropertyAccessException.class, repository::count);
+        assertThrows(PropertyAccessException.class, repository::deleteAll);
+        assertThrows(PropertyAccessException.class, () -> {repository.exists("ok");});
+        assertThrows(PropertyAccessException.class, () -> {repository.find("f1");});
+        assertThrows(PropertyAccessException.class, () -> {repository.delete("ok");});
+        assertThrows(PropertyAccessException.class, () -> {repository.deleteProperty("ok");});
+        assertThrows(PropertyAccessException.class, () -> {repository.saveProperty(new PropertyString("a", "b"));});
+        assertThrows(PropertyAccessException.class, () -> {repository.updatePropertyValue("p1", "p2");});
     }
     
 }

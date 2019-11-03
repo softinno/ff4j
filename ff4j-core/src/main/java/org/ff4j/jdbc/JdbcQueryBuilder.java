@@ -887,12 +887,9 @@ public class JdbcQueryBuilder {
         return "UPDATE " + getTableName(condition.tableName()) + " SET " + fields.substring(4) + sqlPartWhere(condition);
     }
     
+    /** Update a property value. */
     public String updateProperty() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("UPDATE ");
-        sb.append(getTableNameProperties());
-        sb.append(" SET CURRENTVALUE = ? WHERE PROPERTY_ID = ?");
-        return sb.toString();
+        return sqlUpdate(PropertyColumns.UID, PropertyColumns.VALUE);
     }
 	
 	// ---------------------------------

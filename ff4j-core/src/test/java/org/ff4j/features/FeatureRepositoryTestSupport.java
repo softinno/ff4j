@@ -646,4 +646,12 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         // Do not close test before logging of console
         Thread.sleep(500);
     }
+    
+    @Test
+    public void should_create_schema_when_createSchema() 
+    throws InterruptedException {
+        testedStore.createSchema();
+        // Do not close test before logging of console
+        Thread.sleep(500);
+    }
 }

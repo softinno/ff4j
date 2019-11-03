@@ -58,11 +58,6 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     /** Query builder. */
     private JdbcQueryBuilder queryBuilder;
     
-    /** {@inheritDoc} */
-    public Stream<String> findAllIds() {
-    	return null;
-	}
-    
     /** Default Constructor. */
     public PropertyRepositoryJdbc() {}
     
@@ -123,7 +118,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     /** {@inheritDoc} */
     @Override
     public long count() {
-        return getPropertyNames().count();
+        return findAllIds().count();
     }
 
     /** {@inheritDoc} */
@@ -146,11 +141,11 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
 
     /** {@inheritDoc} */
     @Override
-    public void update(String name, String newValue) {
+    public void updatePropertyValue(String name, String newValue) {
         assertHasLength(name);
+        // Check existence
+        Property<?> ab = read(name);
         try (Connection sqlConn = getDataSource().getConnection()) {
-            // Check existence
-            Property<?> ab = read(name);
             // Check new value validity
             ab.fromString(newValue);
             try(PreparedStatement ps = buildStatement(sqlConn, getQueryBuilder().updateProperty(), newValue, name)) {
@@ -196,7 +191,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     
     /** {@inheritDoc} */
     @Override
-    public Stream<String> getPropertyNames() {
+    public Stream<String> findAllIds() {
         Collection < String > propertyNames = new ArrayList<>();
         try (Connection sqlConn = getDataSource().getConnection()) {
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectAllPropertyNames())) {
@@ -231,6 +226,9 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
      *       current value of 'dataSource'
      */
     public DataSource getDataSource() {
+        if (dataSource == null) {
+            throw new IllegalStateException("DataSource has not been initialized");
+        }
         return dataSource;
     }
 
@@ -252,11 +250,5 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
 		}
 		return queryBuilder;
 	}
-
-	/**
-	 * @param queryBuilder the queryBuilder to set
-	 */
-	public void setQueryBuilder(JdbcQueryBuilder queryBuilder) {
-		this.queryBuilder = queryBuilder;
-	}  
+	
 }

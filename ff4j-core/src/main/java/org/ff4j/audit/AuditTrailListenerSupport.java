@@ -71,12 +71,14 @@ public abstract class AuditTrailListenerSupport<E extends FF4jEntity<?>> impleme
     /** {@inheritDoc} */
     @Override
     public void onCreateSchema() {
-        log(createEvent(Action.CREATE_SCHEMA, scopeStore));
+        Event e = createEvent(Action.CREATE_SCHEMA, scopeStore);
+        log(e);
     }
     
     /** {@inheritDoc} */
     public void onDeleteAll() {
-        log(createEvent(Action.DELETE, scopeStore));
+        Event e = createEvent(Action.DELETE, scopeStore);
+        log(e);
     }
     
     /** {@inheritDoc} */
@@ -87,18 +89,10 @@ public abstract class AuditTrailListenerSupport<E extends FF4jEntity<?>> impleme
     
     /** {@inheritDoc} */
     @Override
-    public void onCreate(E entity) {
-        logEvent(Action.CREATE, scopeEntity, entity.getUid());
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void onDelete(String uid) {
         logEvent(Action.DELETE, scopeEntity, uid);
     }   
 
-    protected void onUpdateEntity(E entity) {
-        logEvent(Action.UPDATE, scopeEntity, entity.getUid());
-    }
+    
 
 }

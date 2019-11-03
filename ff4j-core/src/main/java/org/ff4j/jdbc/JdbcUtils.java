@@ -32,6 +32,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import org.ff4j.feature.exception.FeatureAccessException;
+import org.ff4j.feature.exception.RepositoryAccessException;
 
 /**
  * Group utilities methods to work with low-level JDBC.
@@ -79,7 +80,7 @@ public class JdbcUtils {
                 stmt.executeUpdate(sqlQuery);
             }
         } catch (SQLException sqlEX) {
-            throw new FeatureAccessException("Cannot execute SQL " + sqlQuery, sqlEX);
+            throw new RepositoryAccessException("Cannot execute SQL " + sqlQuery, sqlEX);
         }
     }
     

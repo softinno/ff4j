@@ -64,5 +64,5 @@ public class RepositoryFeatureJdbcTest extends FeatureRepositoryTestSupport {
         sqlDataSource = JdbcTestHelper.createInMemoryHQLDataSource();
         store.setDataSource(sqlDataSource);
         Assertions.assertTrue(store.count() >0) ;
-    }   
+    }
 }

@@ -2,7 +2,6 @@ package org.ff4j.property.repository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.ff4j.FF4jRepository;
 import org.ff4j.exception.ItemNotFoundException;
@@ -43,17 +42,7 @@ public interface PropertyRepository extends FF4jRepository < String, Property<?>
      * @return
      *      list of properties names.
      */
-    default Stream < String > getPropertyNames() {
-        return findAllIds();
-    }
-    
-    /**
-     * Syntax sugar.
-     *
-     * @return
-     *      list of properties names.
-     */
-    default Set < String > getPropertyNamesAsSet() {
+    default Set < String > findAllIdsAsSet() {
         return findAllIds().collect(Collectors.toSet());
     }
     
@@ -65,7 +54,7 @@ public interface PropertyRepository extends FF4jRepository < String, Property<?>
      * @param newValue
      *          new value as a String
      */
-    default void update(String name, String newValue) {
+    default void updatePropertyValue(String name, String newValue) {
         Property<?> p = read(name);
         p.setValueFromString(newValue);
         saveProperty(p);

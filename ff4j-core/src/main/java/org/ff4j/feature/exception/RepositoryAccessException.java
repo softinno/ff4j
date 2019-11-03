@@ -1,10 +1,10 @@
 package org.ff4j.feature.exception;
 
-/*
+/*-
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 Ff4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ package org.ff4j.feature.exception;
  */
 
 /**
- * Store could be parameterized to through exception when Feature not found.
+ * Error Accessing store.
  * 
- * @author Cedrick Lunven (@clunven)
+ * @author Cedrick LUNVEN (@clunven)
  */
-public class FeatureAccessException extends RepositoryAccessException {
+public class RepositoryAccessException extends RuntimeException {
 
     /** serial number. */
-    private static final long serialVersionUID = 5153793944219676093L;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Parameterized constructor.
@@ -36,7 +36,7 @@ public class FeatureAccessException extends RepositoryAccessException {
      * @param msg
      *            Exception message
      **/
-    public FeatureAccessException(String msg) {
+    public RepositoryAccessException(String msg) {
         super(msg);
     }
 
@@ -49,7 +49,7 @@ public class FeatureAccessException extends RepositoryAccessException {
      *            parent exception
      * 
      **/
-    public FeatureAccessException(String msg, Throwable parent) {
+    public RepositoryAccessException(String msg, Throwable parent) {
         super(msg, parent);
     }
 

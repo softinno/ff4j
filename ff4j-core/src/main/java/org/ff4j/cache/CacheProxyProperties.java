@@ -21,7 +21,6 @@ package org.ff4j.cache;
  */
 
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.property.Property;
@@ -76,7 +75,7 @@ public class CacheProxyProperties extends CacheProxy< String, Property<?>> imple
 
     /** {@inheritDoc} */
     @Override
-    public void update(String name, String newValue) {
+    public void updatePropertyValue(String name, String newValue) {
         // Retrieve the full object from its name
         Property<?> fp = getTargetPropertyStore().read(name);
         fp.setValueFromString(newValue);
@@ -106,12 +105,6 @@ public class CacheProxyProperties extends CacheProxy< String, Property<?>> imple
         getTargetPropertyStore().delete(uid);
         // Remove from cache old value
         getCacheManager().evict(uid);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public Stream<String> getPropertyNames() {
-        return getTargetPropertyStore().getPropertyNames();
     }
     
     /** {@inheritDoc} */

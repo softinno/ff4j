@@ -25,7 +25,7 @@ import java.io.InputStream;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryInMemory;
 import org.ff4j.parser.yaml.YamlParser;
-import org.ff4j.test.FeatureRepositoryTestSupport;
+import org.ff4j.test.features.FeatureRepositoryTestSupport;
 import org.junit.jupiter.api.DisplayName;
 
 /**

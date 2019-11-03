@@ -1,5 +1,7 @@
 package org.ff4j.property.exception;
 
+import org.ff4j.feature.exception.RepositoryAccessException;
+
 /*
  * #%L
  * ff4j-core
@@ -25,8 +27,8 @@ package org.ff4j.property.exception;
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public class PropertyAccessException extends RuntimeException {
-
+public class PropertyAccessException extends RepositoryAccessException {
+    
     /** serial number. */
     private static final long serialVersionUID = 5153793944219676093L;
 

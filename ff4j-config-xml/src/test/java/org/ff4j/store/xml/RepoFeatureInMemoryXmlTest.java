@@ -22,8 +22,8 @@ package org.ff4j.store.xml;
 
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryInMemory;
-import org.ff4j.test.FeatureRepositoryTestSupport;
 import org.ff4j.parser.xml.XmlParserV2;
+import org.ff4j.test.features.FeatureRepositoryTestSupport;
 import org.junit.jupiter.api.DisplayName;
 
 /**

@@ -1,4 +1,4 @@
-package org.ff4j.features;
+package org.ff4j.test.features;
 
 /*-
  * #%L
@@ -58,7 +58,7 @@ public class FeatureRepositoryListenerConsole implements FeatureRepositoryListen
     /** {@inheritDoc} */
     @Override
     public void onCreateSchema() {
-        System.out.println("FeatureRepositoryListenerConsole_ Create schema");
+        System.out.println("Create schema");
     }
 
     /** {@inheritDoc} */

@@ -66,9 +66,7 @@ public abstract class FF4jRepositorySupport < E extends FF4jEntity<?>, LISTENER 
     /** {@inheritDoc} */
     @Override
     public void createSchema() {
-        // If not overrided, should notify subscriber anyway.
         this.notify(FF4jRepositoryListener::onCreateSchema);
-        return;
     }
     
     // ---------------------------------------------------------------

@@ -151,6 +151,12 @@ public abstract class FeatureRepositorySupport
     
     /** {@inheritDoc} */
     @Override
+    public void createSchema() {
+        notify(l -> l.onCreateSchema());
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public void toggleOff(String uid) {
         if (!exists(uid)) {
             throw new FeatureNotFoundException(uid);

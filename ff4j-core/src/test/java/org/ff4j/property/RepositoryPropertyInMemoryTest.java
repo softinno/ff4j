@@ -55,4 +55,15 @@ public class RepositoryPropertyInMemoryTest extends PropertyRepositoryTestSuppor
         Assertions.assertNotNull(new PropertyRepositoryInMemory( (Collection) null));
     }
     
+    @Test
+    public void should_return_null_when_properties_null() {
+        // Given
+        PropertyRepositoryInMemory pStoreMem = new PropertyRepositoryInMemory();
+        // When
+        pStoreMem.setProperties(null);
+        // Then
+        Assertions.assertNull(pStoreMem.findAll());
+        Assertions.assertNull(pStoreMem.findAllIds());
+    }
+    
 }

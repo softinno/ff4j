@@ -79,6 +79,7 @@ public abstract class PropertyRepositorySupport
          * But not always (JDBC, Mongo, Cassandra)... this is the reason why the dedicated store must 
          * override this method. It a default implementation (Pattern Adapter).
          */
+        this.notify(l -> l.onCreateSchema());
         return;
     }
     

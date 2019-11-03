@@ -1,5 +1,7 @@
 package org.ff4j.property;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import javax.sql.DataSource;
 
 /*-
@@ -26,8 +28,10 @@ import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.property.repository.PropertyRepository;
 import org.ff4j.property.repository.PropertyRepositoryJdbc;
 import org.ff4j.test.jdbc.JdbcTestHelper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing implementation of {@link FeatureRepository} for DB : MEMORY
@@ -53,6 +57,19 @@ public class RepositoryPropertyJdbcTest extends PropertyRepositoryTestSupport {
     public void setUp() throws Exception {
         super.setUp();
         JdbcTestHelper.initDBSchema(sqlDataSource);
+    }
+    
+    @Test
+    public void should_throw_IllegalStateException_if_no_datasource() {
+        assertThrows(IllegalStateException.class, () -> { new PropertyRepositoryJdbc().getDataSource(); });
+    }
+    
+    @Test
+    public void should_init_ok() {
+        PropertyRepositoryJdbc store = new PropertyRepositoryJdbc();
+        sqlDataSource = JdbcTestHelper.createInMemoryHQLDataSource();
+        store.setDataSource(sqlDataSource);
+        Assertions.assertTrue(store.count() >0) ;
     }
     
 }

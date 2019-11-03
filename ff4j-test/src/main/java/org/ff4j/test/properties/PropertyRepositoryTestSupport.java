@@ -1,4 +1,4 @@
-package org.ff4j.test;
+package org.ff4j.test.properties;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -9,17 +9,14 @@ import org.ff4j.FF4j;
 import org.ff4j.exception.AssertionViolationException;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.property.Property;
-import org.ff4j.property.PropertyDouble;
-import org.ff4j.property.PropertyLogLevel;
 import org.ff4j.property.PropertyLogLevel.LogLevel;
-import org.ff4j.property.PropertyString;
 import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.property.repository.PropertyRepository;
+import org.ff4j.test.AssertFF4j;
+import org.ff4j.test.FF4jTestDataSet;
 import org.ff4j.utils.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /*-
@@ -65,9 +62,9 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     @BeforeEach
     public void setUp() throws Exception {
         ConfigurationFileParser.clearCache();
-        ff4j        = new FF4j().withRepositoryProperties(initStore());
+        testedStore = initStore();
+        ff4j        = new FF4j().withRepositoryProperties(testedStore);
         assertFF4j  = new AssertFF4j(ff4j);
-        testedStore = ff4j.getRepositoryProperties();
         testDataSet = expectConfig();
     }
     
@@ -83,23 +80,17 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     // -- exists --
     
     @Test
-    @DisplayName("When test property existence with null param, expecting AssertionViolationException")
-    public void existWithNullShouldThrowViolationException() throws Exception {
+    public void should_throw_AssertionViolationException_when_invalid_parameters() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { testedStore.exists(null); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.exists(""); });
-    }
-    
-    // -- create --
-    
-    @Test
-    @DisplayName("When creating properties with null param, expecting AssertionViolationException")
-    public void createWithNullShouldThrowViolationException() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { testedStore.save((Property<?>)null); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.read(null); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.read(""); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.deleteProperty((String) null); });
     }
-   
+    
     @Test
-    @DisplayName("When creating new property, it becomes available")
-    public void createShouldMakeNewPropertyAvailable() throws Exception {
+    public void should_create_property_when_save_new() throws Exception {
         assertFF4j.assertThatPropertyStoreHasSize(testDataSet.getProperties().size());
         assertFF4j.assertThatPropertyDoesNotExist(PROPERTY_FOR_TEST);
         PropertyString p = new PropertyString(PROPERTY_FOR_TEST);
@@ -110,8 +101,17 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("When creating new property, it becomes available")
-    public void createShouldMakeNewPropertyLogLevelAvailable() throws Exception {
+    public void should_update_property_when_update() throws Exception {
+        assertFF4j.assertThatPropertyDoesNotExist(PROPERTY_FOR_TEST);
+        PropertyString p = new PropertyString(PROPERTY_FOR_TEST);
+        p.setValue("v1").description("ok");
+        testedStore.save(p);
+        assertFF4j.assertThatPropertyStoreHasSize(testDataSet.getProperties().size() + 1);
+        assertFF4j.assertThatPropertyExist(PROPERTY_FOR_TEST);
+    }
+    
+    @Test
+    public void should_create_propertyloglevel_when_save_new() throws Exception {
         assertFF4j.assertThatPropertyStoreHasSize(testDataSet.getProperties().size());
         assertFF4j.assertThatPropertyDoesNotExist(PROPERTY_FOR_TEST);
         PropertyLogLevel p = new PropertyLogLevel(PROPERTY_FOR_TEST, LogLevel.INFO);
@@ -120,23 +120,8 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
         assertFF4j.assertThatPropertyExist(PROPERTY_FOR_TEST);
     }  
     
-    // -- read --
-    
     @Test
-    @DisplayName("When configuration file is null, expecting violation exception")
-    public void readWithNullShouldThrowViolationException() {
-        assertThrows(AssertionViolationException.class, () -> { testedStore.read(null); });
-    }
-
-    @Test
-    @DisplayName("When configuration file is empty, expecting violation exception")
-    public void readWithEmptyShouldThrowViolationException() {
-        assertThrows(AssertionViolationException.class, () -> { testedStore.read(""); });
-    }
-    
-    @Test
-    @DisplayName("When parsing configuration file, should have expected test DataSet")
-    public void readAllConfFileShouldMatchExpectedDataSet() {
+    public void should_match_dataset_when_read_all() {
         // Given
         assertFF4j.assertThatPropertyStoreHasSize(testDataSet.getProperties().size());
         // When
@@ -148,24 +133,14 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     // -- update --
     
     @Test
-    @DisplayName("When updating property with null param, expecting AssertionViolationException")
-    public void updatePropertyWithNullShouldThrowViolationException() throws Exception {
-        assertThrows(AssertionViolationException.class, () -> { 
-            testedStore.save((Property<?>) null); 
-        });
-    }
-    
-    @Test
-    @DisplayName("When updating property with unknowm param, creating the property")
-    public void updatedUnknownPropertyShouldCreateProperty() throws Exception {
+    public void should_create_new_property_when_save_new() throws Exception {
         assertFF4j.assertThatPropertyDoesNotExist(PROPERTY_FOR_TEST);
         testedStore.save(new PropertyString(PROPERTY_FOR_TEST, "OK"));
         assertFF4j.assertThatPropertyExist(PROPERTY_FOR_TEST);
     }
     
     @Test
-    @DisplayName("When updating property, all attributes should be updated")
-    public void testUpdatePropertiesAll() {
+    public void should_update_property_when_save() {
         // Givens
         String newDescription = "new-description";
         assertFF4j.assertThatPropertyExist(PDouble);
@@ -185,11 +160,23 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
         Assertions.assertEquals(3, testedStore.read(PDouble).getFixedValues().get().size());
     }
     
+    @Test
+    public void should_update_property_when_update_value() {
+        // Givens
+        assertFF4j.assertThatPropertyExist(PDouble);
+        // When
+        PropertyDouble propDouble = (PropertyDouble) testedStore.read(PDouble);
+        Assertions.assertNotEquals(10.1, propDouble.getValue());
+        testedStore.updatePropertyValue(PDouble, String.valueOf(10.1));
+        // Then
+        PropertyDouble updatedProp = (PropertyDouble) testedStore.read(PDouble);
+        Assertions.assertEquals(10.1, updatedProp.getValue());
+    }
+    
     // -- delete --
     
     @Test
-    @DisplayName("When deleting new property, it is not available anymore")
-    public void deleteShouldRemovePropertyAvailable() throws Exception {
+    public void should_remove_property_when_delete() throws Exception {
         assertFF4j.assertThatPropertyStoreHasSize(testDataSet.getProperties().size());
         assertFF4j.assertThatPropertyExist(PDouble);
         testedStore.delete(PDouble);
@@ -198,14 +185,7 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("When deleting property with null param, expecting AssertionViolationException")
-    public void deletePropertyWithNullShouldThrowViolationException() throws Exception {
-        assertThrows(AssertionViolationException.class, () -> { testedStore.deleteProperty((String) null); });
-    }
-    
-    @Test
-    @DisplayName("When deleting property with null param, expecting PropertyNotFoundException")
-    public void deleteUnknownPropertyShouldThrowPropertyNotFound() throws Exception {
+    public void should_throw_PropertyNotFoundException_when_delete_notexisting_property() throws Exception {
         assertFF4j.assertThatPropertyDoesNotExist(PROPERTY_FOR_TEST);
         assertThrows(PropertyNotFoundException.class, () -> { 
             testedStore.delete(PROPERTY_FOR_TEST); 
@@ -213,21 +193,18 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     }
     
     @Test
-    @DisplayName("When invoking clear all properties are deleted")
-    public void clearShouldEmptyRepository() {
+    public void should_empty_repository_when_deleteAll() {
+        // Given
         assertFF4j.assertThatPropertyExist(PDouble);
-        assertFF4j.assertThatPropertyExist(PInstant);
-        assertFF4j.assertThatPropertyExist(PInt);
-        assertFF4j.assertThatPropertyExist(PDate);
+        // When
         testedStore.deleteAll();
         // Then
         Assertions.assertEquals(0, testedStore.findAll().count());
     }
     
     @Test
-    @DisplayName("When listing all properties names, the are all retrieve")
-    public void listingPropertyNamesShouldRetrieveAllNames() {
-        Stream< String> propertyNames = testedStore.getPropertyNames();
+    public void should_match_expecteddataset_when_findAllIds() {
+        Stream< String> propertyNames = testedStore.findAllIds();
         Assertions.assertNotNull(propertyNames);
         Assertions.assertEquals(testDataSet.getProperties().size(), propertyNames.count());
     }
