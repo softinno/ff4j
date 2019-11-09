@@ -48,7 +48,8 @@ public class MappingTest {
         
         // When
         Map<String, String> outputMap = JsonUtils.mapString2Map(res);
-        System.out.println(outputMap);
+        Assertions.assertEquals(4, outputMap.size());
+        
     }
 
 }

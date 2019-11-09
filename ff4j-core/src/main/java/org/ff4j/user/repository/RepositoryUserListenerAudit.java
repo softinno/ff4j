@@ -24,6 +24,7 @@ import org.ff4j.FF4jEntity;
 import org.ff4j.FF4jRepositoryListener;
 import org.ff4j.audit.AuditTrailListenerSupport;
 import org.ff4j.audit.AuditTrailRepository;
+import org.ff4j.event.Event;
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
 import org.ff4j.user.FF4jUser;
@@ -52,7 +53,11 @@ public class RepositoryUserListenerAudit extends AuditTrailListenerSupport < FF4
     /** {@inheritDoc} */
     @Override
     public void onCreate(FF4jUser user) {
-        log(createEvent(Action.CREATE, Scope.USER).targetUid(user.getUid()));
+        log(Event.builder()
+                .action(Action.CREATE)
+                .scope(Scope.USER)
+                .refEntityUid(user.getUid())
+                .build());
     }
     
 }

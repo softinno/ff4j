@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@DisplayName("PropertyRepository::Jdbc (HQL)")
+@DisplayName("RepositoryProperty_Jdbc_Test")
 public class RepositoryPropertyJdbcTest extends PropertyRepositoryTestSupport {
 
     /** SQL DataSource. */

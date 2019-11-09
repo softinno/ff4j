@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@DisplayName("FeatureRepository::InMemory with static DataSet")
+@DisplayName("RepositoryFeature_InMemory_TestFixedDataSet")
 public class RepositoryFeatureInMemoryTest extends FeatureRepositoryTestSupport {
 
     /** {@inheritDoc} */

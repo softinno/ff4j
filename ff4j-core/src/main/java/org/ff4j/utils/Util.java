@@ -137,7 +137,7 @@ public class Util {
     public static <T> List<T> listOf(T... els) {
         return (els == null) ? null : new ArrayList<T>(Arrays.asList(els));
     }
-
+    
     /**
      * Check that expression is true.
      * 
@@ -168,7 +168,7 @@ public class Util {
         AssertUtils.assertNotNull(evt);
         AssertUtils.assertNotNull(evt.getScope());
         AssertUtils.assertNotNull(evt.getAction());
-        AssertUtils.assertHasLength(evt.getTargetUid());
+        AssertUtils.assertHasLength(evt.getRefEntityUid());
     }
 
     /**

@@ -32,12 +32,14 @@ import org.ff4j.jdbc.JdbcUtils;
 import org.ff4j.property.exception.PropertyAccessException;
 import org.ff4j.property.repository.PropertyRepositoryJdbc;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
  * Enhancing test coverage ration by generating error on mocked data source. 
  */
+@DisplayName("RepositoryProperty_Jdbc_Test")
 public class RepositoryPropertyJdbcErrorsTest {
     
     /** SQL DataSource. */

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author Cedrick Lunven (@clunven)
  */
-@DisplayName("TMain FF4j Test Class")
+@DisplayName("FF4j Test Class")
 public class FF4jTest implements FF4jTestDataSet {
 
     /** FF4J Instance for testings. */

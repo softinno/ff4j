@@ -28,7 +28,7 @@ import org.junit.jupiter.api.DisplayName;
 /**
  * Unit tests for {@link AuditTrailRepositoryInMemory}, in-memory store for {@link AuditTrailInMemoryTest}
  */
-@DisplayName(" EventRepository::InMemory")
+@DisplayName("RepositoryEvent_InMemory_Test")
 public class EventRepositoryTestInMemory extends EventRepositoryTestSupport {
  
     /** {@inheritDoc} */

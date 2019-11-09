@@ -24,13 +24,16 @@ import static org.ff4j.utils.Util.validateEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.ff4j.event.Event;
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.EventSeries;
 import org.ff4j.utils.Util;
 
@@ -60,23 +63,24 @@ public class AuditTrailRepositoryInMemory implements AuditTrailRepository {
     /** {@inheritDoc} */
     @Override
     public void createSchema() {
-        // nothing need regarding the auditTrail HashMap
         // We may send a dedicated event
-        log(new Event().action(Action.CREATE)
-                       .scope(Scope.AUDIT_TRAIL)
-                       .targetUid("createSchema"));
+        log(Event.builder()
+                 .action(Action.CREATE)
+                 .scope(Scope.AUDIT_TRAIL)
+                 .refEntityUid("createSchema")
+                 .build());
     }
     
     /** {@inheritDoc} */
     @Override
     public void log(Event evt) {
         validateEvent(evt);
-        String scope = evt.getScope().name();
+        String scope = evt.getScope();
         if (!auditTrail.containsKey(scope)) {
             auditTrail.put(scope, new ConcurrentHashMap<>());
         }
         // Some event do not point a specific feature (featureStore..) so reuse the scope
-        String uid = Util.hasLength(evt.getTargetUid()) ? evt.getTargetUid() : scope;
+        String uid = Util.hasLength(evt.getRefEntityUid()) ? evt.getRefEntityUid() : scope;
         if (!auditTrail.get(scope).containsKey(uid)) {
             auditTrail.get(scope).put(uid, new EventSeries(queueCapacity));
         }
@@ -85,20 +89,21 @@ public class AuditTrailRepositoryInMemory implements AuditTrailRepository {
 
     /** {@inheritDoc} */
     @Override
-    public Stream<Event> search(AuditTrailQuery query) {
+    public Stream<Event> search(EventQuery query) {
         assertNotNull(query);
-        if (query.getScope().isPresent()) {
-            // Filter event to get only
-            Event.Scope queryScope    = query.getScope().get();
-            Map<String, EventSeries > subPerimeter = auditTrail.get(queryScope.toString());
-            if (subPerimeter!= null) {
-                return searchInMapOfEventSeries(query, subPerimeter).stream();
-            } else {
-                return Stream.empty();
-            }
+        List<Event> results = new ArrayList<>();
+        if (!query.getFilteredScopes().isEmpty()) {
+            query.getFilteredScopes()
+                 .stream().map(auditTrail::get)
+                 .map(Optional::ofNullable)
+                 .filter(Optional::isPresent)
+                 .map(Optional::get)
+                 .forEach(p -> results.addAll(searchInMapOfEventSeries(query, p)));
+        } else {
+            auditTrail
+                 .values().stream()
+                 .forEach(p -> results.addAll(searchInMapOfEventSeries(query, p)));
         }
-        Collection < Event > results = new ArrayList<>();
-        auditTrail.values().stream().forEach(map -> results.addAll(searchInMapOfEventSeries(query, map)));
         return results.stream();
     }
     
@@ -112,35 +117,36 @@ public class AuditTrailRepositoryInMemory implements AuditTrailRepository {
      * @return
      *      the events matching query in the target event series
      */
-    private Collection < Event > searchInMapOfEventSeries(AuditTrailQuery query, Map < String, EventSeries > mapOfEventSeries) {
+    private Collection < Event > searchInMapOfEventSeries(EventQuery query, Map < String, EventSeries > mapOfEventSeries) {
         assertNotNull(query);
         Collection < Event > results = new ArrayList<>();
-        
         // Map of EventSeries
-        if (query.getUid().isPresent()) {
-            // Single EventSerie to search
-            EventSeries targetSerie = mapOfEventSeries.get(query.getUid().get());
-            if (targetSerie != null) {
-                return query.filter(targetSerie);
-            } else {
-                // Empty list here, the id has not been found
-                return results;
-            }
-        }
+        if (!query.getFilteredEntityUids().isEmpty()) {
+            query.getFilteredEntityUids().stream()
+                 .map(mapOfEventSeries::get)
+                 .map(Optional::ofNullable)
+                 .filter(Optional::isPresent)
+                 .map(Optional::get)
+                 .map(query::filter)
+                 .forEach(results::addAll);
         // No single EventSerie so will have to loop on each key
-        mapOfEventSeries.values().forEach(es -> results.addAll(query.filter(es)));
+        } else {
+            mapOfEventSeries.values().stream()
+                            .map(query::filter)
+                            .forEach(results::addAll);
+        }
         return results;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void purge(AuditTrailQuery query) {
+    public void purge(EventQuery query) {
         // Will get a stream of event to remove
         search(query).forEach(evt -> {
             // Get correct scope (Feature, Properties, ...)
-            auditTrail.get(evt.getScope().name())
+            auditTrail.get(evt.getScope())
                       // Get correct event series
-                      .get(evt.getTargetUid())
+                      .get(evt.getRefEntityUid())
                       // Remove from the Event Series
                       .remove(evt);
         });

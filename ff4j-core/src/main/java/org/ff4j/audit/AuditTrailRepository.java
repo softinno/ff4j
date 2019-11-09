@@ -22,6 +22,7 @@ package org.ff4j.audit;
 
 import java.util.stream.Stream;
 
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.Event;
 
 /**
@@ -51,7 +52,7 @@ public interface AuditTrailRepository {
      *      target query
      * @return
      */
-    Stream < Event > search(AuditTrailQuery query);
+    Stream < Event > search(EventQuery query);
     
     /**
      * Will delete log record matching the query. Will create a new record line to notify.
@@ -59,5 +60,5 @@ public interface AuditTrailRepository {
      * @param query
      *      current query
      */
-    void purge(AuditTrailQuery query);
+    void purge(EventQuery query);
 }

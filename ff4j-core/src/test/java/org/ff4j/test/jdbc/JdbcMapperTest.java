@@ -27,6 +27,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.ff4j.event.Event.Scope;
+import org.ff4j.event.EventQuery;
 import org.ff4j.jdbc.JdbcConstants;
 import org.ff4j.jdbc.JdbcQueryBuilder;
 import org.ff4j.jdbc.mapper.JdbcFeatureMapper;
@@ -35,7 +37,7 @@ import org.mockito.Mockito;
 
 public class JdbcMapperTest {
     
-    public static JdbcQueryBuilder jdbcQb = new JdbcQueryBuilder();
+    public static JdbcQueryBuilder qBuilder = new JdbcQueryBuilder();
     
     @Test
     public void mapEntity_should_map_exception_sql_to_IllegalArgument() {
@@ -43,7 +45,7 @@ public class JdbcMapperTest {
             Connection sqlConn = Mockito.mock(Connection.class);
             ResultSet rs = Mockito.mock(ResultSet.class);
             doThrow(new SQLException()).when(rs).getTimestamp(JdbcConstants.COLUMN_CREATED);
-            new JdbcFeatureMapper(sqlConn, jdbcQb).mapEntity(rs, null);
+            new JdbcFeatureMapper(sqlConn, qBuilder).mapEntity(rs, null);
         });
     }
     
@@ -53,8 +55,19 @@ public class JdbcMapperTest {
             Connection sqlConn = Mockito.mock(Connection.class);
             ResultSet rs = Mockito.mock(ResultSet.class);
             doThrow(new SQLException()).when(rs).getTimestamp(JdbcConstants.COLUMN_CREATED);
-            new JdbcFeatureMapper(sqlConn, jdbcQb).mapEntity(rs, null);
+            new JdbcFeatureMapper(sqlConn, qBuilder).mapEntity(rs, null);
         });
+    }
+    
+    @Test
+    public void should_return_correct_cql_when_purgeAudit() {
+        EventQuery.builder()
+                .from(System.currentTimeMillis() - 1000*3600*24*5)
+                .to(System.currentTimeMillis() + 10)
+                .filterOnScopes(Scope.AUDIT_TRAIL)
+                .filterOnEntityUid("AAA")
+                .build();
+        //System.out.println(qBuilder.sqlPurgeAuditTrail(last5Days));
     }
     
 }

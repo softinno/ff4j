@@ -23,6 +23,7 @@ package org.ff4j.audit;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.ff4j.FF4j;
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.Event;
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
@@ -56,57 +57,55 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
     protected abstract AuditTrailRepository initAuditTrailRepository();
     
     protected static Event genEventCreatureFeature(String featureName) {
-        return new Event().action(Action.CREATE)
+        return Event.builder().action(Action.CREATE)
                           .scope(Scope.FEATURE)
-                          .targetUid(featureName);
+                          .refEntityUid(featureName)
+                          .build();
     }
     
     protected static Event genEventToggleOnFeature(String featureName) {
-        return new Event().action(Action.TOGGLE_ON)
+        return Event.builder().action(Action.TOGGLE_ON)
                           .scope(Scope.FEATURE)
-                          .targetUid(featureName);
+                          .refEntityUid(featureName).build();
     }
     
     @Test
     public void should_throw_AssertionViolationException_when_invalid_event() {
         assertThrows(AssertionViolationException.class, () -> { auditTrail.log(null); });
-        Event e = new Event().scope(null).action(null).targetUid(null);
-        assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e); });
-        e.scope(Scope.FEATURE);
-        assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e); });
-        e.action(Action.ADD);
-        assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e); });
-        e.targetUid("f1");
-        // No Exception anymore as event is scorrect
-        auditTrail.log(e);
+        Event e1 = Event.builder().scope((Scope) null).action((Action)null).refEntityUid(null).build();
+        assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e1); });
+        Event e2 = Event.builder().scope(Scope.FEATURE).action((Action)null).refEntityUid(null).build();
+        assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e2); });
+        Event e3 = Event.builder().scope(Scope.FEATURE).action(Action.ADD).refEntityUid(null).build();
+        assertThrows(AssertionViolationException.class, () -> { auditTrail.log(e3); });
+        Event e4 = Event.builder().scope(Scope.FEATURE).action(Action.ADD).refEntityUid("f1").build();
+        auditTrail.log(e4);
     }
     
     @Test
     public void should_create_record_when_log_event() {
         // Given an empty repo
-        AuditTrailQuery last5Days = new AuditTrailQuery(
-                System.currentTimeMillis() - 1000*3600*24*5, 
-                System.currentTimeMillis() + 10);
+        EventQuery last5Days = new EventQuery.Builder()
+                .from(System.currentTimeMillis() - 1000*3600*24*5)
+                .to(System.currentTimeMillis() + 10)
+                .filterOnScopes(Scope.FEATURE)
+                .filterOnEntityUid("f1")
+                .build();
         Assertions.assertTrue(auditTrail.search(last5Days).findFirst().isEmpty());
         // When creating event
         auditTrail.log(genEventCreatureFeature("f1"));
         // All events
         Assertions.assertFalse(auditTrail.search(last5Days).findFirst().isEmpty());
-        // Adding filter
-        last5Days.scope(Scope.FEATURE);
-        Assertions.assertFalse(auditTrail.search(last5Days).findFirst().isEmpty());
-        // Adding filter
-        last5Days.uid("f1");
-        Assertions.assertFalse(auditTrail.search(last5Days).findFirst().isEmpty());
     }
     
     @Test
-    public void should_delete_entry_when_purge_event() {
-        AuditTrailQuery last5Days = new AuditTrailQuery()
+    public void should_delete_entry_when_purge_event() throws InterruptedException {
+        EventQuery last5Days = new EventQuery.Builder()
                 .from(System.currentTimeMillis() - 1000*3600*24*5)
-                .to(System.currentTimeMillis() + 10);
-        last5Days.scope(Scope.FEATURE);
-        last5Days.uid("f1");
+                .to(System.currentTimeMillis() + 10000)
+                .filterOnScopes(Scope.FEATURE)
+                .filterOnEntityUid("f1")
+                .build();
         Assertions.assertTrue(auditTrail.search(last5Days).findFirst().isEmpty());
         auditTrail.log(genEventCreatureFeature("f1"));
         Assertions.assertFalse(auditTrail.search(last5Days).findFirst().isEmpty());
@@ -117,11 +116,12 @@ public abstract class AuditTrailTestSupport implements FF4jTestDataSet {
     @Test
     public void should_create_resources_when_createSchema() {
         // Given no info
-        AuditTrailQuery last5Days = new AuditTrailQuery()
+        EventQuery last5Days = new EventQuery.Builder()
                 .from(System.currentTimeMillis() - 1000*3600*24*5)
-                .to(System.currentTimeMillis() + 10);
-        last5Days.scope(Scope.AUDIT_TRAIL);
-        last5Days.uid("createSchema");
+                .to(System.currentTimeMillis() + 10)
+                .filterOnScopes(Scope.AUDIT_TRAIL)
+                .filterOnEntityUid("createSchema")
+                .build();
         Assertions.assertTrue(auditTrail.search(last5Days).findFirst().isEmpty());
         auditTrail.createSchema();
         Assertions.assertFalse(auditTrail.search(last5Days).findFirst().isEmpty());

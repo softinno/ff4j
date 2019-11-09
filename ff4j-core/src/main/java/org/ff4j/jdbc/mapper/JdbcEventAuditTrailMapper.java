@@ -24,16 +24,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.ff4j.event.Event;
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
 import org.ff4j.event.Event.Source;
+import org.ff4j.event.EventQuery;
 import org.ff4j.exception.AuditAccessException;
 import org.ff4j.jdbc.JdbcConstants.AuditTrailColumns;
 import org.ff4j.jdbc.JdbcQueryBuilder;
+import org.ff4j.jdbc.JdbcUtils;
 import org.ff4j.mapper.EventMapper;
 import org.ff4j.utils.JsonUtils;
 
@@ -48,6 +51,55 @@ public class JdbcEventAuditTrailMapper extends AbstractJdbcMapper implements Eve
         super(sqlConn, qbd);
     }
     
+    public PreparedStatement buildPurgeStatement(EventQuery query) {
+        PreparedStatement stmt = null;
+        try {
+            StringBuilder sqlQuery = new StringBuilder(queryBuilder.sqlDeleteAllAuditrail())
+                    .append(" WHERE ")
+                    .append(AuditTrailColumns.TIMESTAMP + " >? AND ")
+                    .append(AuditTrailColumns.TIMESTAMP + " <? ");
+            if (!query.getFilteredEntityUids().isEmpty()) {
+                sqlQuery.append(" AND ")
+                        .append(AuditTrailColumns.NAME + " IN")
+                        .append(toStringListWithComma(query.getFilteredEntityUids()));
+            }
+            if (!query.getFilteredHostNames().isEmpty()) {
+                sqlQuery.append(" AND ")
+                        .append(AuditTrailColumns.HOSTNAME + " IN")
+                        .append(toStringListWithComma(query.getFilteredHostNames()));
+            }
+            if (!query.getFilteredSources().isEmpty()) {
+                sqlQuery.append(" AND ")
+                        .append(AuditTrailColumns.SOURCE + " IN")
+                        .append(toStringListWithComma(query.getFilteredSources()));
+            }
+            if (!query.getFilteredValues().isEmpty()) {
+                sqlQuery.append(" AND ")
+                        .append(AuditTrailColumns.VALUE + " IN")
+                        .append(toStringListWithComma(query.getFilteredValues()));
+            }
+            if (!query.getFilteredValues().isEmpty()) {
+                sqlQuery.append(" AND ")
+                        .append(AuditTrailColumns.VALUE + " IN")
+                        .append(toStringListWithComma(query.getFilteredValues()));
+            }
+           
+            List<Object> params = new ArrayList<>();
+            params.add(query.getFrom());
+            params.add(query.getTo());
+            stmt = JdbcUtils.buildStatement(sqlConn, sqlQuery.toString(), params.toArray());
+            
+        } catch(SQLException sqlEx) {
+            throw new AuditAccessException("Cannot purge audit trail", sqlEx);
+        }
+        return stmt;
+        
+    }
+    
+    public static String toStringListWithComma(Set<String> items) {
+        return new StringBuilder("('").append(String.join("','", items)).append("')").toString();
+    }
+    
     /** {@inheritDoc} */
     @Override
     public PreparedStatement mapToRepository(Event evt) {
@@ -57,11 +109,11 @@ public class JdbcEventAuditTrailMapper extends AbstractJdbcMapper implements Eve
             populateEntity(stmt, evt);
             
             stmt.setTimestamp(6, new java.sql.Timestamp(evt.getTimestamp()));
-            stmt.setString( 7, evt.getScope().name());
-            stmt.setString( 8, evt.getTargetUid());
-            stmt.setString( 9, evt.getAction().name());
+            stmt.setString( 7, evt.getScope());
+            stmt.setString( 8, evt.getRefEntityUid());
+            stmt.setString( 9, evt.getAction());
             stmt.setString(10, evt.getHostName());
-            stmt.setString(11, evt.getSource().name());
+            stmt.setString(11, evt.getSource());
             stmt.setLong(  12, evt.getDuration().orElse(0L));
             stmt.setString(13, evt.getValue().orElse(null));
             stmt.setString(14, JsonUtils.mapAsJson(evt.getProperties()));
@@ -84,31 +136,20 @@ public class JdbcEventAuditTrailMapper extends AbstractJdbcMapper implements Eve
     @Override
     public Event mapFromRepository(ResultSet rs) {
         try {
-            Event evt = new Event(rs.getString(AuditTrailColumns.UID.colname()));
+            Event.Builder eventBuilder = Event.builder();
+            eventBuilder.refEntityUid(rs.getString(AuditTrailColumns.UID.colname()));
+            eventBuilder.scope(Scope.valueOf(rs.getString(AuditTrailColumns.TYPE.colname())));
+            eventBuilder.refEntityUid(rs.getString(AuditTrailColumns.NAME.colname()));
+            eventBuilder.action(Action.valueOf(rs.getString(AuditTrailColumns.ACTION.colname())));
+            eventBuilder.hostName(rs.getString(AuditTrailColumns.HOSTNAME.colname()));
+            eventBuilder.source(Source.valueOf(rs.getString(AuditTrailColumns.SOURCE.colname())));
+            eventBuilder.duration(rs.getLong(AuditTrailColumns.DURATION.colname()));
+            eventBuilder.value(rs.getString(AuditTrailColumns.VALUE.colname()));
+            Event evt = eventBuilder.build();
             mapEntity(rs, evt);
-            evt.scope(Scope.valueOf(
-                    rs.getString(AuditTrailColumns.TYPE.colname())));
-            evt.targetUid(
-                    rs.getString(AuditTrailColumns.NAME.colname()));
-            evt.action(Action.valueOf(
-                    rs.getString(AuditTrailColumns.ACTION.colname())));
-            evt.hostName(
-                    rs.getString(AuditTrailColumns.HOSTNAME.colname()));
-            evt.source(Source.valueOf(
-                    rs.getString(AuditTrailColumns.SOURCE.colname())));
-            evt.duration(
-                    rs.getLong(AuditTrailColumns.DURATION.colname()));
-            evt.value(
-                    rs.getString(AuditTrailColumns.VALUE.colname()));
-            
-            //evt.setCustomKeys(JsonUtils.jsonAsMap(rs.getString(AuditTrailColumns.KEYS.colname())));
-            ZoneOffset zof = ZoneId.systemDefault().getRules().getOffset(evt.getCreationDate().get());
-            evt.setTimestamp(evt.getCreationDate().get().toEpochSecond(zof));
             return evt;
         } catch(SQLException sqlEx) {
             throw new AuditAccessException("Cannot map result to Event", sqlEx);
         }
-        
     }
-
 }

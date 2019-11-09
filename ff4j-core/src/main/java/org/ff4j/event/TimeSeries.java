@@ -121,11 +121,11 @@ public class TimeSeries implements Serializable {
      *      current event
      */
     public void addEvent(Event evt) {
-        if (!series.containsKey(evt.getTargetUid())) {
-            createNewSerie(evt.getTargetUid());
+        if (!series.containsKey(evt.getRefEntityUid())) {
+            createNewSerie(evt.getRefEntityUid());
         }
         String targetSlot = sdf.format(new Date(evt.getTimestamp()));
-        Serie < Map <String, HitCount > > targetSerie = series.get(evt.getTargetUid());
+        Serie < Map <String, HitCount > > targetSerie = series.get(evt.getRefEntityUid());
         if (targetSerie != null) {
             HitCount mhc = targetSerie.getValue().get(targetSlot);
             if (mhc != null) {

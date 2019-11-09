@@ -23,8 +23,10 @@ package org.ff4j.features;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryJdbc;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("RepositoryFeature_Jdbc_TestCreateSchema")
 public class RepositoryFeatureJdbcCreateTableTest {
     
     /** {@inheritDoc} */

@@ -27,8 +27,8 @@ import java.util.List;
 
 import org.ff4j.FF4j;
 import org.ff4j.exception.AssertionViolationException;
-import org.ff4j.feature.usage.repository.FeatureUsageRepository;
 import org.ff4j.feature.usage.repository.EventRepositorySupport;
+import org.ff4j.feature.usage.repository.FeatureUsageRepository;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.test.AssertFF4j;
@@ -80,19 +80,22 @@ public abstract class EventRepositoryTestSupport implements FF4jTestDataSet {
      * Generate feature event.
      */
     protected Event generateFeatureUsageEvent(String uid) {
-        return new Event().source(Event.Source.JAVA_API)
-                .targetUid(uid)
+        return Event.builder().source(Event.Source.JAVA_API)
+                .refEntityUid(uid)
                 .scope(Event.Scope.FEATURE)
-                .action(Event.Action.HIT);
+                .action(Event.Action.HIT).build();
     }
     
     /**
      * Generate feature event.
      */
     protected Event generateFeatureUsageEvent(String uid, long timestamp) {
-        Event event = generateFeatureUsageEvent(uid);
-        event.setTimestamp(timestamp);
-        return event;
+        return Event.builder()
+                .source(Event.Source.JAVA_API)
+                .refEntityUid(uid)
+                .scope(Event.Scope.FEATURE)
+                .action(Event.Action.HIT).timestamp(timestamp)
+                .build();
     }
     
     /**
@@ -158,10 +161,10 @@ public abstract class EventRepositoryTestSupport implements FF4jTestDataSet {
     @DisplayName("When saving event unitary, record is stored in the repository")
     public void whenSaveUnitaryEventShouldbeThere() throws InterruptedException {
         long start = System.currentTimeMillis();
-        EventQueryDefinition query = new EventQueryDefinition(start, System.currentTimeMillis());
+        EventQuery query = EventQuery.builder().from(start).to(System.currentTimeMillis()).build();
         Assertions.assertEquals(0, testedStore.getTotalHitCount(query));
         testedStore.save(generateFeatureUsageEvent("f1"));
-        EventQueryDefinition queryfewMillis = new EventQueryDefinition(start-20, System.currentTimeMillis());
+        EventQuery queryfewMillis = EventQuery.builder().from(start-100).to(System.currentTimeMillis()).build();
         Thread.sleep(100);
         Assertions.assertEquals(1, testedStore.getTotalHitCount(queryfewMillis));
     }
@@ -175,15 +178,16 @@ public abstract class EventRepositoryTestSupport implements FF4jTestDataSet {
     @Test
     public void testPieChart() throws InterruptedException {
         long start = System.currentTimeMillis();
-        Event evt1 = new Event()
-             .targetUid("f1")
+        Event evt1 = Event.builder()
+             .refEntityUid("f1")
              .scope(Event.Scope.FEATURE)
              .action(Event.Action.CREATE)
-             .source(Event.Source.JAVA_API);
+             .source(Event.Source.JAVA_API)
+             .build();
         testedStore.save(evt1);
         Thread.sleep(200);
         
-        EventQueryDefinition query = new EventQueryDefinition(start-10, System.currentTimeMillis());
+        EventQuery query = EventQuery.builder().from(start-20).to(System.currentTimeMillis()).build();
         //find(ids)etFeatureUsagePieChart(eqd)
         //Map < String, HitCount> maps = testedStore.getHostHitCount(query);
         

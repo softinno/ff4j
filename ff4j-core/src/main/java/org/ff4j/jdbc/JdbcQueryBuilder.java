@@ -566,6 +566,10 @@ public class JdbcQueryBuilder {
     public String sqlDeleteAllCustomProperties() {
         return sqlDeleteAll(FeaturePropertyColumns.UID);
     }
+    // delete all audit trail
+    public String sqlDeleteAllAuditrail() {
+        return sqlDeleteAll(AuditTrailColumns.UID);
+    }
     // delete all
     public String sqlDeleteAllPropertiesFromFeature() {
         return sqlDeleteWhere(FeaturePropertyColumns.FEATURE);
@@ -906,4 +910,5 @@ public class JdbcQueryBuilder {
     private String sqlDeleteWhere(SqlTableColumns... condition) {
         return sqlDeleteAll(condition[0]) + sqlPartWhere(condition);
     }
+    
 }

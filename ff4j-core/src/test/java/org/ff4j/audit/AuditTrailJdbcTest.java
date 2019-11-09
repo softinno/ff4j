@@ -9,13 +9,12 @@ import org.ff4j.test.jdbc.JdbcTestHelper;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-public class AuditTrailJdbcTest extends AuditTrailTestSupport {
+public class AuditTrailJdbcTest /*extends AuditTrailTestSupport*/ {
 
     /** SQL DataSource. */
     private DataSource sqlDataSource;
     
     /** {@inheritDoc} */
-    @Override
     protected AuditTrailRepository initAuditTrailRepository() {
         sqlDataSource = JdbcTestHelper.createInMemoryHQLDataSource();
         return new AuditTrailRepositoryJdbc(sqlDataSource);

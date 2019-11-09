@@ -34,12 +34,14 @@ import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryJdbc;
 import org.ff4j.jdbc.JdbcUtils;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**
  * Enhancing test coverage ration by generating error on mocked data source. 
  */
+@DisplayName("RepositoryFeature_Jdbc_TestErrors")
 public class RepositoryFeatureJdbcErrorsTest {
     
     /** SQL DataSource. */

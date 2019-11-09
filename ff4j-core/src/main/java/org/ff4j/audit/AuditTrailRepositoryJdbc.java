@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.Event;
 import org.ff4j.event.HitCount;
 import org.ff4j.feature.exception.AuditTrailAccessException;
@@ -43,6 +44,7 @@ import org.ff4j.feature.usage.repository.FeatureUsageRepository;
 import org.ff4j.jdbc.JdbcConstants.AuditTrailColumns;
 import org.ff4j.jdbc.JdbcQueryBuilder;
 import org.ff4j.jdbc.mapper.JdbcEventAuditTrailMapper;
+import org.ff4j.test.AssertUtils;
 
 /**
  * Implementation of in memory {@link FeatureUsageRepository} with limited events.
@@ -84,6 +86,7 @@ public class AuditTrailRepositoryJdbc implements AuditTrailRepository {
     }
     
     /** {@inheritDoc} */
+    @Override
     public void log(Event evt) {
         validateEvent(evt);
         try (Connection sqlConn = dataSource.getConnection()) {
@@ -95,18 +98,24 @@ public class AuditTrailRepositoryJdbc implements AuditTrailRepository {
             throw new AuditTrailAccessException("Cannot insert event into audit trail", sqlEX);
         }
     }
-
-    @Override
+    
     /** {@inheritDoc} */
-    public Stream<Event> search(AuditTrailQuery query) {
-        throw new UnsupportedOperationException("Not implemented, yet");
+    @Override
+    public void purge(EventQuery query) {
+        AssertUtils.assertNotNull(query, "Audit Query cannot be null nor empty");
+        try (Connection sqlConn = dataSource.getConnection()) {
+            throw new UnsupportedOperationException("Not implemented, yet");
+        } catch (SQLException sqlEX) {
+            throw new AuditTrailAccessException("Cannot purge audit trail based on query :", sqlEX);
+        }
     }
 
     @Override
     /** {@inheritDoc} */
-    public void purge(AuditTrailQuery query) {
+    public Stream<Event> search(EventQuery query) {
         throw new UnsupportedOperationException("Not implemented, yet");
-    }    
+    }
+
     
     /** {@inheritDoc} *
     @Override

@@ -55,7 +55,7 @@ public abstract class AuditTrailListenerSupport<E extends FF4jEntity<?>> impleme
     }
     
     protected Event createEvent(Action action, Scope scope) {
-        return new Event().source(source).action(action).scope(scope);
+        return Event.builder().source(source).action(action).scope(scope).build();
     }
     
     protected void log(Event evt) {
@@ -65,7 +65,7 @@ public abstract class AuditTrailListenerSupport<E extends FF4jEntity<?>> impleme
     }
     
     protected void logEvent(Action action, Scope scope, String uid) {
-        log(createEvent(action, scope).targetUid(uid));
+        log(Event.builder().source(source).action(action).scope(scope).refEntityUid(uid).build());
     }
     
     /** {@inheritDoc} */

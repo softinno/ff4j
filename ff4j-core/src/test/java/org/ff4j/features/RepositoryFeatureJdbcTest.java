@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("FeatureRepository::Jdbc (HQL)")
+@DisplayName("RepositoryFeature_Jdbc_Test")
 public class RepositoryFeatureJdbcTest extends FeatureRepositoryTestSupport {
     
     /** SQL DataSource. */

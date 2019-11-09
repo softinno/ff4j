@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 import org.ff4j.event.Event;
-import org.ff4j.event.EventQueryDefinition;
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.EventSeries;
 import org.ff4j.event.HitCount;
 import org.ff4j.event.TimeSeries;
@@ -76,48 +76,48 @@ public class FeatureUsageRepositoryJdbc extends EventRepositorySupport {
     
     @Override
     /** {@inheritDoc} */
-    public EventSeries search(EventQueryDefinition query) {
+    public EventSeries search(EventQuery query) {
         notImplementedYet();
         return null;
     }
 
     @Override
     /** {@inheritDoc} */
-    public void purge(EventQueryDefinition query) {
+    public void purge(EventQuery query) {
         notImplementedYet();
     }
 
     @Override
     /** {@inheritDoc} */
-    public Map<String, HitCount> getHitCount(EventQueryDefinition query) {
-        notImplementedYet();
-        return null;
-    }
-
-    @Override
-    /** {@inheritDoc} */
-    public Map<String, HitCount> getHostHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getHitCount(EventQuery query) {
         notImplementedYet();
         return null;
     }
 
     @Override
     /** {@inheritDoc} */
-    public Map<String, HitCount> getUserHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getHostHitCount(EventQuery query) {
         notImplementedYet();
         return null;
     }
 
     @Override
     /** {@inheritDoc} */
-    public Map<String, HitCount> getSourceHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getUserHitCount(EventQuery query) {
         notImplementedYet();
         return null;
     }
 
     @Override
     /** {@inheritDoc} */
-    public TimeSeries getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units) {
+    public Map<String, HitCount> getSourceHitCount(EventQuery query) {
+        notImplementedYet();
+        return null;
+    }
+
+    @Override
+    /** {@inheritDoc} */
+    public TimeSeries getFeatureUsageHistory(EventQuery query, TimeUnit units) {
         notImplementedYet();
         return null;
     }

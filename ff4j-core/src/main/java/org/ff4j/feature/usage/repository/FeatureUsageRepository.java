@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.ff4j.FF4jRepository;
 import org.ff4j.event.Event;
 import org.ff4j.event.Event.Scope;
-import org.ff4j.event.EventQueryDefinition;
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.EventSeries;
 import org.ff4j.event.HitCount;
 import org.ff4j.event.TimeSeries;
@@ -54,7 +54,7 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      * @return
      *      a list of events
      */
-    EventSeries search(EventQueryDefinition query);
+    EventSeries search(EventQuery query);
     
     /**
      * Purge feature usage.
@@ -64,7 +64,7 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      * @param endTime
      *      end time
      */
-    void purge(EventQueryDefinition query);
+    void purge(EventQuery query);
     
     /**
      * Count hit ratio of features between 2 dates. This will be used for different charts.
@@ -75,7 +75,7 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      *          end time
      * @return
      */
-    Map < String, HitCount > getHitCount(EventQueryDefinition query);
+    Map < String, HitCount > getHitCount(EventQuery query);
     
     /**
      * Count hit for each host.
@@ -86,7 +86,7 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      *      end time
      * return the hitcount
      */
-    Map < String, HitCount > getHostHitCount(EventQueryDefinition query);
+    Map < String, HitCount > getHostHitCount(EventQuery query);
     
     /**
      * Count hit for each host.
@@ -97,7 +97,7 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      *      end time
      * return the hitcount
      */
-    Map < String, HitCount > getUserHitCount(EventQueryDefinition query);
+    Map < String, HitCount > getUserHitCount(EventQuery query);
     
     /**
      * Count hit for each source (api...).
@@ -108,7 +108,7 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      *      end time
      * return the hitcount
      */
-    Map < String, HitCount > getSourceHitCount(EventQueryDefinition query);
+    Map < String, HitCount > getSourceHitCount(EventQuery query);
     
     /**
      * All Data will be generated in the structure and overriden in the chart.
@@ -120,14 +120,14 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      * @return
      *      object structure
      */
-    TimeSeries getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units);
+    TimeSeries getFeatureUsageHistory(EventQuery query, TimeUnit units);
     
     /**
      * Get all events.
      * 
      * @return all event in the repository
      */
-    default int getTotalHitCount(EventQueryDefinition query) {
+    default int getTotalHitCount(EventQuery query) {
         Objects.requireNonNull(query);
         HitCount total = new HitCount();
         getHitCount(query).values().stream().map(HitCount::get).forEach(total::incBy);
@@ -142,9 +142,10 @@ public interface FeatureUsageRepository extends FF4jRepository < String, Event >
      */
     default void featureUsageHit(Feature f) {
         Objects.requireNonNull(f);
-        save(new Event().scope(Scope.FEATURE)
-                .targetUid(f.getUid())
-                .action(Event.Action.HIT));
+        save(Event.builder()
+                .scope(Scope.FEATURE)
+                .refEntityUid(f.getUid())
+                .action(Event.Action.HIT).build());
     }
     
     /**

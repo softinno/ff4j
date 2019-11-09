@@ -2,6 +2,7 @@ package org.ff4j.property.repository;
 
 import org.ff4j.audit.AuditTrailListenerSupport;
 import org.ff4j.audit.AuditTrailRepository;
+import org.ff4j.event.Event;
 import org.ff4j.event.Event.Action;
 
 /*-
@@ -41,7 +42,11 @@ public class PropertyRepositoryListenerAudit extends AuditTrailListenerSupport<P
     /** {@inheritDoc} */
     @Override
     public void onCreate(Property<?> prop) {
-        log(createEvent(Action.CREATE, Scope.PROPERTY).targetUid(prop.getUid()));
+        log(Event.builder()
+                 .action(Action.CREATE)
+                 .scope(Scope.PROPERTY)
+                 .refEntityUid(prop.getUid())
+                 .build());
     }
     
 }

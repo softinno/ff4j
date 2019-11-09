@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@DisplayName("PropertyRepository::InMemory with static DataSet")
+@DisplayName("RepositoryProperty_InMemory_TestFixedDataSet")
 public class RepositoryPropertyInMemoryTest extends PropertyRepositoryTestSupport {
 
     /** {@inheritDoc} */

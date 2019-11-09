@@ -2,6 +2,7 @@ package org.ff4j.feature.repository;
 
 import org.ff4j.audit.AuditTrailListenerSupport;
 import org.ff4j.audit.AuditTrailRepository;
+import org.ff4j.event.Event;
 
 /*-
  * #%L
@@ -42,48 +43,69 @@ public class FeatureRepositoryListenerAudit extends AuditTrailListenerSupport < 
     /** {@inheritDoc} */
     @Override
     public void onToggleOnFeature(String uid) {
-        log(createEvent(Action.TOGGLE_ON, Scope.FEATURE).targetUid(uid));
+        log(Event.builder().source(source)
+                 .action(Action.TOGGLE_ON)
+                 .scope(Scope.FEATURE)
+                 .refEntityUid(uid).build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onToggleOffFeature(String uid) {
-        log(createEvent(Action.TOGGLE_OFF, Scope.FEATURE).targetUid(uid));
+        log(Event.builder().source(source)
+                .action(Action.TOGGLE_OFF)
+                .scope(Scope.FEATURE)
+                .refEntityUid(uid).build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onToggleOnGroup(String groupName) {
-        log(createEvent(Action.TOGGLE_ON, Scope.FEATURE_GROUP).targetUid(groupName));
+        log(Event.builder().source(source)
+                .action(Action.TOGGLE_ON)
+                .scope(Scope.FEATURE_GROUP)
+                .refEntityUid(groupName).build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onToggleOffGroup(String groupName) {
-        log(createEvent(Action.TOGGLE_OFF, Scope.FEATURE_GROUP)
-                .targetUid(groupName));
+        log(Event.builder().source(source)
+                .action(Action.TOGGLE_OFF)
+                .scope(Scope.FEATURE_GROUP)
+                .refEntityUid(groupName).build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onAddFeatureToGroup(String uid, String groupName) {
-        log(createEvent(Action.ADD_TO_GROUP, Scope.FEATURE)
-                .targetUid(groupName)
-                .put("targetGroup", groupName));
+        log(Event.builder().source(source)
+                .action(Action.ADD_TO_GROUP)
+                .scope(Scope.FEATURE)
+                .refEntityUid(groupName)
+                .customKey("targetGroup", groupName)
+                .build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onRemoveFeatureFromGroup(String uid, String groupName) {
-        log(createEvent(Action.REMOVE_FROM_GROUP, Scope.FEATURE)
-                .targetUid(groupName)
-                .put("targetGroup", groupName));
+        log(Event.builder().source(source)
+                .action(Action.REMOVE_FROM_GROUP)
+                .scope(Scope.FEATURE)
+                .refEntityUid(groupName)
+                .customKey("targetGroup", groupName)
+                .build());
     }
 
     /** {@inheritDoc} */
     @Override
     public void onCreate(Feature bo) {
-        log(createEvent(Action.CREATE, Scope.FEATURE).targetUid(bo.getUid()));
+        log(Event.builder().source(source)
+                .action(Action.CREATE)
+                .scope(Scope.FEATURE)
+                .refEntityUid(bo.getUid())
+                .build());
     }
 
 }

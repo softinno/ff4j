@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.ff4j.event.Event;
-import org.ff4j.event.EventQueryDefinition;
+import org.ff4j.event.EventQuery;
 import org.ff4j.event.EventSeries;
 import org.ff4j.event.HitCount;
 import org.ff4j.event.Serie;
@@ -167,7 +167,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
     
     private boolean match(Event e) {
         return (e!= null) && e.getScope().equals(Event.Scope.FEATURE.name())
-                          && Event.Action.HIT.name().equalsIgnoreCase(e.getAction().name());
+                          && Event.Action.HIT.name().equalsIgnoreCase(e.getAction());
     }
     
     /** {@inheritDoc} */
@@ -178,33 +178,33 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
     
     /** {@inheritDoc} */
     @Override
-    public Map<String, HitCount> getHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getHitCount(EventQuery query) {
         Map<String, HitCount> hitRatio = new TreeMap<String, HitCount>();
         for (Event event : search(query)) {
-            if (!hitRatio.containsKey(event.getTargetUid())) {
-                hitRatio.put(event.getTargetUid(), new HitCount());
+            if (!hitRatio.containsKey(event.getRefEntityUid())) {
+                hitRatio.put(event.getRefEntityUid(), new HitCount());
              }
-             hitRatio.get(event.getTargetUid()).inc();
+             hitRatio.get(event.getRefEntityUid()).inc();
         }
         return hitRatio;
     }
     
     /** {@inheritDoc} */
     @Override
-    public Map<String, HitCount> getSourceHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getSourceHitCount(EventQuery query) {
         Map<String, HitCount> hitRatio = new TreeMap<String, HitCount>();
         for (Event event : search(query)) {
-            if (!hitRatio.containsKey(event.getSource().name())) {
-                hitRatio.put(event.getSource().name(), new HitCount());
+            if (!hitRatio.containsKey(event.getSource())) {
+                hitRatio.put(event.getSource(), new HitCount());
              }
-             hitRatio.get(event.getSource().name()).inc();
+             hitRatio.get(event.getSource()).inc();
         }
         return hitRatio;
     }
     
     /** {@inheritDoc} */
     @Override
-    public Map<String, HitCount> getHostHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getHostHitCount(EventQuery query) {
         Map<String, HitCount> hitRatio = new TreeMap<String, HitCount>();
         for (Event event : search(query)) {
             if (!hitRatio.containsKey(event.getHostName())) {
@@ -217,7 +217,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
     
     /** {@inheritDoc} */
     @Override
-    public Map<String, HitCount> getUserHitCount(EventQueryDefinition query) {
+    public Map<String, HitCount> getUserHitCount(EventQuery query) {
         Map<String, HitCount> hitRatio = new TreeMap<String, HitCount>();
         for (Event event : search(query)) {
             String user = event.getOwner().orElse("anonymous");
@@ -241,7 +241,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
     private boolean saveEvent(Event e, Map<String, Map<String, EventSeries>> target) {
         assertEvent(e);
         String key = getKeyDate(e.getTimestamp());
-        String uid = e.getTargetUid();
+        String uid = e.getRefEntityUid();
         if (!target.containsKey(key)) {
             target.put(key, new ConcurrentHashMap<String, EventSeries>());
         }
@@ -253,7 +253,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
     
     /** {@inheritDoc} */
     @Override
-    public TimeSeries getFeatureUsageHistory(EventQueryDefinition query, TimeUnit units) {
+    public TimeSeries getFeatureUsageHistory(EventQuery query, TimeUnit units) {
         // Create the interval depending on units
         TimeSeries tsc = new TimeSeries(query.getFrom(), query.getTo(), units);
         
@@ -263,7 +263,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
                 for (Map.Entry<String, EventSeries> entry : events.get(currentDay).entrySet()) {
                     String currentFeatureName = entry.getKey();
                     // Filter feature names if required
-                    Set < String > filteredFeatures = query.getNamesFilter();
+                    Set < String > filteredFeatures = query.getFilteredEntityUids();
                     if (filteredFeatures == null || filteredFeatures.isEmpty() || filteredFeatures.contains(currentFeatureName)) {
                         // Loop over events
                         for (Event evt : entry.getValue()) {
@@ -293,7 +293,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
     
     /** {@inheritDoc} */
     @Override
-    public void purge(EventQueryDefinition q) {
+    public void purge(EventQuery q) {
         Set<String> candidateDates = getCandidateDays(q.getFrom(), q.getTo());
         for (String currentDay : candidateDates) {
             if (events.containsKey(currentDay)) {
@@ -330,7 +330,7 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
 
     /** {@inheritDoc} */
     @Override
-    public EventSeries search(EventQueryDefinition query) {
+    public EventSeries search(EventQuery query) {
         EventSeries es = new EventSeries(1000000);
         // Dates are the keys of the storage map, compute list of keys and loop over them
         for (String currentDay : getCandidateDays(query.getFrom(), query.getTo())) {
@@ -339,20 +339,26 @@ public class FeatureUsageRepositoryInMemory extends EventRepositorySupport {
                Map<String, EventSeries> currentDayEvents = events.get(currentDay);
                for (String currentFeature : currentDayEvents.keySet()) {
                     // query can have filters for names, here we limite the number of map to scan
-                    if (query.matchName(currentFeature)) {
-                        Iterator<Event> iterEvents = currentDayEvents.get(currentFeature).iterator();
-                        while (iterEvents.hasNext()) {
-                            Event evt = iterEvents.next();
-                            // use other filter (host, action, timestamp....)
-                            if (query.match(evt)) {
-                                es.add(evt);
-                            }
-                        }
-                    }
+                   if (query.getFilteredEntityUids().isEmpty()) {
+                       currentDayEvents.values().stream().forEach(current ->  addAllMatchingEvents(es, current, query));
+                       // We need to select all Features
+                   } else if (query.getFilteredEntityUids().contains(currentFeature)){
+                       addAllMatchingEvents(es, currentDayEvents.get(currentFeature), query);
+                  }
                 }
             }
         }
         return es;
+    }
+    
+    private void addAllMatchingEvents(EventSeries result, EventSeries current, EventQuery query) {
+        Iterator<Event> iterEvents = current.iterator();
+        while (iterEvents.hasNext()) {
+            Event tmpEvt = iterEvents.next();
+            if (query.match(tmpEvt)) {
+                result.add(tmpEvt);
+            }
+        }
     }
     
     /**

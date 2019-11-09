@@ -3,13 +3,18 @@ package org.ff4j.test.properties;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.ff4j.FF4j;
 import org.ff4j.exception.AssertionViolationException;
 import org.ff4j.parser.ConfigurationFileParser;
 import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.property.Property;
+import org.ff4j.property.PropertyDouble;
+import org.ff4j.property.PropertyLogLevel;
 import org.ff4j.property.PropertyLogLevel.LogLevel;
+import org.ff4j.property.PropertyString;
 import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.property.repository.PropertyRepository;
 import org.ff4j.test.AssertFF4j;
@@ -83,7 +88,7 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     public void should_throw_AssertionViolationException_when_invalid_parameters() throws Exception {
         assertThrows(AssertionViolationException.class, () -> { testedStore.exists(null); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.exists(""); });
-        assertThrows(AssertionViolationException.class, () -> { testedStore.save((Property<?>)null); });
+        assertThrows(AssertionViolationException.class, () -> { testedStore.saveProperty(null); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.read(null); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.read(""); });
         assertThrows(AssertionViolationException.class, () -> { testedStore.deleteProperty((String) null); });
@@ -161,6 +166,19 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     }
     
     @Test
+    public void should_return_empty_if_property_not_exist() {
+        // Givens
+        assertFF4j.assertThatPropertyDoesNotExist("PPP");
+        assertFF4j.assertThatPropertyExist(PDouble);
+        // When
+        Optional<Property<?>> p1 = testedStore.find("PPP");
+        Optional<Property<?>> p2 = testedStore.find(PDouble);
+        // Then
+        Assertions.assertTrue(p1.isEmpty());
+        Assertions.assertFalse(p2.isEmpty());
+    }
+    
+    @Test
     public void should_update_property_when_update_value() {
         // Givens
         assertFF4j.assertThatPropertyExist(PDouble);
@@ -200,6 +218,11 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
         testedStore.deleteAll();
         // Then
         Assertions.assertEquals(0, testedStore.findAll().count());
+    }
+    
+    @Test
+    public void should_work_when_creatingSchema() {
+        testedStore.createSchema();
     }
     
     @Test
