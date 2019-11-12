@@ -1,6 +1,6 @@
 package org.ff4j.event;
 
-import static org.ff4j.utils.Util.inetAddressHostName;
+import static org.ff4j.core.utils.Util.inetAddressHostName;
 
 /*
  * #%L
@@ -23,6 +23,7 @@ import static org.ff4j.utils.Util.inetAddressHostName;
  */
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,8 +31,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.ff4j.FF4jEntity;
-import org.ff4j.utils.JsonUtils;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.utils.JsonUtils;
 
 /**
  * Audit information relevant to features.
@@ -88,7 +89,7 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
     }
     
     public enum Source {
-        UNKNOWN, JAVA_API, WEB_CONSOLE, WEB_API, JMX, SSH;
+        UNKNOWN, JAVA_API, WEB_CONSOLE, WEB_API, JMX, SSH, TEST;
     }
     
     public static Builder builder() {
@@ -99,6 +100,22 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
         private Event e = null;
         public Builder() {
             this.e = new Event();
+        }
+        public Builder uid(String uid) {
+            e.uid = uid;
+            return this;
+        }
+        public Builder owner(String owner) {
+            e.owner = Optional.ofNullable(owner);
+            return this;
+        }
+        public Builder description(String description) {
+            e.description = Optional.ofNullable(description);
+            return this;
+        }
+        public Builder creationDate(LocalDateTime ldt) {
+            e.creationDate = Optional.ofNullable(ldt);
+            return this;
         }
         public Builder action(String action) {
             e.action = action;
@@ -178,8 +195,6 @@ public class Event extends FF4jEntity<Event> implements Serializable, Comparable
         timestamp    = creationDate.get().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         hostName     = inetAddressHostName();
     }
-    
-    
     
     /** {@inheritDoc} */
     public String toString() {

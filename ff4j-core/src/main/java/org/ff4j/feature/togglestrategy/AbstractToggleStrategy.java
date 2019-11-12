@@ -28,8 +28,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.ff4j.core.test.AssertUtils;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.property.Property;
-import org.ff4j.test.AssertUtils;
 
 /**
  * Super class for {@link ToggleStrategy} implementation with utilities.

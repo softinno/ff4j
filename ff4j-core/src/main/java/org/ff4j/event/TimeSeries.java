@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.ff4j.core.utils.JsonUtils;
 import org.ff4j.event.Event;
-import org.ff4j.utils.JsonUtils;
 
 /*
  * #%L

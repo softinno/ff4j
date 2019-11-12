@@ -23,12 +23,12 @@ package org.ff4j.parser.yaml;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.security.FF4jPermission;
+import org.ff4j.core.test.FF4jTestDataSet;
 import org.ff4j.feature.Feature;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.feature.togglestrategy.PonderationToggleStrategy;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
-import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.security.FF4jPermission;
-import org.ff4j.test.FF4jTestDataSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 public class YamlParserTest implements FF4jTestDataSet {
     
     /** DataSet. **/
-    protected FF4jConfigFile testDataSet;
+    protected FF4jConfiguration testDataSet;
     
     /** {@inheritDoc} */
     @BeforeEach
@@ -58,7 +58,7 @@ public class YamlParserTest implements FF4jTestDataSet {
         InputStream in = getClass().getClassLoader().getResourceAsStream("ff4j-testDataset.yml");
         
         // Parsing
-        FF4jConfigFile configFile = new YamlParser().parse(in);
+        FF4jConfiguration configFile = new YamlParser().parse(in);
         
         // Evaluating Features
         Map<String, Feature> features = configFile.getFeatures();

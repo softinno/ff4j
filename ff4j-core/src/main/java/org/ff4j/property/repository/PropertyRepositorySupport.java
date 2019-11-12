@@ -1,19 +1,19 @@
 package org.ff4j.property.repository;
 
-import static org.ff4j.test.AssertUtils.assertNotNull;
-import static org.ff4j.utils.JsonUtils.attributeAsJson;
-import static org.ff4j.utils.JsonUtils.collectionAsJson;
-import static org.ff4j.utils.JsonUtils.objectAsJson;
-import static org.ff4j.utils.Util.setOf;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
+import static org.ff4j.core.utils.JsonUtils.attributeAsJson;
+import static org.ff4j.core.utils.JsonUtils.collectionAsJson;
+import static org.ff4j.core.utils.JsonUtils.objectAsJson;
+import static org.ff4j.core.utils.Util.setOf;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4jRepositoryListener;
-import org.ff4j.FF4jRepositorySupport;
-import org.ff4j.audit.AuditTrailRepository;
-import org.ff4j.exception.ItemNotFoundException;
+import org.ff4j.core.FF4jRepositoryListener;
+import org.ff4j.core.FF4jRepositorySupport;
+import org.ff4j.core.exception.NotFoundException;
+import org.ff4j.event.repository.audit.AuditTrailRepository;
 import org.ff4j.property.Property;
 import org.ff4j.property.exception.PropertyNotFoundException;
 
@@ -62,7 +62,7 @@ public abstract class PropertyRepositorySupport
     protected void assertPropertyExist(String uid) {
         try {
             assertItemExist(uid);
-        } catch(ItemNotFoundException infEx) {
+        } catch(NotFoundException infEx) {
             throw new PropertyNotFoundException(uid, infEx);
         }
     }

@@ -20,11 +20,11 @@ package org.ff4j.core;
  * #L%
  */
 
-import org.ff4j.FF4j;
+import org.ff4j.core.FF4j;
+import org.ff4j.core.test.AssertFF4j;
+import org.ff4j.core.test.FF4jTestDataSet;
+import org.ff4j.core.test.TestConfigurationParser;
 import org.ff4j.feature.Feature;
-import org.ff4j.test.AssertFF4j;
-import org.ff4j.test.FF4jTestDataSet;
-import org.ff4j.test.TestConfigurationParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

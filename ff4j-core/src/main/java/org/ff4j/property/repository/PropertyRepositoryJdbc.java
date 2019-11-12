@@ -4,7 +4,7 @@ package org.ff4j.property.repository;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2017 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package org.ff4j.property.repository;
  * limitations under the License.
  * #L%
  */
-import static org.ff4j.jdbc.JdbcUtils.buildStatement;
-import static org.ff4j.jdbc.JdbcUtils.executeUpdate;
-import static org.ff4j.jdbc.JdbcUtils.isTableExist;
-import static org.ff4j.test.AssertUtils.assertHasLength;
-import static org.ff4j.test.AssertUtils.assertNotNull;
+
+import static org.ff4j.core.jdbc.JdbcUtils.buildStatement;
+import static org.ff4j.core.jdbc.JdbcUtils.executeUpdate;
+import static org.ff4j.core.jdbc.JdbcUtils.isTableExist;
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -36,18 +37,18 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
-import org.ff4j.jdbc.JdbcConstants.PropertyColumns;
-import org.ff4j.jdbc.JdbcQueryBuilder;
-import org.ff4j.jdbc.mapper.JdbcPropertyMapper;
+import org.ff4j.core.jdbc.JdbcQueryBuilder;
+import org.ff4j.core.jdbc.JdbcSchema;
 import org.ff4j.property.Property;
 import org.ff4j.property.exception.PropertyAccessException;
+import org.ff4j.property.mapper.PropertyMapperJdbc;
 
 /**
  * Access information related to properties within database.
  *
  * @author Cedrick Lunven (@clunven)
  */
-public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
+public class PropertyRepositoryJdbc extends PropertyRepositorySupport implements JdbcSchema {
 
     /** serialVersionUID. */
     private static final long serialVersionUID = -1746222910983624609L;
@@ -94,7 +95,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
                 }
             }
         } catch (SQLException sqlEX) {
-           throw new PropertyAccessException("Cannot check feature existence, error related to database", sqlEX);
+           throw new PropertyAccessException("Cannot check property existence, error related to database", sqlEX);
         }
     }
 
@@ -106,7 +107,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
             deleteProperty(ap.getUid());
         }
         try (Connection sqlConn = getDataSource().getConnection()) {
-            JdbcPropertyMapper pmapper = new JdbcPropertyMapper(sqlConn, getQueryBuilder());
+            PropertyMapperJdbc pmapper = new PropertyMapperJdbc(sqlConn, getQueryBuilder());
             try(PreparedStatement ps1 = pmapper.mapToRepository(ap)) {
                 ps1.executeUpdate();
             }
@@ -126,7 +127,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     public Optional < Property<?> > find(String name) {
         assertHasLength(name);
         try (Connection sqlConn = getDataSource().getConnection()) {
-            JdbcPropertyMapper pmapper = new JdbcPropertyMapper(sqlConn, getQueryBuilder());
+            PropertyMapperJdbc pmapper = new PropertyMapperJdbc(sqlConn, getQueryBuilder());
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectPropertyById())) {
                 ps1.setString(1, name);
                 try (ResultSet rs1 = ps1.executeQuery()) {
@@ -175,7 +176,7 @@ public class PropertyRepositoryJdbc extends PropertyRepositorySupport {
     public Stream < Property<?> > findAll() {
         Collection <Property<?>> properties = new ArrayList<>();
         try (Connection sqlConn = getDataSource().getConnection()) {
-            JdbcPropertyMapper  pmapper = new JdbcPropertyMapper(sqlConn, getQueryBuilder());
+            PropertyMapperJdbc  pmapper = new PropertyMapperJdbc(sqlConn, getQueryBuilder());
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectAllProperties())) {
                 try (ResultSet rs1 = ps1.executeQuery()) {
                     while (rs1.next()) {

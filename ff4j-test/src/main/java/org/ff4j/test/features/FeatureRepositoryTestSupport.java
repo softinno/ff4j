@@ -28,27 +28,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.ff4j.FF4j;
-import org.ff4j.audit.AuditTrailRepositoryInMemory;
-import org.ff4j.exception.AssertionViolationException;
+import org.ff4j.core.FF4j;
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.exception.AssertionViolationException;
+import org.ff4j.core.security.FF4jPermission;
+import org.ff4j.core.test.AssertFF4j;
+import org.ff4j.core.test.FF4jTestDataSet;
+import org.ff4j.core.utils.Util;
+import org.ff4j.event.repository.audit.AuditTrailRepositoryInMemory;
 import org.ff4j.feature.Feature;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.feature.exception.FeatureNotFoundException;
 import org.ff4j.feature.exception.GroupNotFoundException;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositoryListenerAudit;
 import org.ff4j.feature.repository.FeatureRepositorySupport;
 import org.ff4j.feature.togglestrategy.PonderationToggleStrategy;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyBoolean;
 import org.ff4j.property.PropertyDouble;
 import org.ff4j.property.PropertyInteger;
-import org.ff4j.security.FF4jPermission;
-import org.ff4j.test.AssertFF4j;
-import org.ff4j.test.FF4jTestDataSet;
-import org.ff4j.utils.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,12 +70,12 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	protected AssertFF4j assertFF4j;
 	
 	/** DataSet. **/
-	protected FF4jConfigFile testDataSet;
+	protected FF4jConfiguration testDataSet;
 	
 	/** {@inheritDoc} */
 	@BeforeEach
 	public void setUp() throws Exception {
-	    ConfigurationFileParser.clearCache();
+	    FF4jConfigurationParser.clearCache();
 	    testedStore = initStore();
 	    ff4j = new FF4j().withRepositoryFeatures(testedStore)
 	                     .withAudit(new AuditTrailRepositoryInMemory());

@@ -4,7 +4,7 @@ package org.ff4j.user.repository;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2017 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ package org.ff4j.user.repository;
  * #L%
  */
 
-import org.ff4j.FF4jEntity;
-import org.ff4j.FF4jRepositoryListener;
-import org.ff4j.audit.AuditTrailListenerSupport;
-import org.ff4j.audit.AuditTrailRepository;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.FF4jRepositoryListener;
 import org.ff4j.event.Event;
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
+import org.ff4j.event.repository.audit.AuditTrailListenerSupport;
+import org.ff4j.event.repository.audit.AuditTrailRepository;
 import org.ff4j.user.FF4jRole;
 
 /**

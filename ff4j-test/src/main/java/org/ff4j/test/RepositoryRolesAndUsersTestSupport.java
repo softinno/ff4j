@@ -25,15 +25,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4j;
-import org.ff4j.exception.AssertionViolationException;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.core.FF4j;
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.exception.AssertionViolationException;
+import org.ff4j.core.test.AssertFF4j;
+import org.ff4j.core.test.FF4jTestDataSet;
+import org.ff4j.core.utils.Util;
 import org.ff4j.user.FF4jUser;
 import org.ff4j.user.exception.RoleNotFoundException;
 import org.ff4j.user.exception.UserNotFoundException;
 import org.ff4j.user.repository.RolesAndUsersRepository;
-import org.ff4j.utils.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -56,12 +58,12 @@ public abstract class RepositoryRolesAndUsersTestSupport implements FF4jTestData
     protected AssertFF4j assertFF4j;
     
     /** DataSet. **/
-    protected FF4jConfigFile testDataSet;
+    protected FF4jConfiguration testDataSet;
     
     /** {@inheritDoc} */
     @BeforeEach
     public void setUp() throws Exception {
-        ConfigurationFileParser.clearCache();
+        FF4jConfigurationParser.clearCache();
         ff4j        = new FF4j().withRepositoryUsersRoles(initStore());
         assertFF4j  = new AssertFF4j(ff4j);
         testedStore = ff4j.getRepositoryUsersRoles();
@@ -238,7 +240,7 @@ public abstract class RepositoryRolesAndUsersTestSupport implements FF4jTestData
     @DisplayName("When listing all user names, the are all retrieve")
     public void listingUserNamesShouldRetrieveAllNames() {
         Stream< String> userNames = testedStore.listUsersNames();
-        Stream< String> roleNames = testedStore.listRoleNames();
+        Stream< String> roleNames = testedStore.findAllRoleNames();
         Assertions.assertNotNull(userNames);
         Assertions.assertNotNull(roleNames);
         

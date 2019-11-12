@@ -6,10 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4j;
-import org.ff4j.exception.AssertionViolationException;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.core.FF4j;
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.exception.AssertionViolationException;
+import org.ff4j.core.test.AssertFF4j;
+import org.ff4j.core.test.FF4jTestDataSet;
+import org.ff4j.core.utils.Util;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyDouble;
 import org.ff4j.property.PropertyLogLevel;
@@ -17,9 +20,6 @@ import org.ff4j.property.PropertyLogLevel.LogLevel;
 import org.ff4j.property.PropertyString;
 import org.ff4j.property.exception.PropertyNotFoundException;
 import org.ff4j.property.repository.PropertyRepository;
-import org.ff4j.test.AssertFF4j;
-import org.ff4j.test.FF4jTestDataSet;
-import org.ff4j.utils.Util;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,12 +61,12 @@ public abstract class PropertyRepositoryTestSupport implements FF4jTestDataSet {
     protected AssertFF4j assertFF4j;
     
     /** DataSet. **/
-    protected FF4jConfigFile testDataSet;
+    protected FF4jConfiguration testDataSet;
     
     /** {@inheritDoc} */
     @BeforeEach
     public void setUp() throws Exception {
-        ConfigurationFileParser.clearCache();
+        FF4jConfigurationParser.clearCache();
         testedStore = initStore();
         ff4j        = new FF4j().withRepositoryProperties(testedStore);
         assertFF4j  = new AssertFF4j(ff4j);

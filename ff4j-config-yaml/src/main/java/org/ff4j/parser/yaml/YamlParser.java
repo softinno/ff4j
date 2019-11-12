@@ -32,26 +32,26 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.security.FF4jAcl;
+import org.ff4j.core.security.FF4jGrantees;
+import org.ff4j.core.security.FF4jPermission;
+import org.ff4j.core.test.AssertUtils;
 import org.ff4j.feature.Feature;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyString;
-import org.ff4j.security.FF4jAcl;
-import org.ff4j.security.FF4jGrantees;
-import org.ff4j.security.FF4jPermission;
-import org.ff4j.test.AssertUtils;
 import org.ff4j.user.FF4jRole;
 import org.ff4j.user.FF4jUser;
 import org.yaml.snakeyaml.Yaml;
 
 /**
- * Parser to read {@link FF4jConfigFile} from a YAML file.
+ * Parser to read {@link FF4jConfiguration} from a YAML file.
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-public class YamlParser extends ConfigurationFileParser {
+public class YamlParser extends FF4jConfigurationParser {
     
     /**
      * Default constructor.
@@ -61,12 +61,12 @@ public class YamlParser extends ConfigurationFileParser {
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
-    public FF4jConfigFile parse(InputStream inputStream) {
+    public FF4jConfiguration parse(InputStream inputStream) {
         AssertUtils.assertNotNull(inputStream, "Cannot read file stream is empty, check readability and path.");
         Yaml yaml = new Yaml();
         Map<?,?> yamlConfigFile = yaml.load(inputStream);
         Map<?,?> ff4jYamlMap = (Map<?, ?>) yamlConfigFile.get(FF4J_TAG);
-        FF4jConfigFile ff4jConfig = new FF4jConfigFile();
+        FF4jConfiguration ff4jConfig = new FF4jConfiguration();
         if (ff4jYamlMap != null) {
             // Audit
             if (ff4jYamlMap.containsKey(GLOBAL_AUDIT_TAG)) {
@@ -103,7 +103,7 @@ public class YamlParser extends ConfigurationFileParser {
      *      role map.
      */
     @SuppressWarnings("unchecked")
-    private void parseRoles(FF4jConfigFile ff4jConfig, List<Map<String, Object>> roleItems) {
+    private void parseRoles(FF4jConfiguration ff4jConfig, List<Map<String, Object>> roleItems) {
         if (null != roleItems) {
             roleItems.forEach(role -> {
                 String roleName = (String) role.get(SECURITY_ROLE_ATTNAME);
@@ -126,7 +126,7 @@ public class YamlParser extends ConfigurationFileParser {
      *      items loaded fron Yaml file.
      */
     @SuppressWarnings("unchecked")
-    private void parseUsers(FF4jConfigFile ff4jConfig, List<Map<String, Object>> usersItems) {
+    private void parseUsers(FF4jConfiguration ff4jConfig, List<Map<String, Object>> usersItems) {
         if (null != usersItems) {
             usersItems.forEach(user -> {
                 FF4jUser currentUser = new FF4jUser( (String) user.get(USER_ATT_UID));
@@ -230,7 +230,7 @@ public class YamlParser extends ConfigurationFileParser {
      *      feature to populate
      */
     @SuppressWarnings("unchecked")
-    private void parseFeatures(FF4jConfigFile ff4jConfig, List<Map<String, Object>> features) {
+    private void parseFeatures(FF4jConfiguration ff4jConfig, List<Map<String, Object>> features) {
         if (null != features) {
             features.forEach(feature -> {
                 String name = (String) feature.get(FEATURE_ATT_UID);
@@ -293,7 +293,7 @@ public class YamlParser extends ConfigurationFileParser {
     
     /** {@inheritDoc} */
     @Override
-    public String export(FF4jConfigFile ff4jConfig) {
+    public String export(FF4jConfiguration ff4jConfig) {
         AssertUtils.assertNotNull(ff4jConfig);
         StringBuilder yamlFile =  new StringBuilder()
             .append(yamlKey("ff4j", 0, false))

@@ -3,8 +3,8 @@ package org.ff4j.property.repository;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.ff4j.FF4jRepository;
-import org.ff4j.exception.ItemNotFoundException;
+import org.ff4j.core.FF4jRepository;
+import org.ff4j.core.exception.NotFoundException;
 import org.ff4j.feature.exception.FeatureNotFoundException;
 import org.ff4j.property.Property;
 import org.ff4j.property.exception.PropertyNotFoundException;
@@ -83,7 +83,7 @@ public interface PropertyRepository extends FF4jRepository < String, Property<?>
     default Property<?> read(String uid) {
         try {
             return FF4jRepository.super.read(uid);
-        } catch(ItemNotFoundException inf) {
+        } catch(NotFoundException inf) {
             throw new PropertyNotFoundException(uid);
         }
     }

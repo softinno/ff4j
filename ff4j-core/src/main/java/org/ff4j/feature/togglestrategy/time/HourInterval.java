@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.ff4j.utils.Util;
+import org.ff4j.core.utils.Util;
 
 /**
  * Date Interval.

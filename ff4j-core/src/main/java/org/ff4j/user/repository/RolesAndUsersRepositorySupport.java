@@ -1,22 +1,10 @@
 package org.ff4j.user.repository;
 
-import static org.ff4j.test.AssertUtils.assertNotEmpty;
-import static org.ff4j.test.AssertUtils.assertNotNull;
-import static org.ff4j.utils.JsonUtils.attributeAsJson;
-import static org.ff4j.utils.JsonUtils.collectionAsJson;
-import static org.ff4j.utils.JsonUtils.objectAsJson;
-import static org.ff4j.utils.Util.setOf;
-
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
-
 /*-
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +20,23 @@ import java.util.stream.Stream;
  * #L%
  */
 
-import org.ff4j.FF4jRepositoryListener;
-import org.ff4j.FF4jRepositorySupport;
-import org.ff4j.audit.AuditTrailRepository;
-import org.ff4j.exception.ItemNotFoundException;
+import static org.ff4j.core.test.AssertUtils.assertNotEmpty;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
+import static org.ff4j.core.utils.JsonUtils.attributeAsJson;
+import static org.ff4j.core.utils.JsonUtils.collectionAsJson;
+import static org.ff4j.core.utils.JsonUtils.objectAsJson;
+import static org.ff4j.core.utils.Util.setOf;
+
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import org.ff4j.core.FF4jRepositoryListener;
+import org.ff4j.core.FF4jRepositorySupport;
+import org.ff4j.core.exception.NotFoundException;
+import org.ff4j.event.repository.audit.AuditTrailRepository;
 import org.ff4j.user.FF4jUser;
 import org.ff4j.user.exception.UserNotFoundException;
 
@@ -66,31 +67,46 @@ public abstract class RolesAndUsersRepositorySupport
     
     /** Specialized method for users : DELETE */
     protected abstract void deleteUser(String userId);
-    
-    /** Specialized method for users : DELETE ALL */
-    protected abstract void deleteAllUsers();
      
-    /** {@inheritDoc} */
-    @Override
-    public void delete(String... uids) {
-        assertNotEmpty(uids);
-        Arrays.stream(uids).forEach(uid -> {
-            assertUserExist(uid);
-            deleteUser(uid);
-            this.notify(l -> l.onDelete(uid));
-        });
-    }
-    
     protected void assertUserExist(String uid) {
         try {
             assertItemExist(uid);
-        } catch(ItemNotFoundException infEx) {
+        } catch(NotFoundException infEx) {
             throw new UserNotFoundException(uid, infEx);
         }
     }
     
     protected void assertUserNotNull(FF4jUser user) {
         assertNotNull(user);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Stream<String> findAllIds() {
+        return findAll().map(FF4jUser::getUid);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void delete(String... uids) {
+        assertNotEmpty(uids);
+        delete(Arrays.stream(uids));
+    }
+    
+    public void delete(Stream<String> entities) {
+        assertNotNull(entities);
+        entities.forEach(uid -> {
+            assertUserExist(uid);
+            deleteUser(uid);
+            this.notify(l -> l.onDelete(uid));
+        });
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void delete(Iterable<String> entities) {
+        assertNotNull(entities);
+        delete(StreamSupport.stream(entities.spliterator(), true));
     }
     
     /** {@inheritDoc} */
@@ -104,13 +120,26 @@ public abstract class RolesAndUsersRepositorySupport
     @Override
     public void save(FF4jUser... entities) {
         assertNotNull(entities);
-        Arrays.stream(entities).forEach(entity -> {
+        save(Arrays.stream(entities));
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void save(Stream<FF4jUser> entities) {
+        assertNotNull(entities);
+        entities.forEach(entity -> {
             preUpdate(entity);
             saveUser(entity);
             this.notify(l -> l.onUpdate(entity));
         });
     }
-
+    /** {@inheritDoc} */
+    @Override
+    public void save(Iterable<FF4jUser> entities) {
+        assertNotNull(entities);
+        save(StreamSupport.stream(entities.spliterator(), true));
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void registerListener(String name, FF4jRepositoryListener<FF4jUser> listener) {

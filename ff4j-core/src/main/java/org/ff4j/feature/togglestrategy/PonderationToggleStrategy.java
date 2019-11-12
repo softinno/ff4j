@@ -1,5 +1,7 @@
 package org.ff4j.feature.togglestrategy;
         
+import org.ff4j.feature.ToggleContext;
+
 /*-
  * #%L
  * ff4j-core

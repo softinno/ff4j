@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.ff4j.FF4jContext;
-import org.ff4j.FF4jEntity;
-import org.ff4j.feature.togglestrategy.ToggleContext;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
+import org.ff4j.core.FF4jContext;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.security.FF4jGrantees;
+import org.ff4j.core.security.FF4jPermission;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyFactory;
-import org.ff4j.security.FF4jGrantees;
-import org.ff4j.security.FF4jPermission;
 
 /**
  * Represents a feature flag identified by an unique identifier.

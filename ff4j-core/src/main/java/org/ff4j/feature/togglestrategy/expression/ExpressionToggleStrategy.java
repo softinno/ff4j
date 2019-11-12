@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.ff4j.feature.ToggleContext;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.togglestrategy.AbstractToggleStrategy;
-import org.ff4j.feature.togglestrategy.ToggleContext;
 import org.ff4j.property.PropertyString;
 
 /**

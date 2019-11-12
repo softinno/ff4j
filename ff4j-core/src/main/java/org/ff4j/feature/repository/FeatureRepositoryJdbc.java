@@ -4,7 +4,7 @@ package org.ff4j.feature.repository;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2017 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ package org.ff4j.feature.repository;
  * #L%
  */
 
-import static org.ff4j.jdbc.JdbcUtils.buildStatement;
-import static org.ff4j.jdbc.JdbcUtils.executeUpdate;
-import static org.ff4j.jdbc.JdbcUtils.isTableExist;
-import static org.ff4j.test.AssertUtils.assertHasLength;
+import static org.ff4j.core.jdbc.JdbcUtils.buildStatement;
+import static org.ff4j.core.jdbc.JdbcUtils.executeUpdate;
+import static org.ff4j.core.jdbc.JdbcUtils.isTableExist;
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,29 +42,25 @@ import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.ff4j.core.jdbc.JdbcQueryBuilder;
+import org.ff4j.core.jdbc.JdbcSchema;
+import org.ff4j.core.jdbc.JdbcUtils;
+import org.ff4j.core.security.FF4jGrantees;
+import org.ff4j.core.security.FF4jPermission;
+import org.ff4j.core.utils.Util;
 import org.ff4j.feature.Feature;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.feature.exception.FeatureAccessException;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
-import org.ff4j.jdbc.JdbcConstants.FeaturePermissionColumns;
-import org.ff4j.jdbc.JdbcConstants.FeaturePropertyColumns;
-import org.ff4j.jdbc.JdbcConstants.FeatureToggleStrategyColumns;
-import org.ff4j.jdbc.JdbcConstants.FeatureToggleStrategyPropertiesColumns;
-import org.ff4j.jdbc.JdbcConstants.FeaturesColumns;
-import org.ff4j.jdbc.JdbcQueryBuilder;
-import org.ff4j.jdbc.JdbcUtils;
-import org.ff4j.jdbc.mapper.JdbcFeatureMapper;
-import org.ff4j.jdbc.mapper.JdbcPropertyMapper;
+import org.ff4j.feature.mapper.FeatureMapperJdbc;
 import org.ff4j.property.Property;
-import org.ff4j.security.FF4jGrantees;
-import org.ff4j.security.FF4jPermission;
-import org.ff4j.utils.Util;
+import org.ff4j.property.mapper.PropertyMapperJdbc;
 
 /**
  * Implementation of {@link FeatureRepository} to work with RDBMS through JDBC.
  *
  * @author Cedrick Lunven (@clunven)
  */
-public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
+public class FeatureRepositoryJdbc extends FeatureRepositorySupport implements JdbcSchema {
 
 	/** serialVersionUID. */
     private static final long serialVersionUID = 7144391802850457781L;
@@ -219,8 +215,8 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
         assertHasLength(uid);
         Feature f = null;
         try (Connection sqlConn = getDataSource().getConnection()) {
-            JdbcFeatureMapper  fmapper = new JdbcFeatureMapper(sqlConn, getQueryBuilder());
-            JdbcPropertyMapper pmapper = new JdbcPropertyMapper(sqlConn, getQueryBuilder());
+            FeatureMapperJdbc  fmapper = new FeatureMapperJdbc(sqlConn, getQueryBuilder());
+            PropertyMapperJdbc pmapper = new PropertyMapperJdbc(sqlConn, getQueryBuilder());
             // CORE FEATURE
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlFindFeatureById())) {
                 ps1.setString(1, uid);
@@ -248,7 +244,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
                 psToggleStratParam.setString(1, uid);
                 try (ResultSet rsToggleStratParam = psToggleStratParam.executeQuery()) {
                     while (rsToggleStratParam.next()) {
-                        String featureUid = rsToggleStratParam.getString(FeatureToggleStrategyPropertiesColumns.STRAT_FEAT_UID.colname());
+                        String featureUid = rsToggleStratParam.getString(FeatureToggleStrategyPropertiesColumns.FEATURE_UID.colname());
                         if (!toggleStratProperties.containsKey(featureUid)) {
                             toggleStratProperties.put(featureUid, new HashSet<>());
                         }
@@ -344,7 +340,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
         try (Connection sqlConn = getDataSource().getConnection()) {
         
             // CORE FEATURES
-            JdbcFeatureMapper  fmapper = new JdbcFeatureMapper(sqlConn, getQueryBuilder());
+            FeatureMapperJdbc  fmapper = new FeatureMapperJdbc(sqlConn, getQueryBuilder());
             try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlFindAllFeatures())) {
                 try (ResultSet rs1 = ps1.executeQuery()) {
                     while (rs1.next()) {
@@ -355,11 +351,11 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
             }
             
             // FEATURE PROPERTIES
-            JdbcPropertyMapper pmapper = new JdbcPropertyMapper(sqlConn, getQueryBuilder());
+            PropertyMapperJdbc pmapper = new PropertyMapperJdbc(sqlConn, getQueryBuilder());
             try(PreparedStatement ps3 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectAllFeatureProperties())) {
                 try (ResultSet rs3 = ps3.executeQuery()) {
                     while (rs3.next()) {
-                        String featureId =  rs3.getString(FeaturePropertyColumns.FEATURE.colname());
+                        String featureId =  rs3.getString(FeaturePropertyColumns.FEATURE_UID.colname());
                         mapFP.get(featureId).addProperty(pmapper.mapFeaturePropertyRepository(rs3));
                     }   
                 }
@@ -371,9 +367,9 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
                 try (ResultSet rsToggleStratParam = psToggleStratParam.executeQuery()) {
                     while (rsToggleStratParam.next()) {
                         String featureUid      = rsToggleStratParam.getString(
-                                FeatureToggleStrategyPropertiesColumns.STRAT_FEAT_UID.colname());
+                                FeatureToggleStrategyPropertiesColumns.FEATURE_UID.colname());
                         String toggleClassName = rsToggleStratParam.getString(
-                                FeatureToggleStrategyPropertiesColumns.STRAT_CLASS.colname());
+                                FeatureToggleStrategyPropertiesColumns.TOGGLESTRATEGY_CLASSNAME.colname());
                         if (!toggleStratProperties.containsKey(featureUid)) {
                             toggleStratProperties.put(featureUid, new HashMap<>());
                         }
@@ -401,7 +397,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
                 try (ResultSet rsPerm = psPerm.executeQuery()) {
                     while (rsPerm.next()) {
                         FF4jGrantees grantees = new FF4jGrantees();
-                        String relatedFeature = rsPerm.getString(FeaturePermissionColumns.FEAT_UID.colname());
+                        String relatedFeature = rsPerm.getString(FeaturePermissionColumns.FEATURE_UID.colname());
                         String permissionName = rsPerm.getString(FeaturePermissionColumns.PERMISSION.colname());
                         String userList       = rsPerm.getString(FeaturePermissionColumns.USERS.colname());
                         String roleList       = rsPerm.getString(FeaturePermissionColumns.ROLES.colname());
@@ -505,7 +501,7 @@ public class FeatureRepositoryJdbc extends FeatureRepositorySupport {
         }
         try (Connection sqlConn = dataSource.getConnection()) {
             sqlConn.setAutoCommit(false);
-            JdbcFeatureMapper mapper = new JdbcFeatureMapper(sqlConn, getQueryBuilder());
+            FeatureMapperJdbc mapper = new FeatureMapperJdbc(sqlConn, getQueryBuilder());
             // Create FeatureCore
             try (PreparedStatement ps1 = mapper.mapToRepository(feature)) {
                 ps1.executeUpdate();

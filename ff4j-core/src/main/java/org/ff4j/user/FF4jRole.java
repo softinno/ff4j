@@ -4,7 +4,7 @@ package org.ff4j.user;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ package org.ff4j.user;
  * #L%
  */
 
-import static org.ff4j.test.AssertUtils.assertNotNull;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4jEntity;
-import org.ff4j.security.FF4jPermission;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.security.FF4jPermission;
 
 /**
  * Set of permission wrapper identified as role.

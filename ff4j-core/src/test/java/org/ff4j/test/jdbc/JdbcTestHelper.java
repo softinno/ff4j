@@ -28,8 +28,8 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.ff4j.jdbc.JdbcQueryBuilder;
-import org.ff4j.jdbc.JdbcUtils;
+import org.ff4j.core.jdbc.JdbcQueryBuilder;
+import org.ff4j.core.jdbc.JdbcUtils;
 
 
 /**

@@ -1,6 +1,6 @@
 package org.ff4j.user;
 
-import org.ff4j.test.TestConfigurationParser;
+import org.ff4j.core.test.TestConfigurationParser;
 
 /*-
  * #%L
@@ -26,8 +26,8 @@ import org.ff4j.user.repository.RolesAndUsersRepository;
 import org.ff4j.user.repository.RolesAndUsersRepositoryInMemory;
 import org.junit.jupiter.api.DisplayName;
 
-@DisplayName("RepositoryRolesAndUsers::In Memory with expected Data set")
-public class RepositoryRolesAndUsers_Test_InMemory extends RepositoryRolesAndUsersTestSupport {
+@DisplayName("RepositoryRolesAndUsers_InMemory_TestFixedDataSet")
+public class RepositoryRolesAndUsers_Test_InMemory extends AbstractTestSupportRolesAndUsersRepository {
 
     @Override
     public RolesAndUsersRepository initStore() {

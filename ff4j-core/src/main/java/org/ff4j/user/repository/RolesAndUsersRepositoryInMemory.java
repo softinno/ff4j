@@ -1,7 +1,7 @@
 package org.ff4j.user.repository;
 
-import static org.ff4j.test.AssertUtils.assertHasLength;
-import static org.ff4j.test.AssertUtils.assertNotNull;
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
 
 /*-
  * #%L
@@ -32,13 +32,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import org.ff4j.FF4jEntity;
-import org.ff4j.exception.ItemNotFoundException;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.test.AssertUtils;
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.test.AssertUtils;
 import org.ff4j.user.FF4jRole;
 import org.ff4j.user.FF4jUser;
 import org.ff4j.user.exception.RoleNotFoundException;
@@ -72,7 +69,7 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
      * @param fileName
      *      target file name
      */
-    public RolesAndUsersRepositoryInMemory(ConfigurationFileParser parser, String fileName) {
+    public RolesAndUsersRepositoryInMemory(FF4jConfigurationParser parser, String fileName) {
         AssertUtils.assertHasLength(fileName, "fileName");
         AssertUtils.assertNotNull(parser,     "parser");
         initWithConfig(parser.parse(fileName));
@@ -86,7 +83,7 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
      * @param fileName
      *      target file name
      */
-    public RolesAndUsersRepositoryInMemory(ConfigurationFileParser parser, InputStream in) {
+    public RolesAndUsersRepositoryInMemory(FF4jConfigurationParser parser, InputStream in) {
         AssertUtils.assertNotNull(parser,  "parser");
         AssertUtils.assertNotNull(in, "inputStream");
         initWithConfig(parser.parse(in));
@@ -98,7 +95,7 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
      * @param fileName
      *            fileName present in classPath or on fileSystem.
      */
-    public RolesAndUsersRepositoryInMemory(FF4jConfigFile ff4jConfig) {
+    public RolesAndUsersRepositoryInMemory(FF4jConfiguration ff4jConfig) {
         initWithConfig(ff4jConfig);
     }
 
@@ -117,7 +114,7 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
      * 
      * @param features
      */
-    private void initWithConfig(FF4jConfigFile ff4jConfig) {
+    private void initWithConfig(FF4jConfiguration ff4jConfig) {
         AssertUtils.assertNotNull(ff4jConfig);
         AssertUtils.assertNotNull(ff4jConfig.getUsers());
         initWithUsers(ff4jConfig.getUsers().values());
@@ -170,6 +167,8 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
         return mapOfRoles.containsKey(roleName);
     }
     
+    // Role [DELETE]
+    
     /** {@inheritDoc} */
     @Override
     public void deleteRole(String roleName) {
@@ -182,51 +181,14 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
     
     /** {@inheritDoc} */
     @Override
-    public void deleteRole(FF4jRole role) {
-        assertNotNull(role);
-        this.deleteRole(role.getUid());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void deleteRoles(Iterable<FF4jRole> entities) {
-        if (null != entities) entities.forEach(this::deleteRole);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
     public void deleteAllRoles() {
         mapOfRoles.clear();
     }
     
     /** {@inheritDoc} */
     @Override
-    public Stream<String> listRoleNames() {
-        return findAllRoles().map(FF4jEntity::getUid);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Stream<FF4jRole> findRoles(Iterable<String> roleNames) {
-        if (roleNames == null) return Stream.empty();
-        return StreamSupport
-                // Iterable to Stream \_(o^o')_/
-                .stream(roleNames.spliterator(),  false)
-                // N+1 Select 'find' 
-                .map(this::findRole)
-                // Get only if found
-                .filter(Optional::isPresent)
-                // Access data
-                .map(Optional::get);
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public FF4jRole readRole(String roleName) {
-        if (!existsRole(roleName)) {
-            throw new ItemNotFoundException(roleName);
-        }
-        return findRole(roleName).get();
+    public void deleteAll() {
+        mapOfUsers.clear();
     }
     
     /** {@inheritDoc} */
@@ -239,33 +201,12 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
     
     /** {@inheritDoc} */
     @Override
-    public boolean isRoleEmpty() {
-        return mapOfRoles.isEmpty();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public void saveRoles(Collection<FF4jRole> entities) {
-        if (entities != null) {
-            entities.stream().forEach(this::updateRole);
+    public void saveRole(FF4jRole entity) {
+        assertNotNull(entity);
+        assertHasLength(entity.getUid());
+        if (!existsRole(entity.getUid())) {
+            entity.setCreationDate(LocalDateTime.now());
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void createRole(FF4jRole entity) {
-        assertNotNull(entity);
-        assertHasLength(entity.getUid());
-        entity.setLastModified(LocalDateTime.now());
-        entity.setCreationDate(entity.getCreationDate().orElse(entity.getLastModifiedDate().get()));
-        mapOfRoles.put(entity.getUid(), entity);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void updateRole(FF4jRole entity) {
-        assertNotNull(entity);
-        assertHasLength(entity.getUid());
         entity.setLastModified(LocalDateTime.now());
         mapOfRoles.put(entity.getUid(), entity);
     }
@@ -306,12 +247,6 @@ public class RolesAndUsersRepositoryInMemory extends RolesAndUsersRepositorySupp
         assertNotNull(userId);
         assertItemExist(userId);
         mapOfUsers.remove(userId);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void deleteAllUsers() {
-        mapOfUsers.clear();
     }
 
     /** {@inheritDoc} */

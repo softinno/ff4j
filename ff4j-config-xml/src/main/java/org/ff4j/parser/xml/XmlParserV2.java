@@ -36,15 +36,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.security.FF4jAcl;
+import org.ff4j.core.security.FF4jGrantees;
+import org.ff4j.core.security.FF4jPermission;
+import org.ff4j.core.test.AssertUtils;
 import org.ff4j.feature.Feature;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
-import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyString;
-import org.ff4j.security.FF4jAcl;
-import org.ff4j.security.FF4jGrantees;
-import org.ff4j.security.FF4jPermission;
-import org.ff4j.test.AssertUtils;
 import org.ff4j.user.FF4jRole;
 import org.ff4j.user.FF4jUser;
 import org.w3c.dom.Element;
@@ -75,9 +75,9 @@ public final class XmlParserV2 extends ConfigurationFileParserXml {
      *      features and properties find within file
      */
     @Override
-    public FF4jConfigFile parse(InputStream in) {
+    public FF4jConfiguration parse(InputStream in) {
         try {
-            FF4jConfigFile xmlConf = new FF4jConfigFile();
+            FF4jConfiguration xmlConf = new FF4jConfiguration();
             NodeList firstLevelNodes = getDocumentBuilder()
                     .parse(in)
                     .getElementsByTagName("ff4j").item(0)

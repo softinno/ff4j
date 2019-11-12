@@ -4,7 +4,7 @@ package org.ff4j.user.exception;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,22 @@ package org.ff4j.user.exception;
  * #L%
  */
 
-import org.ff4j.exception.ItemNotFoundException;
+import org.ff4j.core.exception.NotFoundException;
 
 /**
  * Store could be parameterized to through exception when Property not found.
  * 
  * @author Cedrick Lunven (@clunven)
  */
-public class RoleNotFoundException extends ItemNotFoundException {
+public class RoleNotFoundException extends NotFoundException {
     
     /** Serial */
     private static final long serialVersionUID = -4904312917445776154L;
 
+    public RoleNotFoundException() {
+        super("");
+    }
+    
     /**
      * Parameterized constructor.
      * 

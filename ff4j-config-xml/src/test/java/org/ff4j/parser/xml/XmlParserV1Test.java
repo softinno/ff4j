@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.ff4j.core.config.FF4jConfiguration;
 import org.ff4j.feature.Feature;
-import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.parser.xml.XmlParserErrorHandler;
 import org.ff4j.parser.xml.XmlParserV1;
 import org.ff4j.property.Property;
@@ -138,13 +138,13 @@ public class XmlParserV1Test {
         // Given
         XmlParserV1 parser = new XmlParserV1();
         InputStream in = getClass().getClassLoader().getResourceAsStream("v1/testXmlParserV1-full.xml");
-        FF4jConfigFile conf = parser.parse(in);
+        FF4jConfiguration conf = parser.parse(in);
         Assert.assertNotNull(conf.getFeatures());
         Assert.assertNotNull(conf.getProperties());
         // When
         InputStream in3 = XmlParserV1.exportAll(conf);
         // Then
-        FF4jConfigFile conf2 = parser.parse(in3);
+        FF4jConfiguration conf2 = parser.parse(in3);
         Assert.assertNotNull(conf2.getFeatures());
         Assert.assertNotNull(conf2.getProperties());
     }
@@ -156,7 +156,7 @@ public class XmlParserV1Test {
         XmlParserV1 parser = new XmlParserV1();
         InputStream in = getClass().getClassLoader().getResourceAsStream("v1/testXmlParserV1-full.xml");
         // When
-        FF4jConfigFile conf = parser.parse(in);
+        FF4jConfiguration conf = parser.parse(in);
         // Then
         Map<String, Feature> features = conf.getFeatures();
         Assert.assertNotNull(features);

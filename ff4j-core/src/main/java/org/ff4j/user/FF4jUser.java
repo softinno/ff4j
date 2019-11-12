@@ -23,8 +23,8 @@ package org.ff4j.user;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ff4j.FF4jEntity;
-import org.ff4j.security.FF4jPermission;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.security.FF4jPermission;
 
 /**
  * Represent a user in FF4J.

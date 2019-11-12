@@ -27,14 +27,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.test.FF4jTestDataSet;
 import org.ff4j.feature.Feature;
-import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.parser.xml.XmlParserV1;
 import org.ff4j.parser.xml.XmlParserV2;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyLogLevel;
 import org.ff4j.property.PropertyLogLevel.LogLevel;
-import org.ff4j.test.FF4jTestDataSet;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
 public class XmlParserV2Test implements FF4jTestDataSet {
   
     /** DataSet. **/
-    protected FF4jConfigFile testDataSet;
+    protected FF4jConfiguration testDataSet;
     
     /** {@inheritDoc} */
     @BeforeEach
@@ -112,13 +112,13 @@ public class XmlParserV2Test implements FF4jTestDataSet {
         // Given
         XmlParserV1 parser = new XmlParserV1();
         InputStream in = getClass().getClassLoader().getResourceAsStream("v1/testXmlParserV1-full.xml");
-        FF4jConfigFile conf = parser.parse(in);
+        FF4jConfiguration conf = parser.parse(in);
         Assert.assertNotNull(conf.getFeatures());
         Assert.assertNotNull(conf.getProperties());
         // When
         InputStream in3 = XmlParserV1.exportAll(conf);
         // Then
-        FF4jConfigFile conf2 = parser.parse(in3);
+        FF4jConfiguration conf2 = parser.parse(in3);
         Assert.assertNotNull(conf2.getFeatures());
         Assert.assertNotNull(conf2.getProperties());
     }
@@ -130,7 +130,7 @@ public class XmlParserV2Test implements FF4jTestDataSet {
         XmlParserV2 parser = new XmlParserV2();
         InputStream in = getClass().getClassLoader().getResourceAsStream("v2/testXmlParserV2-full.xml");
         // When
-        FF4jConfigFile conf = parser.parse(in);
+        FF4jConfiguration conf = parser.parse(in);
         // Then
         Map<String, Feature> features = conf.getFeatures();
         Assert.assertNotNull(features);

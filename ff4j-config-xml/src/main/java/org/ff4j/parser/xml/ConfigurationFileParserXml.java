@@ -30,19 +30,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.utils.Util;
 import org.ff4j.feature.Feature;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyString;
-import org.ff4j.utils.Util;
 
 /**
  * In v2 we still need to read v1 files (to convert to v2)
  * 
  * @author Cedrick LUNVEN (@clunven)
  */
-public abstract class ConfigurationFileParserXml extends ConfigurationFileParser {
+public abstract class ConfigurationFileParserXml extends FF4jConfigurationParser {
     
     /** TAG XML. */
     public static final String CDATA_START = "<![CDATA[";
@@ -90,7 +90,7 @@ public abstract class ConfigurationFileParserXml extends ConfigurationFileParser
     
     /** {@inheritDoc} */
     @Override
-    public String export(FF4jConfigFile config) {
+    public String export(FF4jConfiguration config) {
         try {
             return Util.fromInputStreamToString(exportAll(config));
         } catch (IOException e) {
@@ -152,7 +152,7 @@ public abstract class ConfigurationFileParserXml extends ConfigurationFileParser
      * @throws IOException
      *      error during marshalling
      */
-    public static InputStream exportAll(FF4jConfigFile conf) throws IOException {
+    public static InputStream exportAll(FF4jConfiguration conf) throws IOException {
         return exportAll(conf.getFeatures(), conf.getProperties());
     }
     

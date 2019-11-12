@@ -1,5 +1,6 @@
 package org.ff4j.user.repository;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -25,9 +26,11 @@ import java.util.Optional;
 
 import java.util.stream.Stream;
 
-import org.ff4j.FF4jRepository;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.FF4jRepository;
 import org.ff4j.user.FF4jRole;
 import org.ff4j.user.FF4jUser;
+import org.ff4j.user.exception.RoleNotFoundException;
 
 /**
  * Common operations with Users.
@@ -35,17 +38,7 @@ import org.ff4j.user.FF4jUser;
  * @author Cedrick LUNVEN (@clunven)
  */
 public interface RolesAndUsersRepository extends FF4jRepository<String, FF4jUser > {
-    
-    /**
-     * Syntax sugar.
-     *
-     * @return
-     *      list of properties names.
-     */
-    default Stream < String > listUsersNames() {
-        return findAllIds();
-    }
-
+   
     /**
      * Count number of elements in the repository
      *
@@ -53,6 +46,10 @@ public interface RolesAndUsersRepository extends FF4jRepository<String, FF4jUser
      */
     long countRoles();
 
+    // -----------------------
+    // -- ROLES,  [DELETE]  --
+    // -----------------------
+    
     /**
      * Delete target entity by its id.
      *
@@ -60,28 +57,49 @@ public interface RolesAndUsersRepository extends FF4jRepository<String, FF4jUser
      *            target entity
      */
     void deleteRole(String roleName);
-
+     
     /**
-     * Delete several entities in a single call.
-     * 
-     * @param entities
-     *            target entites to remove
+     * Syntax sugar to delete roles
      */
-    void deleteRoles(Iterable<FF4jRole> roles);
-
+    default void deleteRoles(Stream<String> rolesNames) {
+        if (rolesNames != null) {
+            rolesNames.forEach(this::deleteRole);
+        }
+    }
+    
     /**
-     * Delete an entity.
-     * 
-     * @param entities
-     *            target entites to remove
+     * Syntax sugar to delete roles
      */
-    void deleteRole(FF4jRole entity);
-
+    default void deleteRoles(Collection<String> rolesNames) {
+        if (rolesNames != null) {
+            deleteRoles(rolesNames.stream());
+        }
+    }
+    
+    /**
+     * Syntax sugar to delete roles
+     */
+    default void deleteRoles(String... roleNames) {
+        if (roleNames != null) {
+            deleteRoles(Arrays.stream(roleNames));
+        }
+    }
+    
     /**
      * Empty the target repository.
      */
-    void deleteAllRoles();
-
+    default void deleteAllRoles() {
+        findAllRoleNames().forEach(this::deleteRole);
+    }
+    
+    default void deleteAllUsers() {
+        findAllIds().forEach(this::delete);
+    }
+    
+    // -----------------------
+    // -- ROLES,  [FIND]  --
+    // -----------------------
+    
     /**
      * Check if an entity exist or not.
      * 
@@ -101,13 +119,47 @@ public interface RolesAndUsersRepository extends FF4jRepository<String, FF4jUser
     Optional<FF4jRole> findRole(String roleName);
     
     /**
-     * Retrieve a subset of store.
-     *
-     * @param ids
-     *            unique identifier
-     * @return subset of elements
+     * Find One entity by its id.
+     * 
+     * @param id
+     *            target identifier
+     * @return entity if exist
      */
-    Stream<FF4jRole> findRoles(Iterable<String> roleNames);
+    default FF4jRole readRole(String roleName) {
+        return findRole(roleName).orElseThrow(RoleNotFoundException::new);
+    }
+    
+    /**
+     * Syntax sugar to find roles
+     */
+    default Stream<FF4jRole> findRoles(Stream<String> rolesNames) {
+        if (rolesNames != null) {
+            return rolesNames.map(this::findRole)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get);
+        }
+        return Stream.empty();
+    }
+    
+    /**
+     * Syntax sugar to find roles
+     */
+    default Stream<FF4jRole> findRoles(Collection<String> rolesNames) {
+        if (rolesNames != null) {
+            return findRoles(rolesNames.stream());
+        }
+        return Stream.empty();
+    }
+    
+    /**
+     * Syntax sugar to find roles
+     */
+    default Stream<FF4jRole> findRoles(String... roleNames) {
+        if (roleNames != null) {
+            return findRoles(Arrays.stream(roleNames));
+        }
+        return Stream.empty();
+    }
     
     /**
      * Retrieve all entities of the stores as a collection.
@@ -122,60 +174,56 @@ public interface RolesAndUsersRepository extends FF4jRepository<String, FF4jUser
      * @return
      *      retrieve key for a repository
      */
-    Stream <String> listRoleNames();
-
-    /**
-     * Find One entity by its id.
-     * 
-     * @param id
-     *            target identifier
-     * @return entity if exist
-     */
-    FF4jRole readRole(String roleName);
-    
-    /**
-     * Retrieve an entity by id and if not found, give default value.
-     *
-     * @param id
-     *      unique item  identifier
-     * @param defaultValue
-     *      provide default value
-     * @return
-     *      target entity
-     */
-    default FF4jRole readRole(String roleName, FF4jRole defaultValue) {
-        return findRole(roleName).orElse(defaultValue);
+    default Stream <String> findAllRoleNames() {
+        return findAllRoles().map(FF4jEntity::getUid);
     }
-
-    /**
-     * Saves a given entity.
-     *
-     * @param entity
-     * @return
-     */
-    void createRole(FF4jRole entity);
-
-    /**
-     * Saves a given entity.
-     *
-     * @param entity
-     * @return
-     */
-    void updateRole(FF4jRole entity);
-
+    
+    // -----------------------
+    // -- ROLES,  [UPSERT]  --
+    // -----------------------s
+    
     /**
      * Import Item into target repository (override if exist).
      *
      * @param entities
      *            target entities
      */
-    void saveRoles(Collection<FF4jRole> entities);
-
-    /**
-     * Tell if a target store is empty
-     *
-     * @return if the store is empty or not
-     */
-    boolean isRoleEmpty();
+    void saveRole(FF4jRole role);
     
+    /**
+     * Syntax sugar to save roles
+     */
+    default void saveRoles(Stream<FF4jRole> roles) {
+        if (roles != null) {
+            roles.forEach(this::saveRole);
+        }
+    }
+    
+    /**
+     * Syntax sugar to save roles
+     */
+    default void saveRoles(Collection<FF4jRole> roles) {
+        if (roles != null) {
+            saveRoles(roles.stream());
+        }
+    }
+    
+    /**
+     * Syntax sugar to save roles
+     */
+    default void saveRoles(FF4jRole... roles) {
+        if (roles != null) {
+            saveRoles(Arrays.stream(roles));
+        }
+    }
+    
+    /**
+     * Syntax sugar.
+     *
+     * @return
+     *      list of properties names.
+     */
+    default Stream < String > listUsersNames() {
+        return findAllIds();
+    }
 }

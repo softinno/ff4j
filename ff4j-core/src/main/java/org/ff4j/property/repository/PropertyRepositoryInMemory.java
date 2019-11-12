@@ -1,6 +1,6 @@
 package org.ff4j.property.repository;
 
-import static org.ff4j.test.AssertUtils.assertHasLength;
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
 
 /*
  * #%L
@@ -31,10 +31,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.test.AssertUtils;
 import org.ff4j.property.Property;
-import org.ff4j.test.AssertUtils;
 
 /**
  * Implementation of {@link PropertyRepository} to keep properties in memory.
@@ -60,7 +60,7 @@ public class PropertyRepositoryInMemory extends PropertyRepositorySupport {
      * @param fileName
      *      target file name
      */
-    public PropertyRepositoryInMemory(ConfigurationFileParser parser, String fileName) {
+    public PropertyRepositoryInMemory(FF4jConfigurationParser parser, String fileName) {
         AssertUtils.assertHasLength(fileName, "fileName");
         AssertUtils.assertNotNull(parser,     "parser");
         initWithConfig(parser.parse(fileName));
@@ -74,7 +74,7 @@ public class PropertyRepositoryInMemory extends PropertyRepositorySupport {
      * @param fileName
      *      target file name
      */
-    public PropertyRepositoryInMemory(ConfigurationFileParser parser, InputStream in) {
+    public PropertyRepositoryInMemory(FF4jConfigurationParser parser, InputStream in) {
         AssertUtils.assertNotNull(parser,  "parser");
         AssertUtils.assertNotNull(in, "inputStream");
         initWithConfig(parser.parse(in));
@@ -86,7 +86,7 @@ public class PropertyRepositoryInMemory extends PropertyRepositorySupport {
      * @param fileName
      *            fileName present in classPath or on fileSystem.
      */
-    public PropertyRepositoryInMemory(FF4jConfigFile ff4jConfig) {
+    public PropertyRepositoryInMemory(FF4jConfiguration ff4jConfig) {
         initWithConfig(ff4jConfig);
     }
 
@@ -105,7 +105,7 @@ public class PropertyRepositoryInMemory extends PropertyRepositorySupport {
      * 
      * @param features
      */
-    private void initWithConfig(FF4jConfigFile ff4jConfig) {
+    private void initWithConfig(FF4jConfiguration ff4jConfig) {
         AssertUtils.assertNotNull(ff4jConfig);
         AssertUtils.assertNotNull(ff4jConfig.getProperties());
         mapOfProperties.clear();

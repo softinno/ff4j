@@ -1,5 +1,12 @@
 package org.ff4j.user;
 
+import javax.sql.DataSource;
+
+import org.ff4j.test.jdbc.JdbcTestHelper;
+import org.ff4j.user.repository.RolesAndUsersRepository;
+import org.ff4j.user.repository.RolesAndUsersRepositoryJdbc;
+import org.junit.jupiter.api.BeforeEach;
+
 /*-
  * #%L
  * ff4j-core
@@ -20,18 +27,15 @@ package org.ff4j.user;
  * #L%
  */
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.DisplayName;
+@DisplayName("RepositoryRolesAndUsers_Jdbc_Test")
+public class RepositoryRolesAndUsers_Test_Jdbc { /*extends AbstractTestSupportRolesAndUsersRepository {
 
-@DisplayName("RepositoryRolesAndUsers::InMemory with JDBC")
-@Ignore
-public class RepositoryRolesAndUsers_Test_Jdbc {} /*extends RepositoryRolesAndUsersTestSupport {
-    
     /** SQL DataSource. *
     private DataSource sqlDataSource;
     
     @Override
-    public RolesAndUsersRepository initStore() {
+    protected RolesAndUsersRepository initStore() {
         sqlDataSource = JdbcTestHelper.createInMemoryHQLDataSource();
         return new RolesAndUsersRepositoryJdbc(sqlDataSource);
     }
@@ -42,8 +46,7 @@ public class RepositoryRolesAndUsers_Test_Jdbc {} /*extends RepositoryRolesAndUs
     public void setUp() throws Exception {
         super.setUp();
         JdbcTestHelper.initDBSchema(sqlDataSource);
-    }
-    
-
-}*/
+    }*/
+ 
+}
     

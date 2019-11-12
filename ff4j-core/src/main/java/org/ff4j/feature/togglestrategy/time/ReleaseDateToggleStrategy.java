@@ -24,8 +24,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.ff4j.feature.ToggleContext;
 import org.ff4j.feature.togglestrategy.AbstractToggleStrategy;
-import org.ff4j.feature.togglestrategy.ToggleContext;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyDate;
 import org.ff4j.property.PropertyString;

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ff4j.feature.ToggleContext;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyListString;
 import org.ff4j.property.PropertyString;

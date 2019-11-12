@@ -4,7 +4,7 @@ package org.ff4j.feature.repository;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2017 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,23 @@ package org.ff4j.feature.repository;
  * #L%
  */
 
-import static org.ff4j.test.AssertUtils.assertHasLength;
-import static org.ff4j.test.AssertUtils.assertNotNull;
-import static org.ff4j.utils.JsonUtils.attributeAsJson;
-import static org.ff4j.utils.JsonUtils.collectionAsJson;
-import static org.ff4j.utils.JsonUtils.objectAsJson;
-import static org.ff4j.utils.Util.setOf;
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
+import static org.ff4j.core.utils.JsonUtils.attributeAsJson;
+import static org.ff4j.core.utils.JsonUtils.collectionAsJson;
+import static org.ff4j.core.utils.JsonUtils.objectAsJson;
+import static org.ff4j.core.utils.Util.setOf;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4jRepository;
-import org.ff4j.FF4jRepositoryListener;
-import org.ff4j.FF4jRepositorySupport;
-import org.ff4j.audit.AuditTrailRepository;
-import org.ff4j.exception.ItemNotFoundException;
+import org.ff4j.core.FF4jRepository;
+import org.ff4j.core.FF4jRepositoryListener;
+import org.ff4j.core.FF4jRepositorySupport;
+import org.ff4j.core.exception.NotFoundException;
+import org.ff4j.event.repository.audit.AuditTrailRepository;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
 import org.ff4j.feature.exception.GroupNotFoundException;
@@ -73,7 +73,7 @@ public abstract class FeatureRepositorySupport
     protected void assertFeatureExist(String uid) {
         try {
             assertItemExist(uid);
-        } catch(ItemNotFoundException infEx) {
+        } catch(NotFoundException infEx) {
             throw new FeatureNotFoundException(uid, infEx);
         }
     }

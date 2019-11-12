@@ -2,6 +2,9 @@ package org.ff4j.property;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.ff4j.property.Property;
+import org.ff4j.property.PropertyFactory;
+import org.ff4j.property.PropertyInteger;
 import org.junit.jupiter.api.Assertions;
 
 /*-

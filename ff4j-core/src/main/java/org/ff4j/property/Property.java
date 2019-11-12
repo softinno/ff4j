@@ -4,7 +4,7 @@ package org.ff4j.property;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package org.ff4j.property;
  * #L%
  */
 
-import static org.ff4j.utils.Util.setOf;
+import static org.ff4j.core.utils.Util.setOf;
 
 import java.lang.reflect.ParameterizedType;
 import java.text.SimpleDateFormat;
@@ -33,8 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.ff4j.FF4jEntity;
-import org.ff4j.utils.Util;
+import org.ff4j.core.FF4jEntity;
+import org.ff4j.core.utils.Util;
 
 /**
  * Abstraction of Property.

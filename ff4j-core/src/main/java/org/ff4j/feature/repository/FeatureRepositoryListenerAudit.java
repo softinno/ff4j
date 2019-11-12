@@ -1,7 +1,5 @@
 package org.ff4j.feature.repository;
 
-import org.ff4j.audit.AuditTrailListenerSupport;
-import org.ff4j.audit.AuditTrailRepository;
 import org.ff4j.event.Event;
 
 /*-
@@ -26,6 +24,8 @@ import org.ff4j.event.Event;
 
 import org.ff4j.event.Event.Action;
 import org.ff4j.event.Event.Scope;
+import org.ff4j.event.repository.audit.AuditTrailListenerSupport;
+import org.ff4j.event.repository.audit.AuditTrailRepository;
 import org.ff4j.feature.Feature;
 
 /**

@@ -35,13 +35,13 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.security.FF4jGrantees;
+import org.ff4j.core.security.FF4jPermission;
 import org.ff4j.feature.Feature;
-import org.ff4j.feature.togglestrategy.ToggleStrategy;
-import org.ff4j.parser.FF4jConfigFile;
+import org.ff4j.feature.ToggleStrategy;
 import org.ff4j.property.Property;
 import org.ff4j.property.PropertyString;
-import org.ff4j.security.FF4jGrantees;
-import org.ff4j.security.FF4jPermission;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -112,11 +112,11 @@ public final class XmlParserV1 extends ConfigurationFileParserXml {
      * @return
      *      features and properties find within file
      */
-    public FF4jConfigFile parse(InputStream in) {
+    public FF4jConfiguration parse(InputStream in) {
         try {
             
             // Object to be build by parsing
-            FF4jConfigFile xmlConf = new FF4jConfigFile();
+            FF4jConfiguration xmlConf = new FF4jConfiguration();
                 
             // Load XML as a Document
             Document ff4jDocument = getDocumentBuilder().parse(in);

@@ -4,7 +4,7 @@ package org.ff4j.feature.repository;
  * #%L
  * ff4j-core
  * %%
- * Copyright (C) 2013 - 2018 FF4J
+ * Copyright (C) 2013 - 2019 FF4J
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ package org.ff4j.feature.repository;
  * #L%
  */
 
-import static org.ff4j.test.AssertUtils.assertHasLength;
-import static org.ff4j.test.AssertUtils.assertNotNull;
-import static org.ff4j.utils.Util.setOf;
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
+import static org.ff4j.core.test.AssertUtils.assertNotNull;
+import static org.ff4j.core.utils.Util.setOf;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -36,10 +36,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.core.config.FF4jConfiguration;
+import org.ff4j.core.config.FF4jConfigurationParser;
+import org.ff4j.core.test.AssertUtils;
 import org.ff4j.feature.Feature;
-import org.ff4j.parser.ConfigurationFileParser;
-import org.ff4j.parser.FF4jConfigFile;
-import org.ff4j.test.AssertUtils;
 
 /**
  * Storing states of feature inmemory with initial values. Could be used mostly for testing purpose.
@@ -68,7 +68,7 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
      * @param fileName
      *      target file name
      */
-    public FeatureRepositoryInMemory(ConfigurationFileParser parser, String fileName) {
+    public FeatureRepositoryInMemory(FF4jConfigurationParser parser, String fileName) {
         AssertUtils.assertHasLength(fileName, "fileName");
         AssertUtils.assertNotNull(parser,     "parser");
         initWithConfig(parser.parse(fileName));
@@ -82,7 +82,7 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
      * @param fileName
      *      target file name
      */
-    public FeatureRepositoryInMemory(ConfigurationFileParser parser, InputStream in) {
+    public FeatureRepositoryInMemory(FF4jConfigurationParser parser, InputStream in) {
         AssertUtils.assertNotNull(parser,  "parser");
         AssertUtils.assertNotNull(in, "inputStream");
         initWithConfig(parser.parse(in));
@@ -94,7 +94,7 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
      * @param fileName
      *            fileName present in classPath or on fileSystem.
      */
-    public FeatureRepositoryInMemory(FF4jConfigFile ff4jConfig) {
+    public FeatureRepositoryInMemory(FF4jConfiguration ff4jConfig) {
         initWithConfig(ff4jConfig);
     }
 
@@ -113,7 +113,7 @@ public class FeatureRepositoryInMemory extends FeatureRepositorySupport {
      * 
      * @param features
      */
-    private void initWithConfig(FF4jConfigFile ff4jConfig) {
+    private void initWithConfig(FF4jConfiguration ff4jConfig) {
         AssertUtils.assertNotNull(ff4jConfig);
         AssertUtils.assertNotNull(ff4jConfig.getFeatures());
         mapOfFeatures.clear();

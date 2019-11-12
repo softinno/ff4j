@@ -22,8 +22,8 @@ package org.ff4j.feature.repository;
 
 import java.util.stream.Stream;
 
-import org.ff4j.FF4jRepository;
-import org.ff4j.exception.ItemNotFoundException;
+import org.ff4j.core.FF4jRepository;
+import org.ff4j.core.exception.NotFoundException;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.exception.FeatureNotFoundException;
 import org.ff4j.feature.exception.GroupNotFoundException;
@@ -141,7 +141,7 @@ public interface FeatureRepository extends FF4jRepository < String, Feature > {
     default Feature read(String uid) {
         try {
             return FF4jRepository.super.read(uid);
-        } catch(ItemNotFoundException inf) {
+        } catch(NotFoundException inf) {
             throw new FeatureNotFoundException(uid);
         }
     }
