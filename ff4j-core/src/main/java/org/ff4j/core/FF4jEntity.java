@@ -349,6 +349,15 @@ public abstract class FF4jEntity<T extends FF4jEntity<?>> implements Comparable<
      */
     public T addProperty(Property<?> property) {
         return addProperties(property);
+    }
+
+    /**
+     * Setter accessor for attribute 'uid'.
+     * @param uid
+     * 		new value for 'uid '
+     */
+    public void setUid(String uid) {
+        this.uid = uid;
     }    
 
 }

@@ -881,6 +881,10 @@ public class JdbcQueryBuilder {
     public String sqlSelectAllRolesUsers() {
         return sqlSelect(false, UsersRolesColumns.values());
     }
+    // select *
+    public String sqlDeleteAllRolesUsers() {
+        return sqlDeleteAll(UsersRolesColumns.REF_ROLE);
+    }
     // select Roles for a User
     public String sqlSelectAllRolesForUser() {
         return sqlSelectWhere(false, UsersRolesColumns.REF_USER, UsersRolesColumns.values());

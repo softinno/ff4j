@@ -1,0 +1,46 @@
+{
+	"uid": "f1",
+	"className": "org.ff4j.feature.Feature",
+	"creationDate": "2018-12-11 11:24:52.049",
+	"lastModifiedDate": "2018-12-11 11:24:52.049",
+	"properties": [
+		{
+			"uid": "p1",
+			"className": "org.ff4j.property.PropertyString",
+			"creationDate": "2018-12-11 11:24:52.049",
+			"lastModifiedDate": "2018-12-11 11:24:52.049",
+			"properties": [],
+			"accessControlList": {
+				
+			},
+			"type": "org.ff4j.property.PropertyString",
+			"readOnly": "false",
+			"value": "v1"
+		}
+	],
+	"accessControlList": {
+		
+	},
+	"enabled": true,
+	"group": "g1",
+	"toggleStrategies": [
+		{
+			"properties": [
+				{
+					"uid": "weight",
+					"className": "org.ff4j.property.PropertyDouble",
+					"creationDate": "2018-12-11 11:24:52.048",
+					"lastModifiedDate": "2018-12-11 11:24:52.048",
+					"properties": [],
+					"accessControlList": {
+						
+					},
+					"type": "org.ff4j.property.PropertyDouble",
+					"readOnly": "false",
+					"value": "0.1"
+				}
+			],
+			"className": "org.ff4j.feature.togglestrategy.PonderationToggleStrategy"
+		}
+	]
+}

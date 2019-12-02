@@ -38,11 +38,11 @@ public class FF4jGrantees {
     /** Expect to access the feature is allow. */
     public static final String EVERYONE = "EVERYONE";
     
-    /** Usernames (unique identifier) for users. */
-    private Set < String > users = new HashSet<>();
-
     /** Roles Names. */
     private Set < String > roles = new HashSet<>();
+    
+    /** Usernames (unique identifier) for users. */
+    private Set < String > users = new HashSet<>();
     
     /**
      * Default constructor

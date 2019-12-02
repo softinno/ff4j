@@ -1,5 +1,9 @@
 package org.ff4j.user;
 
+import static org.ff4j.core.utils.JsonUtils.attributeAsJson;
+import static org.ff4j.core.utils.JsonUtils.collectionAsJson;
+import static org.ff4j.core.utils.JsonUtils.valueAsJson;
+
 /*-
  * #%L
  * ff4j-core
@@ -56,6 +60,22 @@ public class FF4jUser extends FF4jEntity < FF4jUser > {
      */
     public FF4jUser(String uid) {
         super(uid);
+    }
+    
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        StringBuilder json = new StringBuilder("{");
+        json.append("\"uid\":" + valueAsJson(getUid()));
+        json.append(attributeAsJson("type", getClass().getName()));
+        creationDate.ifPresent(d -> json.append(attributeAsJson("creationDate", d.format(FORMATTER))));
+        lastModifiedDate.ifPresent(lmd -> json.append(attributeAsJson("creationDate", lmd.format(FORMATTER))));
+        json.append(attributeAsJson("firstName", firstName));
+        json.append(attributeAsJson("lastName", lastName));
+        json.append(",\"permissions\":" + collectionAsJson(permissions));
+        json.append(",\"roles\":" + collectionAsJson(roles));
+        return json.append("}").toString();   
     }
     
     /**
@@ -175,5 +195,8 @@ public class FF4jUser extends FF4jEntity < FF4jUser > {
     public void setRoles(Set<String> roles) {
         this.roles = roles;
     }
+
+
+
     
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /*
  * #%L
@@ -35,12 +36,38 @@ import java.util.Date;
  * @author Cedrick LUNVEN (@clunven)
  */
 public class TimeUtils {
+    
+    /** Formatting date. */
+    public static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+    /** Formatting date. */
+    public static final DateTimeFormatter FORMATTER_DATETIME = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+    
 	/**
 	 * Hide default constructor.
 	 */
 	private TimeUtils() {
 	}
+	
+	public static String formatDay(LocalDateTime ldt) {
+	    if (null == ldt) return null; 
+	    return FORMATTER_DATE.format(ldt);
+	}
+	
+	public static LocalDateTime parseDay(String day) {
+        if (null == day) return null; 
+        return (LocalDateTime) FORMATTER_DATE.parse(day);
+    }
+	
+	public static String formatDateTime(LocalDateTime ldt) {
+        if (null == ldt) return null; 
+        return FORMATTER_DATETIME.format(ldt);
+    }
+	
+	public static LocalDateTime parseDateTime(String dateTime) {
+        if (null == dateTime) return null; 
+        return (LocalDateTime) FORMATTER_DATETIME.parse(dateTime);
+    }
 
 	/**
 	 * Compute time for today midnight.

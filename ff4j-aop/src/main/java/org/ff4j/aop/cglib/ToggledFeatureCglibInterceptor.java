@@ -24,8 +24,8 @@ import java.lang.reflect.Method;
 
 import javax.lang.model.type.NullType;
 
-import org.ff4j.FF4j;
 import org.ff4j.aop.ToggledFeature;
+import org.ff4j.core.FF4j;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;

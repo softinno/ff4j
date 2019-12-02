@@ -303,9 +303,9 @@ public abstract class Property<T> extends FF4jEntity<Property<T>> implements Sup
     public void addFixedValues(Set<String> fixedValues) {
         if (fixedValues != null) {
             fixedValues.stream().forEach(v -> add2FixedValueFromString(v.trim()));
-            if (!fixedValues.contains(getValue())) {
+            if (getFixedValues().isPresent() && !getFixedValues().get().contains(getValue())) {
                 throw new IllegalArgumentException("Cannot create property <" + getUid() + "> invalid value <"
-                            + getValue() + "> expected one of " + getFixedValues());
+                            + getValue() + "> expected one of " + getFixedValues().get());
             }
         }
     }

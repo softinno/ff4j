@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~         COORDINATES      ~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<artifactId>ff4j-store-cassandra</artifactId>
+	<packaging>jar</packaging>
+	<name>ff4j-store-cassandra</name>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~         PARENT           ~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<parent>
+		<groupId>org.ff4j</groupId>
+		<artifactId>ff4j-parent</artifactId>
+		<version>2.0.RC1</version>
+	</parent>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~      PROPERTIES          ~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<properties>
+		<license.licenseResolver>${project.baseUri}/../src/license</license.licenseResolver>
+		<oss-java-driver.version>4.3.0</oss-java-driver.version>
+	</properties>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~       DEPENDENCIES       ~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<dependencies>
+
+		<!-- logger -->
+		<dependency>
+			<groupId>org.ff4j</groupId>
+			<artifactId>ff4j-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- Cassandra Driver -->
+		<dependency>
+			<groupId>com.datastax.oss</groupId>
+			<artifactId>java-driver-core</artifactId>
+			<version>${oss-java-driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.oss</groupId>
+			<artifactId>java-driver-query-builder</artifactId>
+			<version>${oss-java-driver.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.datastax.oss</groupId>
+			<artifactId>java-driver-mapper-runtime</artifactId>
+			<version>${oss-java-driver.version}</version>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<artifactId>ff4j-test</artifactId>
+			<groupId>org.ff4j</groupId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	
+</project>

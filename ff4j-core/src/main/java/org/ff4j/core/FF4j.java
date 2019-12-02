@@ -35,7 +35,6 @@ import org.ff4j.core.config.FF4jConfigurationParser;
 import org.ff4j.event.Event;
 import org.ff4j.event.repository.audit.AuditTrailRepository;
 import org.ff4j.event.repository.hit.FeatureHitRepository;
-import org.ff4j.event.repository.hit.FeatureHitRepositoryInMemory;
 import org.ff4j.event.repository.hit.FeatureHitRepositoryListener;
 import org.ff4j.event.repository.hit.FeatureHitRepositorySupport;
 import org.ff4j.feature.Feature;
@@ -62,10 +61,6 @@ import org.ff4j.user.repository.RolesAndUsersRepositoryInMemory;
  */
 public class FF4j extends FF4jRepositoryObserver < FeatureHitRepositoryListener > implements Predicate<String> {
     
-    // -------------------------------------------------------------------------
-    // ------------------- META-DATA         -----------------------------------
-    // -------------------------------------------------------------------------
-    
     /** Top for startup in  order to compute uptime. */
     private final long startTime = System.currentTimeMillis();
 
@@ -77,37 +72,25 @@ public class FF4j extends FF4jRepositoryObserver < FeatureHitRepositoryListener 
    
     /** Flag to ask for automatically create the feature if not found in the store. */
     private boolean autoCreateFeatures = false;
-   
-    // -------------------------------------------------------------------------
-    // -------- Repositories (features, properties, events) --------------------
-    // -------------------------------------------------------------------------
-    
+      
     /** Storage to persist feature within {@link FeatureRepository}. */
     private FeatureRepository repositoryFeatures = new FeatureRepositoryInMemory();
-   
+    
     /** Storage to persist properties within {@link PropertyRepository}. */
     private PropertyRepository repositoryProperties = new PropertyRepositoryInMemory();
     
     /** ReadOnly but can be extended to have full control on user (and dedicated screen in console). */
     private RolesAndUsersRepository repositoryUsersRoles = new RolesAndUsersRepositoryInMemory();
     
+    /** Define feature usage. */
+    private Optional<FeatureHitRepositorySupport> repositoryFeaturesHit = Optional.empty();
+    
     /** Storage to persist event logs. */ 
     private Optional <AuditTrailRepository> auditTrail = Optional.empty();
-   
-    /** Define feature usage. */
-    private FeatureHitRepositorySupport repositoryEventFeaturesUsage = new FeatureHitRepositoryInMemory();
-    
-    // -------------------------------------
-    // ---------- CONTEXT ------------------
-    // -------------------------------------
-    
+     
     /** Hold properties related to each users. */
     private ThreadLocal < FF4jContext > context = new ThreadLocal<>();
-    
-    // -------------------------------------
-    // ---------- INIT ---------------------
-    // -------------------------------------
-    
+     
     /**
      * Base constructor: Allows instantiation through Inversion of Control Ioc.
      * Default settings use InMemory stores and let them empty.
@@ -134,10 +117,9 @@ public class FF4j extends FF4jRepositoryObserver < FeatureHitRepositoryListener 
      *      configuration bean for ff4j.
      */
     public FF4j(FF4jConfiguration config) {
-        this.repositoryFeatures           = new FeatureRepositoryInMemory(config);
-        this.repositoryProperties         = new PropertyRepositoryInMemory(config);
-        this.repositoryUsersRoles         = new RolesAndUsersRepositoryInMemory(config);
-        this.repositoryEventFeaturesUsage = new FeatureHitRepositoryInMemory();
+        this.repositoryFeatures    = new FeatureRepositoryInMemory(config);
+        this.repositoryProperties  = new PropertyRepositoryInMemory(config);
+        this.repositoryUsersRoles  = new RolesAndUsersRepositoryInMemory(config);
     }
     
     // -------------------------------------
@@ -271,8 +253,8 @@ public class FF4j extends FF4jRepositoryObserver < FeatureHitRepositoryListener 
             getRepositoryProperties().createSchema();
         }
         // FeatureUsage
-        if (null != getRepositoryEventFeaturesUsage()) {
-            getRepositoryEventFeaturesUsage().createSchema();
+        if (!getRepositoryFeaturesHit().isEmpty()) {
+            getRepositoryFeaturesHit().get().createSchema();
         }
         // AuditTrail
         if (!getAuditTrail().isEmpty()) {
@@ -472,62 +454,33 @@ public class FF4j extends FF4jRepositoryObserver < FeatureHitRepositoryListener 
     // ------------------- AUDIT TRAILS      ---------------------
     // -----------------------------------------------------------
     
-    /**
-     * Getter accessor for attribute 'auditTrail'.
-     *
-     * @return
-     *       current value of 'auditTrail'
-     */
-    public Optional<AuditTrailRepository> getAuditTrail() {
-        return auditTrail;
-    }
-
-    /**
-     * Setter accessor for attribute 'auditTrail'.
-     *
-     * @param auditTrail
-     *      new value for 'auditTrail '
-     */
-    public void setRepositoryAudit(AuditTrailRepository auditTrail) {
-        withAudit(auditTrail);
-    }
-    
-    /**
-     * Update & enable audit trail information.
-     *
-     * @param auditTrail
-     *      
-     * @return
-     */
-    public FF4j withRepositoryAudit(AuditTrailRepository auditTrail) {
-        setRepositoryAudit(auditTrail);
-        return this;
-    }
-    
-    /**
-     * Get audit status.
-     *
-     * @return
-     *      audit status.
-     */
     public boolean isAuditEnabled() {
         return !getAuditTrail().isEmpty();
     }
     
+    public Optional<AuditTrailRepository> getAuditTrail() {
+        return auditTrail;
+    }
+
+    public void setAuditTrail(AuditTrailRepository auditTrail) {
+        withAudit(auditTrail);
+    }
+    
     public FF4j withAudit(AuditTrailRepository auditTrailRepository) {
         this.auditTrail = Optional.ofNullable(auditTrailRepository);
+        return withAudit();
+    }
+    
+    public FF4j withAudit() {
+        if (auditTrail.isEmpty()) {
+            throw new IllegalStateException("Not audit trail provided, cannot enable");
+        }
         getRepositoryFeatures().registerAuditListener(getAuditTrail().get());
         getRepositoryProperties().registerAuditListener(getAuditTrail().get());
-        return this;
+       return this;
     }
-    /**
-     * Unregister listener to work on audit.
-     *
-     * @return
-     *      current ff4j instance
-     */
-    public FF4j stopAudit() {
-        this.auditTrail = Optional.empty();
+    
+    public FF4j withoutAudit() {
         getRepositoryFeatures().unRegisterAuditListener();
         getRepositoryProperties().unRegisterAuditListener();
         return this;
@@ -537,62 +490,41 @@ public class FF4j extends FF4jRepositoryObserver < FeatureHitRepositoryListener 
     // ------------------- FEATURE USAGE     -----------------------------------
     // -------------------------------------------------------------------------
     
-    /**
-     * Enable features tracking (enable/disable/check).
-     * 
-     * @param featureUsage
-     * @return
-     */
-    public FF4j withRepositoryEventFeaturesUsage(FeatureHitRepositorySupport featureUsage) {
-        setRepositoryEventFeaturesUsage(featureUsage);
-        return withFeatureUsageTracking();
+    public boolean isFeatureHitEnabled() {
+        return !getRepositoryFeaturesHit().isEmpty();
     }
     
-    /**
-     * Register listener for feature usage.
-     *
-     * @return
-     *      current ff4j instance
-     */
-    public FF4j withFeatureUsageTracking() {
-        registerListener(FeatureHitRepositoryListener.KEY_USAGETRACKING_LISTENER, getRepositoryEventFeaturesUsage());
+    public Optional<FeatureHitRepositorySupport> getRepositoryFeatureHit() {
+        return repositoryFeaturesHit;
+    }
+
+    public void setRepositoryFeatureHit(FeatureHitRepositorySupport featurehitRepo) {
+        withFeaturesHitTracking(featurehitRepo);
+    }
+    
+    public FF4j withFeaturesHitTracking(FeatureHitRepositorySupport featureHit) {
+        this.repositoryFeaturesHit = Optional.ofNullable(featureHit);
+        return withFeaturesHitTracking();
+    }
+    
+    public FF4j withFeaturesHitTracking() {
+        if (repositoryFeaturesHit.isEmpty()) {
+            throw new IllegalStateException("Not repository for feature tracking, cannot enable");
+        }
+        registerListener(FeatureHitRepositoryListener.KEY_USAGETRACKING_LISTENER, getRepositoryFeaturesHit().get());
         return this;
     }
     
-    /**
-     * Unregister listener for feature usage.
-     *
-     * @return
-     *      current ff4j instance
-     */
-    public FF4j withoutFeatureUsageTracking() {
+    public Optional<FeatureHitRepositorySupport> getRepositoryFeaturesHit() {
+        return repositoryFeaturesHit;
+    }
+
+    public FF4j withoutFeaturesHitTracking() {
+        getRepositoryFeatures().unRegisterAuditListener();
         unregisterListener(FeatureHitRepositoryListener.KEY_USAGETRACKING_LISTENER);
         return this;
     }
-
-    /**
-     * Getter accessor for attribute 'repositoryEventFeaturesUsage'.
-     *
-     * @return
-     *       current value of 'repositoryEventFeaturesUsage'
-     */
-    public FeatureHitRepositorySupport getRepositoryEventFeaturesUsage() {
-        return repositoryEventFeaturesUsage;
-    }
-
-    /**
-     * Setter accessor for attribute 'repositoryEventFeaturesUsage'.
-     * @param repositoryEventFeaturesUsage
-     * 		new value for 'repositoryEventFeaturesUsage '
-     */
-    public void setRepositoryEventFeaturesUsage(FeatureHitRepositorySupport repositoryEventFeaturesUsage) {
-        this.repositoryEventFeaturesUsage = repositoryEventFeaturesUsage;
-    }
     
-    // -------------------------------------------------------------------------
-    // ------------------- GETTERS & SETTERS -----------------------------------
-    // -------------------------------------------------------------------------
-     
     // --- Autocreate
     
     /**

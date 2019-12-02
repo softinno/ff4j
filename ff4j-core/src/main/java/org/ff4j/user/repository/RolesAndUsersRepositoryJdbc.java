@@ -149,12 +149,15 @@ public class RolesAndUsersRepositoryJdbc extends RolesAndUsersRepositorySupport 
     public void deleteAllRoles() {
         try (Connection   sqlConn = getDataSource().getConnection()) {
             sqlConn.setAutoCommit(false);
-            // Remove all roles
-            try(PreparedStatement ps = buildStatement(sqlConn, getQueryBuilder().sqlDeleteAllRoles())) {
+            // Remove all item in Role/User association (due to foreign key)
+            try (PreparedStatement ps = sqlConn.prepareStatement(getQueryBuilder().sqlDeleteAllRolesUsers())) {
                 ps.executeUpdate();
             }
-            // Remove all item in Role/User association (due to foreign key)
-            try (PreparedStatement ps = buildStatement(sqlConn, getQueryBuilder().sqlSelectAllRolesUsers())) {
+            try (PreparedStatement ps = sqlConn.prepareStatement(getQueryBuilder().sqlDeleteAllRolePermissions())) {
+                ps.executeUpdate();
+            }
+            // Remove all roles
+            try(PreparedStatement ps = buildStatement(sqlConn, getQueryBuilder().sqlDeleteAllRoles())) {
                 ps.executeUpdate();
             }
             // Commit
@@ -322,7 +325,7 @@ public class RolesAndUsersRepositoryJdbc extends RolesAndUsersRepositorySupport 
         Optional<FF4jUser> res = Optional.empty();
         try (Connection sqlConn = getDataSource().getConnection()) {
             UserMapperJdbc userMapper = new UserMapperJdbc(sqlConn, getQueryBuilder());
-            try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectRoleByName())) {
+            try(PreparedStatement ps1 = sqlConn.prepareStatement(getQueryBuilder().sqlSelectUserById())) {
                 ps1.setString(1, userId);
                 try (ResultSet rs1 = ps1.executeQuery()) {
                     if (rs1.next()) {
@@ -380,6 +383,7 @@ public class RolesAndUsersRepositoryJdbc extends RolesAndUsersRepositorySupport 
             try(PreparedStatement ps1 = pmapper.mapToRepository(user)) {
                 ps1.executeUpdate();
             }
+            
             // Saving Role Permissions
             if (null != user.getPermissions() && !user.getPermissions().isEmpty()) {
                 for (FF4jPermission permission : user.getPermissions()) {
@@ -392,7 +396,7 @@ public class RolesAndUsersRepositoryJdbc extends RolesAndUsersRepositorySupport 
             if (null != user.getRoles() && !user.getRoles().isEmpty()) {
                 // Here we do not Create ROLE, we expect them to be there already
                 for (String roleName : user.getRoles()) {
-                    try(PreparedStatement ps2 = pmapper.inserUserPermission(user.getUid(), roleName)) {
+                    try(PreparedStatement ps2 = pmapper.inserUserRole(user.getUid(), roleName)) {
                         ps2.executeUpdate();
                     }
                 }

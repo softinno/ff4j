@@ -40,6 +40,7 @@
 		<version.jupiter-unit>5.5.0-M1</version.jupiter-unit>
 		<version.mockito>2.27.0</version.mockito>
 		<version.snakeyaml>1.24</version.snakeyaml>
+		<version.swagger>1.6.0</version.swagger>
 		
 		<!-- MAVEN, please keep alphabetic order -->
 		<version.maven.plugin.clean>3.1.0</version.maven.plugin.clean>
@@ -70,6 +71,11 @@
 		<module>ff4j-config-xml</module>
 		<module>ff4j-aop</module>
 		<module>ff4j-test</module>
+		<module>ff4j-json</module>
+		
+		<module>ff4j-api-rest</module>
+		
+		<!-- <module>ff4j-store-cassandra</module> -->
 	</modules>
 
 	<!-- Enforce dependencies versions -->
@@ -118,6 +124,11 @@
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
+				<version>${version.jackson}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
 				<version>${version.jackson}</version>
 			</dependency>
 			<dependency>

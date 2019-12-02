@@ -74,9 +74,9 @@ public abstract class AbstractTestSupportMetricsRepository implements FF4jTestDa
     @BeforeEach
     public void setUp() throws Exception {
         FF4jConfigurationParser.clearCache();
-        ff4j        = new FF4j().withRepositoryEventFeaturesUsage(initRepository());
+        ff4j        = new FF4j().withFeaturesHitTracking(initRepository());
         assertFF4j  = new AssertFF4j(ff4j);
-        testedStore = ff4j.getRepositoryEventFeaturesUsage();
+        testedStore = ff4j.getRepositoryFeaturesHit().get();
         testDataSet = expectConfig();
     }
     

@@ -77,13 +77,15 @@ public class UserMapperJdbc extends JdbcMapper implements UserMapper< PreparedSt
     
     /** {@inheritDoc} */
     @Override
-    public PreparedStatement mapToRepository(FF4jUser role) {
+    public PreparedStatement mapToRepository(FF4jUser user) {
         PreparedStatement ps;
         try {
             ps = sqlConn.prepareStatement(queryBuilder.sqlInsertUser());
-            populateEntity(ps, role);
+            populateEntity(ps, user);
+            ps.setString(6, user.getLastName());
+            ps.setString(7, user.getFirstName());
         } catch (SQLException sqlEx) {
-            throw new RolesAndUserException("Cannot create statement to create role", sqlEx);
+            throw new RolesAndUserException("Cannot create statement to create user", sqlEx);
         }
         return ps;
     }
@@ -94,9 +96,11 @@ public class UserMapperJdbc extends JdbcMapper implements UserMapper< PreparedSt
         try {
             FF4jUser myUser = new FF4jUser(rs.getString(UsersColumns.UID.colname()));
             mapEntity(rs, myUser);
+            myUser.setFirstName(rs.getString(UsersColumns.FIRSTNAME.colname()));
+            myUser.setLastName(rs.getString(UsersColumns.LASTNAME.colname()));
             return myUser;
        } catch(SQLException sqlEx) {
-           throw new FeatureAccessException("Cannot create statement to create role", sqlEx);
+           throw new FeatureAccessException("Cannot create statement to create user", sqlEx);
        }
     }
 

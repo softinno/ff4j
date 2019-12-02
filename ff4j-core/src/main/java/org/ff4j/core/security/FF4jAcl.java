@@ -51,16 +51,6 @@ public class FF4jAcl implements Serializable {
     }
     
     /**
-     * If the permissions map is empty;
-     *
-     * @return
-     *      if the permission is empty.
-     */
-    public boolean isEmpty() {
-        return permissions.isEmpty();
-    }
-    
-    /**
      * Grant a permission to a target user.
      *
      * @param userName

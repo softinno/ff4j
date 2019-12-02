@@ -679,8 +679,6 @@ public interface JdbcSchema {
         LASTMODIFIED(COLUMN_LASTMODIFIED, SQLTypes.DATETIME, 0, false),
         OWNER(COLUMN_OWNER, SQLTypes.VARCHAR,   100, false),
         DESCRIPTION(COLUMN_DESCRIPTION, SQLTypes.VARCHAR, 255, false),
-        
-        PASSWORD("PASSWORD", SQLTypes.VARCHAR, 255, true),
         LASTNAME("LASTNAME", SQLTypes.VARCHAR, 100, false),
         FIRSTNAME("FIRSTNAME", SQLTypes.VARCHAR, 100, false);
         

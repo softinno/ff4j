@@ -32,13 +32,6 @@
 			<version>3.2.12</version>
 		</dependency>
 		
-		<!-- Dynamic Pointcut with AspectJ -->
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>1.9.4</version>
-		</dependency>
-		
 		<!-- Junit 5 -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -67,35 +60,5 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>aspectj-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>aspectj-maven-plugin</artifactId>
-					<version>1.11</version>
-					<configuration>
-						<complianceLevel>1.11</complianceLevel>
-						<source>1.11</source>
-						<target>1.11</target>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>compile</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+	
 </project>

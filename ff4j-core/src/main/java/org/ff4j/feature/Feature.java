@@ -127,7 +127,7 @@ public class Feature extends FF4jEntity < Feature > {
             addProperty(pTmp);
         }
         // Cloning Permissions
-        if (!f.getAccessControlList().isEmpty()) {
+        if (!f.getAccessControlList().getPermissions().isEmpty()) {
             Map <FF4jPermission, FF4jGrantees> currentPermissions = getAccessControlList().getPermissions();
             for (Map.Entry<FF4jPermission, FF4jGrantees> acl : f.getAccessControlList().getPermissions().entrySet()) {
                 if (!currentPermissions.containsKey(acl.getKey())) {
