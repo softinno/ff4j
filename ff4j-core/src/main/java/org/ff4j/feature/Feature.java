@@ -56,9 +56,6 @@ public class Feature extends FF4jEntity < Feature > {
     /** State to decide to toggleOn or not. */
     private boolean enable = false;
     
-    /** Some feature should live for a dedicated period of time and raised alert if stil there after a while. */
-    private Optional < Long > ttl = Optional.empty();
-
     /** Feature could be grouped to enable/disable the whole group. */
     private Optional< String> group = Optional.empty();
     
@@ -279,39 +276,7 @@ public class Feature extends FF4jEntity < Feature > {
         return this;
     }
 
-    // ---- Working With TTL ----
-
-    /**
-     * Getter accessor for attribute 'ttl'.
-     *
-     * @return current value of 'ttl'
-     */
-    public Optional<Long> getTTL() {
-        return ttl;
-    }
-    
-    /**
-     * Setter for ttl.
-     *
-     * @param ttl
-     *      ttl value
-     */
-    public void setTTL(long ttl) {
-        this.ttl = Optional.ofNullable(ttl);
-    }
-    
-    /**
-     * Fluent Setter.
-     *
-     * @param groupName
-     *      target groupName
-     * @return
-     *      current bean
-     */
-    public Feature ttl(long ttl) {
-        setTTL(ttl);
-        return this;
-    }
+   
     
     // ---- Working With Group ----
 

@@ -1,5 +1,7 @@
 package org.ff4j.api.resources;
 
+import javax.ws.rs.GET;
+
 /*-
  * #%L
  * ff4j-api-rest
@@ -23,6 +25,7 @@ package org.ff4j.api.resources;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.Api;
 
@@ -38,6 +41,12 @@ public class ChartResource  extends AbstractResource {
   
     /** Path for the resource. */
     public static final String PATH = FF4jResource.PATH + "/charts";
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getFeatureMonitoring() {
+        return Response.ok().build();
+    }
     
     /**
      * Provide core information on store and available sub resources.

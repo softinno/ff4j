@@ -44,6 +44,20 @@ public class FF4jAcl implements Serializable {
     /** Permission : by Default everyOne can use the Feature. */
     private Map < FF4jPermission, FF4jGrantees > permissions = new HashMap<>();
 
+    /**
+     * Default Constructor.
+     */
+    public FF4jAcl() {}
+    
+    /**
+     * Constructor with permissions
+     * @param permissions
+     */
+    public FF4jAcl(Map < FF4jPermission, FF4jGrantees > permissions) {
+        this.permissions = permissions;
+    }
+    
+    
     /** {@inheritDoc} */
     @Override
     public String toString() {

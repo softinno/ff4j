@@ -1,88 +1,126 @@
 package org.ff4j.cassandra.store;
 
-/*-
- * #%L
- * ff4j-store-cassandra
- * %%
- * Copyright (C) 2013 - 2019 FF4J
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+import static org.ff4j.core.test.AssertUtils.assertHasLength;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.ff4j.cassandra.driver.CassandraDriverMapper;
+import org.ff4j.cassandra.driver.CassandraDriverMapperBuilder;
+import org.ff4j.cassandra.driver.CassandraSchema;
+import org.ff4j.cassandra.entity.FeatureDao;
+import org.ff4j.cassandra.entity.FeatureEntity;
+import org.ff4j.cassandra.entity.FeatureEntityMapper;
 import org.ff4j.feature.Feature;
 import org.ff4j.feature.repository.FeatureRepository;
 import org.ff4j.feature.repository.FeatureRepositorySupport;
 
+import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
+
 /**
- * Implementation of {@link FeatureRepository} to store data into Apache Cassandra™.
- * 
+ * Implementation of {@link FeatureRepository} to persist data into Apache Cassandra.
+ *
  * @author Cedrick LUNVEN (@clunven)
  */
-public class FeatureRepositoryCassandra  extends FeatureRepositorySupport {
+public class FeatureRepositoryCassandra extends FeatureRepositorySupport implements CassandraSchema {
 
     /** Serial. */
-    private static final long serialVersionUID = 1230721832994192438L;
+    private static final long serialVersionUID = -8831825890084850860L;
 
+    /** Mappers for tables. */
+    private static final FeatureEntityMapper MAPPER_FEATURE = new FeatureEntityMapper();
+    
+    /** CqlSession holding metadata to interact with Cassandra. */
+    private FeatureDao featureDao;
+   
+    public FeatureRepositoryCassandra(CqlSession cqlSession) {
+        this(cqlSession, cqlSession.getKeyspace().get().asInternal());
+    }
+    
+    /**
+     * Constructor with `CqlSession` and `keyspace` already defined.
+     *
+     * @param cqlSession
+     *      current connection to Cassandra Cluster
+     * @param keyspaceName
+     *      applicative keyspace where to find ff4j_* tables
+     */
+    public FeatureRepositoryCassandra(CqlSession cqlSession, String keyspaceName) {
+        // Table is required for mapper, creating table if required
+        schemaCreateAll(cqlSession, keyspaceName);
+        // Use entity mapper from driver
+        CassandraDriverMapper mapper = new CassandraDriverMapperBuilder(cqlSession).build();
+        featureDao = mapper.featureDao(CqlIdentifier.fromCql(keyspaceName));
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean existGroup(String groupName) {
-        return false;
+        assertHasLength(groupName);
+        return featureDao.existGroup(groupName);
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<Feature> readGroup(String groupName) {
-        return null;
+        assertGroupExist(groupName);
+        return featureDao.readGroup(groupName)
+                         .all().stream().map(MAPPER_FEATURE::mapFromRepository);
     }
 
     /** {@inheritDoc} */
     @Override
     public Stream<String> listGroupNames() {
-        return null;
+        return featureDao.listGroupNames().stream();
     }
 
-    @Override
-    public void saveFeature(Feature feature) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void deleteFeature(String uid) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public boolean exists(String id) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
+    /** {@inheritDoc} */
     @Override
     public Stream<String> findAllIds() {
-        // TODO Auto-generated method stub
-        return null;
+        return featureDao.findAllIds().stream();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void saveFeature(Feature feature) {
+        assertFeatureNotNull(feature);
+        assertHasLength(feature.getUid());
+        FeatureEntity fe = MAPPER_FEATURE.mapToRepository(feature);
+        featureDao.upsert(fe);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void deleteFeature(String uid) {
+        assertFeatureExist(uid);
+        featureDao.delete(uid);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean exists(String id) {
+        assertHasLength(id);
+        return featureDao.existFeature(id);
+    }
+
+    /** {@inheritDoc} */
     @Override
     public Optional<Feature> find(String id) {
-        // TODO Auto-generated method stub
-        return null;
+        assertHasLength(id);
+        Optional<FeatureEntity> fe = featureDao.findById(id);
+        return fe.isPresent() ? 
+                Optional.ofNullable(MAPPER_FEATURE.mapFromRepository(fe.get())) : 
+                Optional.empty();
+    } 
+    
+    /** {@inheritDoc} */
+    @Override
+    public void removeFromGroup(String uid, String groupName) {
+        assertFeatureExist(uid);
+        assertGroupExist(groupName);
+        this.notify(l -> l.onRemoveFeatureFromGroup(uid, groupName));
+        featureDao.removeFromGroup(uid, groupName);
     }
 
 }

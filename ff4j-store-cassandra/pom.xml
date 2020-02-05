@@ -22,12 +22,9 @@
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<properties>
 		<license.licenseResolver>${project.baseUri}/../src/license</license.licenseResolver>
-		<oss-java-driver.version>4.3.0</oss-java-driver.version>
+		<oss-java-driver.version>4.4.0</oss-java-driver.version>
 	</properties>
 
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- ~       DEPENDENCIES       ~ -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<dependencies>
 
 		<!-- logger -->
@@ -53,6 +50,13 @@
 			<artifactId>java-driver-mapper-runtime</artifactId>
 			<version>${oss-java-driver.version}</version>
 		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
+		</dependency>
 
 		<!-- Tests -->
 		<dependency>
@@ -61,6 +65,27 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
+	
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>com.datastax.oss</groupId>
+								<artifactId>java-driver-mapper-processor</artifactId>
+								<version>${oss-java-driver.version}</version>
+							</path>
+						</annotationProcessorPaths>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 	
 </project>

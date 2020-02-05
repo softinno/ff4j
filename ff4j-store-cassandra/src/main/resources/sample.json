@@ -1,0 +1,48 @@
+{
+ "category": "Technical Blogs",
+ "icon":"rss",
+ "sections": [
+   {
+     "title":"Organization",
+	 "entries": [
+		{
+		  "title": "Apache Cassandra Blog",
+		  "description": "Members of Apache teams and committers write deep dive posts about Cassandra features and news.",
+		  "url": "https://cassandra.apache.org/blog/",
+		  "image": "pics/blogs/blog-cassandra-core.png",
+		  "tags": ["apache"],
+		  "lang": ["en"]
+		},
+		{
+		  "title": "The Last Pickle Blog",
+		  "description": "TLP regularly contributes blog posts to help share our knowledge and build the collaborative knowledge base.",
+		  "url": "https://thelastpickle.com/blog/",
+		  "image": "pics/blogs/blog-tlp.png",
+		  "tags": ["blog", "the last pickle", "tlp"],
+		  "lang": ["en"]
+		}
+	  ]
+    },
+    {
+     "title":"Aggregators and Platforms",
+	 "entries": [
+		{
+		  "title": "Medium.com",
+		  "description": "Platform mutualizing multiple articles sources files by domains and tags.",
+		  "url": "https://medium.com/tag/cassandra",
+		  "image": "pics/blogs/blog-medium.png",
+		  "tags": ["medium"],
+		  "lang": ["en"]
+		},
+		{
+		  "title": "Dev.to",
+		  "description": "Platform mutualizing multiple articles sources files by domains and tags.",
+		  "url": "https://dev.to/t/cassandra/top/infinity",
+		  "image": "pics/blogs/blog-devto.png",
+		  "tags": ["dev.to"],
+		  "lang": ["en"]
+		}
+	  ]
+    }
+  ]
+}

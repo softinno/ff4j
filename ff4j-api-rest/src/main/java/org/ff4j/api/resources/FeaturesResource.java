@@ -43,8 +43,8 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
  */
-@Api(FeatureGroupResource.PATH)
-@Path(FeatureGroupResource.PATH)
+@Api(FeaturesResource.PATH)
+@Path(FeaturesResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)
 @RolesAllowed({FF4jApiSpecification.ROLE_WRITE})
 public class FeaturesResource extends AbstractResource {

@@ -79,7 +79,6 @@ public class FeatureJson extends AbstractJsonEntity {
     /** Default Constructor. */
     public FeatureJson(Feature feat) {
         populateFromEntity(feat);
-        feat.getTTL().ifPresent(val -> this.ttl = val);
         feat.getGroup().ifPresent(g -> this.group = g);
         feat.getToggleStrategies().stream()
                 .map(ToggleStrategyJson::new)
@@ -113,9 +112,6 @@ public class FeatureJson extends AbstractJsonEntity {
     public Feature asFeature() {
         Feature f = new Feature(getUid());
         populateTargetEntity(f);
-        if (null != ttl) {
-            f.setTTL(ttl);
-        }
         if (null != group) {
             f.setGroup(group);
         }

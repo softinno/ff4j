@@ -76,11 +76,11 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
 	@BeforeEach
 	public void setUp() throws Exception {
 	    FF4jConfigurationParser.clearCache();
+        testDataSet = expectConfig();
 	    testedStore = initStore();
 	    ff4j = new FF4j().withRepositoryFeatures(testedStore)
 	                     .withAudit(new AuditTrailRepositoryInMemory());
 	    assertFF4j  = new AssertFF4j(ff4j);
-        testDataSet = expectConfig();
 	}
 
 	/**
@@ -624,13 +624,13 @@ public abstract class FeatureRepositoryTestSupport implements FF4jTestDataSet {
         Optional<FeatureRepositoryListenerAudit> auditListener = 
                 (Optional<FeatureRepositoryListenerAudit>) testedStore.readAuditListener();
         Assertions.assertTrue(auditListener.isPresent());
-        Assertions.assertEquals(1, testedStore.listListenerNames().count());
+        long countBefore = testedStore.listListenerNames().count();
         Assertions.assertEquals(auditListener, 
                 testedStore.readListener(FeatureRepositorySupport.LISTENERNAME_AUDIT));
         // When
         testedStore.unRegisterAuditListener();
         // Then
-        Assertions.assertEquals(0, testedStore.listListenerNames().count());
+        Assertions.assertEquals(countBefore-1, testedStore.listListenerNames().count());
         Assertions.assertFalse(testedStore.readAuditListener().isPresent());
     }
     

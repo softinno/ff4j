@@ -37,7 +37,9 @@ import io.swagger.annotations.ApiResponses;
  *
  * @author Cedrick LUNVEN (@clunven)
  */
-@Api(AuditResource.PATH)
+@Api(description = "",
+     basePath = AuditResource.PATH,
+     value = AuditResource.PATH)
 @Path(AuditResource.PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public class AuditResource extends AbstractResource {

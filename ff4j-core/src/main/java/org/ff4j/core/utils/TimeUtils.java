@@ -102,6 +102,16 @@ public class TimeUtils {
 	    if (sqlTimeStamp == null) return null;
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(sqlTimeStamp.getTime()), ZoneId.systemDefault());
     }
+	
+	public static LocalDateTime asLocalDateTime(Instant instant) {
+	    if (instant == null) return null;
+	    return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+	}
+	
+	public static Instant toInstant(LocalDateTime ldt) {
+        if (ldt == null) return null;
+        return ldt.toInstant(ZoneOffset.UTC);
+    }
     
     public static java.sql.Timestamp asSqlTimeStamp(LocalDateTime jdk8Date) {
         if (jdk8Date == null) return null;

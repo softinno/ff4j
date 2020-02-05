@@ -1,76 +1,76 @@
----
--- #%L
--- ff4j-store-cassandra
--- %%
--- Copyright (C) 2013 - 2016 FF4J
--- %%
--- Licensed under the Apache License, Version 2.0 (the "License");
--- you may not use this file except in compliance with the License.
--- You may obtain a copy of the License at
--- 
---      http://www.apache.org/licenses/LICENSE-2.0
--- 
--- Unless required by applicable law or agreed to in writing, software
--- distributed under the License is distributed on an "AS IS" BASIS,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the License for the specific language governing permissions and
--- limitations under the License.
--- #L%
----
--- List tables
-describe tables;
+INSERT INTO ff4j_settings(param_name, param)  VALUES ('autocreate', { uid: 'autocreate', class_name: 'java.lang.Boolean' , value: 'true'} );
+INSERT INTO ff4j_settings(param_name, param)  VALUES ('audit',      { uid: 'audit', class_name: 'java.lang.Boolean' , value: 'true'} );
+
+INSERT INTO ff4j_role(role_name, permissions)  VALUES ('EVERYONE', {'VIEW_FEATURES', 'VIEW_PROPERTIES'});
+INSERT INTO ff4j_role(role_name, permissions)  VALUES ('USER', {'VIEW_FEATURES', 'VIEW_PROPERTIES', 'VIEW_AUDITTRAIL', 'VIEW_FEATUREUSAGE'});
+INSERT INTO ff4j_role(role_name, permissions)  VALUES ('SUPERUSER', {'TOGGLE_FEATURES',  'VIEW_FEATURES', 'VIEW_PROPERTIES', 'VIEW_AUDITTRAIL', 'VIEW_FEATUREUSAGE'});
+INSERT INTO ff4j_role(role_name, permissions)  VALUES ('ADMIN_FEATURES', { 'ADMIN_PROPERTIES', 'ADMINISTRATOR', 'TOGGLE_FEATURES',  'VIEW_FEATURES', 'VIEW_PROPERTIES', 'VIEW_AUDITTRAIL', 'VIEW_FEATUREUSAGE'});
+
+INSERT INTO ff4j_user(uid, description, firstname, lastname, permissions, roles) 
+VALUES ('john', 'sample description if OK', 'John', 'Connor', {'ADMIN_FEATURES'}, {'ADMINISTRATOR'});
+INSERT INTO ff4j_user(uid, description, firstname, lastname, permissions, roles) 
+VALUES ('sarah', 'sample description if OK', 'Sarah', 'Connor', {'FEATURE_VIEW'}, {'USER'});
+
+INSERT INTO ff4j_feature(uid, enable, description) VALUES ('f1', false, 'some desc');
+INSERT INTO ff4j_feature(uid, enable, description, group_name, permissions_roles, permissions_users, properties, toggle_strategies) 
+VALUES ('f2', true, 'description', 'GRP1', 
+    { 'FEATURE_VIEW':   {'EVERYONE'}}, -- roles permissions
+    { 'FEATURE_TOGGLE': {'john'} },    -- users permissions
+    -- properties
+    { 'ppint':      {uid:'ppint',      class_name:'int', value:'12'    },
+      'ppdouble':   {uid:'ppdouble',   class_name:'double',  value:'12.5'  },
+      'ppboolean':  {uid:'ppboolean',  class_name:'boolean', value:'true'  },
+      'ppstring':   {uid:'ppstring',   class_name:'string',  value:'hello' },
+      'myLogLevel': {uid:'myLogLevel', class_name:'logLevel',          value:'DEBUG' },
+      'ppListInt':  {uid:'ppListInt',  class_name:'listInt',           value:'12,13,14' },
+      'digitValue': {uid:'digitValue', class_name:'org.ff4j.property.PropertyInteger',  value:'1',  fixed_values:{'0','1','2','3'} },
+      'regionIdentifier': {uid:'regionIdentifier', class_name:'string',       value:'NA', fixed_values:{'NA','EMEA','APAC'} }
+    },
+    -- toggle Strategies
+    [{class_name:'org.ff4j.feature.togglestrategy.PonderationToggleStrategy', params:{
+        'weight': {uid:'weight', class_name:'double', value:'1'}
+    }}] 
+);
+INSERT INTO ff4j_feature(uid, enable, description, group_name, permissions_roles) 
+VALUES ('f3', true, 'description', 'GRP0',  { 'FEATURE_VIEW':   {'USER'}});
+INSERT INTO ff4j_feature(uid, enable, description, group_name, toggle_strategies) 
+VALUES ('f4', true, 'description', 'GRP1',
+    -- toggle Strategies
+    [{class_name:'org.ff4j.feature.togglestrategy.expression.ExpressionToggleStrategy', params:{
+        'expression': {uid:'expression', class_name:'string', value:' f3 | f2'}
+    }}] 
+);
 
 
- -- Afficher une table
- SELECT * FROM ff4j.features;
-
--- Populate FEATURE
-INSERT INTO ff4j.features (FEAT_UID, ENABLE, DESCRIPTION, GROUPNAME, ROLES)
-VALUES('f1', 1, 'sample desc', 'groupe1', {'ADMIN', 'USER'});
-INSERT INTO ff4j.features (UID, ENABLE, DESCRIPTION, GROUPNAME, ROLES, STRATEGY, PROPERTIES)
-VALUES('f2', 1, 'sample desc', 'groupe1', {'ADMIN', 'USER'}, '{"flippingStrategy":"value", "initParam":"ok"}', 
-        {'p1':'{"type":"int", "value":3}', 'p2':'v2'});
-INSERT INTO ff4j.features (FEAT_UID, ENABLE, CUSTOM_PROPERTIES) VALUES('f3', 1, {'p1':'v1', 'p2':'v2'});
-INSERT INTO ff4j.features (FEAT_UID, ENABLE, CUSTOM_PROPERTIES) VALUES('f4', 1, {'p1':'{"type":"int", "value":3}', 'p2':'v2'});
-
--- Disable
-UPDATE ff4j.features SET enable='0' WHERE feat_uid = 'f1';
-
--- Truncate
-CONSISTENCY ALL;TRUNCATE TABLE ff4j.features;
-
--- Grant
-UPDATE users SET emails = emails + {'fb@friendsofmordor.org'} WHERE user_id = 'frodo';
-UPDATE features SET roles = roles + {'ooo'} WHERE uid = 'fx1';
-
--- Empty set
-UPDATE users SET emails = {} WHERE user_id = 'frodo';
-
-DELETE emails FROM users WHERE user_id = 'frodo';
-
-CREATE INDEX ON ff4j.features (GROUPNAME);
-
-SELECT * from ff4j.features where GROUPNAME = 'group3';
-
-UPDATE features SET enable = 1 WHERE GROUPNAME = 'group3';
-
--- requete TIME/FEATURE(name+type)
-
-CREATE TABLE latest_temperatures (
-weatherstation_id text,
-event_time timestamp,
-temperature text,
-PRIMARY KEY (weatherstation_id,event_time),
-) WITH CLUSTERING ORDER BY (event_time DESC);
-
-INSERT INTO latest_temperatures(weatherstation_id,event_time,temperature)
-VALUES (’1234ABCD’,’2013-04-03 07:03:00′,’72F’) USING TTL 20;
-
-ALTER TABLE users ALTER bio TYPE text;
-ALTER TABLE cycling.cyclist_races ADD firstname text;
-ALTER TABLE cycling.basic_info DROP birth_year;
-
-
-select * from audit
-where time > '2013-04-03 07:01:00'
-AND time < '2013-04-03 07:04:00'
+INSERT INTO ff4j_property(uid, param) VALUES ('pBigDecimal', 	 { uid:'pBigDecimal', 	  class_name:'bigDecimal',     value:'1.5'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pBigInteger', 	 { uid:'pBigInteger', 	  class_name:'bigInteger',     value:'123456'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pBoolean',    	 { uid:'pBoolean',    	  class_name:'boolean',        value:'true'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pByte',       	 { uid:'pByte',       	  class_name:'byte',           value:'p'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pCalendar',   	 { uid:'pCalendar',   	  class_name:'calendar',       value:' 2018-12-24 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pDate',       	 { uid:'pDate',       	  class_name:'date',           value:' 2018-12-24 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pClass',      	 { uid:'pClass',      	  class_name:'class',          value:' 123456'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pDouble',    	 { uid:'pDouble',     	  class_name:'double',         value:'20.0'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pFloat',      	 { uid:'pFloat',      	  class_name:'float',          value:'20.0'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pInstant',    	 { uid:'pInstant',    	  class_name:'instant',        value:'2018-12-24 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pLocal',      	 { uid:'pLocal',      	  class_name:'localDateTime',  value:'2018-12-24 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pInt',        	 { uid:'pInt',        	  class_name:'int',            value:'10'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pLogLevel',   	 { uid:'pLogLevel',   	  class_name:'logLevel',       value:'INFO'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pLong',       	 { uid:'pLong',       	  class_name:'long',           value:'123'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pShort',      	 { uid:'pShort',      	  class_name:'short',          value:'5'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pString',     	 { uid:'pString',     	  class_name:'string',         value:'pString'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListBigDecimal', { uid:'pListBigDecimal', class_name:'listBigDecimal', value:'1.5,2.5'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListBigInteger', { uid:'pListBigInteger', class_name:'listBigInteger', value:'123456,789012'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListBoolean',    { uid:'pListBoolean',    class_name:'listBoolean',    value:'true,false'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListByte',       { uid:'pListByte',       class_name:'listByte',       value:'p,l'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListCalendar',   { uid:'pListCalendar',   class_name:'listCalendar',   value:'018-12-24 23:00:00,2019-01-01 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListDate',       { uid:'pListDate',       class_name:'listDate',       value:'018-12-24 23:00:00,2019-01-01 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListClass',      { uid:'pListClass',      class_name:'listClass',      value:'java.lang.String,java.lang.Integer'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListDouble',     { uid:'pListDouble',     class_name:'listDouble',     value:'20.0,30.0'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListFloat',      { uid:'pListFloat',      class_name:'listFloat',      value:'20.0,30.0'});
+INSERT INTO ff4j_property(uid, param) VALUES ('plistInstant',    { uid:'plistInstant',    class_name:'listInstant',    value:'2018-12-24 23:00:00,2019-01-01 23:00:00'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListInt',        { uid:'pListInt',        class_name:'listInt',        value:'10,20'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListLogLevel',   { uid:'pListLogLevel',   class_name:'listLogLevel',   value:'INFO,DEBUG'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListLong',       { uid:'pListLong',       class_name:'listLong',       value:'123,456'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListShort',      { uid:'pListShort',      class_name:'listShort',      value:'5,6'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListString',     { uid:'pListString',     class_name:'listString',     value:'pString,listString'});
+INSERT INTO ff4j_property(uid, param) VALUES ('pListLocal',      { uid:'pListLocal',      class_name:'listLocalDateTime', value:'2018-12-24 23:00:00,2019-01-01 23:00:00'});
